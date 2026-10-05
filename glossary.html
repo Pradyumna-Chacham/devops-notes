@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Midterm Glossary</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section[id^="d"] table td:first-child{min-width:10.5rem}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><span class="cur" aria-current="page">Glossary<small>Definitions</small></span></nav>
+<header class="top">
+<div class="eyebrow">CSC 519 · Midterm prep · Notes and definitions</div>
+<h1>DevOps midterm glossary</h1>
+<p class="lede">Every term from the study guide and the lecture slides that could be asked as "what is…?", each answered in one or two sentences you could write on the exam. Entries tagged <span class="src" style="margin-left:0">slide wording</span> follow the slides or the two course glossaries closely, so learn those near verbatim. The rest are short explanations in plain words.</p>
+<ul class="toc"><li><a href="#git">Git Flow and review</a></li><li><a href="#devops">DevOps and pipelines</a></li><li><a href="#cicd">CI / CD</a></li><li><a href="#roles">Roles and teams</a></li><li><a href="#env">Computing environments</a></li><li><a href="#containers">Containers</a></li><li><a href="#secrets">Env vars and secrets</a></li><li><a href="#rest">REST</a></li><li><a href="#actions">GitHub Actions</a></li><li><a href="#ansible">Ansible</a></li><li><a href="#release">Releasing</a></li><li><a href="#rings">Rings and testing</a></li><li><a href="#learn">Retrospectives</a></li><li><a href="#adages">Adages</a></li><li><a href="#pairs">Confused pairs</a></li><li><a href="#names">Names and quotes</a></li></ul>
+</header>
+<div class="filter"><input id="term-filter" type="search" placeholder="Filter terms: try canary, idempotent, branch…" aria-label="Filter terms"><output id="term-count" for="term-filter"></output></div>
+
+<section id="git" data-terms>
+<h2>Git Flow, branches and code review</h2>
+<dl class="terms">
+<div class="term"><dt>Git</dt><dd>A distributed version control system: it records the history of a project as commits and lets many people work on branches and merge them.</dd></div>
+<div class="term"><dt>Clone vs download ZIP</dt><dd><code>git clone</code> copies the repository <em>and</em> sets up the connection to the git server (history, remote, push and pull). A ZIP is only a snapshot of the files with no connection.</dd></div>
+<div class="term"><dt>Commit</dt><dd>One recorded change to the repository, with a message. Workshop 2 asked for meaningful commit messages.</dd></div>
+<div class="term"><dt>Branch</dt><dd>A named, movable pointer to a commit (a "ref"). Creating a branch is cheap, which is why work is isolated on branches.</dd></div>
+<div class="term"><dt>Branch-based development</dt><dd>Nobody commits straight to the shared branch. Work happens on a short-lived branch and enters the shared branch only through a reviewed merge.</dd></div>
+<div class="term"><dt>Git Flow<span class="src">slide wording</span><small>a Git-based development workflow</small></dt><dd>A branching model with five kinds of branch: <code>main</code>, <code>develop</code>, <code>feature</code>, <code>release</code> and <code>hotfix</code>, and fixed rules for which may merge into which.<span class="tn">Marked "important slide" in lecture.</span></dd></div>
+<div class="term"><dt>main<span class="src">slide wording</span></dt><dd>The clean, always-buildable branch. "main stays clean. Don't break the build. Build from main. Use release tags." Quality gates protect main.<span class="tn">Only release and hotfix branches merge into main: its two inbound edges.</span></dd></div>
+<div class="term"><dt>develop<span class="src">slide wording</span><small>dev</small></dt><dd>The integration branch, branched from main. Finished features merge here. "Dev might at times be broken."<span class="tn">Receives features, plus the merge-backs from hotfix and release.</span></dd></div>
+<div class="term"><dt>Feature branch<span class="src">slide wording</span></dt><dd>Branched from <strong>develop</strong> and merged back into <strong>develop</strong>. Named <code>unity_id__description</code>. "Don't squash commits (at first)."<span class="tn">Sample exam question: "a feature branch is branched from main" is false. Correct word: develop.</span></dd></div>
+<div class="term"><dt>Release branch</dt><dd>Branched from develop to stabilise a version. Merges into main (where it gets a tag) and back into develop.</dd></div>
+<div class="term"><dt>Hotfix</dt><dd>An urgent production fix branched from main. Merges into main and also into develop so the fix is not lost.</dd></div>
+<div class="term"><dt>Tag / release tag</dt><dd>A fixed label on a commit on main marking a version, such as <code>v0.1</code>, <code>v0.2</code>, <code>v1.0</code>.</dd></div>
+<div class="term"><dt>Squash</dt><dd>Combining several commits into one before merging. The slides say not to squash at first, so the history of the work stays visible.</dd></div>
+<div class="term"><dt>Pull request (PR)</dt><dd>A request to merge one branch into another. It holds one or more commits, shows the diff, hosts the review discussion, and is where automated checks report.</dd></div>
+<div class="term"><dt>Diff time<span class="src">slide wording</span></dt><dd>The critical moment in the software engineering process when a code change is proposed. It is when peer code review happens and, increasingly, when static analysis runs.<span class="tn">It is a discrete event, which is why "continuous" is called imprecise.</span></dd></div>
+<div class="term"><dt>Modern Code Review<span class="src">slide wording</span></dt><dd>Peer review of code changes at diff time, done with tools on the diff instead of in formal inspection meetings. Source: "Modern code review: a case study at Google" (2018).</dd></div>
+<div class="term"><dt>Static analysis</dt><dd>Automated checking of code without running it (linters, bug finders). Increasingly run at diff time. Source: "Scaling static analyses at Facebook" (2019).</dd></div>
+<div class="term"><dt>Quality gate</dt><dd>A check a change must pass before it is promoted to the next stage or branch, for example "all tests pass". Gates may be automated.</dd></div>
+<div class="term"><dt>.gitignore</dt><dd>A file listing paths git must not track. Used to keep <code>mytoken.txt</code>, keys and inventory files out of the repository.</dd></div>
+</dl>
+</section>
+
+<section id="devops" data-terms>
+<h2>DevOps, lifecycle and pipelines</h2>
+<dl class="terms">
+<div class="term"><dt>DevOps<span class="src">slide wording</span></dt><dd>"A set of practices designed to help teams build, test, and release software faster and more reliably." It joins Development and Operations.</dd></div>
+<div class="term"><dt>DevOps lifecycle</dt><dd>The repeating loop of phases, drawn as an infinity symbol: plan, code, build, test (Dev side), then release, deploy, operate, monitor (Ops side), feeding back into planning.</dd></div>
+<div class="term"><dt>Event-driven<span class="src">slide wording</span></dt><dd>DevOps automation runs in response to events: a code commit, a pull request to a special branch, automated testing, and passing tests automatically triggering the CI/CD pipeline.</dd></div>
+<div class="term"><dt>Event / trigger</dt><dd>Something that happens (push, PR opened, tests passed, a schedule) and starts automation.</dd></div>
+<div class="term"><dt>Pipeline<span class="src">slide wording</span><small>general computer science meaning</small></dt><dd>"An architectural style for incrementally processing data with independent components or stages."</dd></div>
+<div class="term"><dt>Pipe<span class="src">slide wording</span></dt><dd>A message queue between stages.</dd></div>
+<div class="term"><dt>Filter<span class="src">slide wording</span></dt><dd>"A process, thread, or component that perpetually reads messages from an input pipe, one at a time, processes each message, then writes the result to an output pipe."</dd></div>
+<div class="term"><dt>DevOps pipeline<span class="src">slide wording</span></dt><dd>Its goal is "to apply a series of checks, tests, and transformations onto a unit of change, such that a production environment is safely and reliably changed in a timely manner."</dd></div>
+<div class="term"><dt>Unit of change</dt><dd>The thing that travels through the pipeline: a commit, a pull request, a build.</dd></div>
+<div class="term"><dt>Pipeline stages<span class="src">slide wording</span></dt><dd>Pre-Build (quick checks), Build (run build manager), Test (unit tests), Analysis (static analysis), Package (create image or bundle binaries), Staging (system tests in a staging environment), Deploy (transport the change into production), Post-Deploy (testing in production).<span class="tn">"Each stage has a particular goal and function."</span></dd></div>
+<div class="term"><dt>Hook<span class="src">slide wording</span></dt><dd>"A mechanism for specifying an action that occurs in response to an event." Commonly used to build pipelines.<span class="tn">Examples: a git <code>pre-commit</code> hook running <code>npm test</code>; a webhook.</span></dd></div>
+<div class="term"><dt>Federation of pipelines</dt><dd>There is no single global pipeline. Companies run hundreds to thousands of loosely aligned pipelines.</dd></div>
+<div class="term"><dt>Environments<span class="src">slide wording</span></dt><dd>Development (Dev), Testing (Test / QA), Staging (Staging / UAT), Production (Prod). Others: Integration, Disaster Recovery (DR).</dd></div>
+<div class="term"><dt>UAT</dt><dd>User Acceptance Testing: checking in a production-like environment that the release does what users need. Associated with the staging environment.</dd></div>
+<div class="term"><dt>Provisioning</dt><dd>Creating and preparing machines or environments so they are ready to use (for example reserving and booting a fresh Ubuntu VM).</dd></div>
+<div class="term"><dt>Toolchain</dt><dd>The set of tools linked together to take code to production (git, build tools, CI, configuration management, monitoring).</dd></div>
+<div class="term"><dt>Service<span class="src">slide wording</span></dt><dd>A unit of software "exposed over a public and well-defined interface, i.e. a set of REST APIs". Each team is responsible for a separate service.</dd></div>
+<div class="term"><dt>Microservices<span class="src">slide wording</span></dt><dd>"An architectural style in which services are created as small and often stateless instances and connected through a central discovery service and property store." (Glossary 2)</dd></div>
+<div class="term"><dt>Build / task manager<span class="src">slide wording</span></dt><dd>The tools a pipeline calls to do the real work: make, maven, grunt, npm, msbuild. "Pipelines are just integrative technology."</dd></div>
+<div class="term"><dt>make: target and source<span class="src">slide wording</span></dt><dd>"A target refers to a group of commands. A source is a dependency for a target." Sources are used to infer which targets must run first.</dd></div>
+<div class="term"><dt>Maven: phase, goal, plugin<span class="src">slide wording</span></dt><dd>"A phase is a stage in the build lifecycle. Each phase contains goals, which are executed by plugins." Phases: compile, test, package, verify, deploy.</dd></div>
+<div class="term"><dt>grunt: task<span class="src">slide wording</span></dt><dd>"A task executes a registered plugin or arbitrary javascript."</dd></div>
+<div class="term"><dt>Build team<span class="src">slide wording</span></dt><dd>A team that maintains CI scripts and infrastructure. They can serve as gatekeepers on code integration and help with build failures.</dd></div>
+<div class="term"><dt>Spinnaker</dt><dd>Netflix's fully automated pipeline tool. Slide features: bake immutable VM images, built-in deployment strategies (highlander, red/black), restrict stages to time windows, Chaos Monkey integration.</dd></div>
+<div class="term"><dt>Chaos Monkey</dt><dd>A tool that deliberately breaks things in production to test resilience. An example of shift-right testing.</dd></div>
+<div class="term"><dt>CD smells / CD-Linter</dt><dd>Common misconfigurations in pipeline configuration files that violate CD principles, and a linter that detects four of them.</dd></div>
+</dl>
+</section>
+
+<section id="cicd" data-terms>
+<h2>Continuous integration, delivery and deployment</h2>
+<dl class="terms">
+<div class="term"><dt>Continuous Integration (CI)<span class="src">slide wording</span></dt><dd>"A practice where developers automatically build, test, and analyze a software change in response to every software change committed to the source repository."<span class="tn">Earlier slide: frequently putting code changes together makes problems easier to identify. Smaller changes, easier debugging.</span></dd></div>
+<div class="term"><dt>"Continuous" is imprecise</dt><dd>Lecture's caveat: code changes happen at discrete moments (diff time), and production updates happen at intervals.</dd></div>
+<div class="term"><dt>CI principles<span class="src">slide wording</span></dt><dd>Commit code frequently. Don't commit broken code. Fix broken builds immediately. Write automated developer tests. All tests and inspections must pass. Run private builds. Avoid getting broken code.</dd></div>
+<div class="term"><dt>CI benefits (claimed)<span class="src">slide wording</span></dt><dd>Detect and fix defects faster; software health is measurable; fewer assumptions about the environment; less repetitive work; deployable software at any time; global feedback about failure gives confidence.</dd></div>
+<div class="term"><dt>CI pain points</dt><dd>"Why did the build fail?" and builds that take too long.</dd></div>
+<div class="term"><dt>Continuous Delivery</dt><dd>Every change is carried automatically through build, test and staging so it is always ready to release. The slides label the pipeline up to the staged, "pre-deploy" code this way.</dd></div>
+<div class="term"><dt>Continuous Deployment<span class="src">slide wording</span></dt><dd>"A process in which incremental software changes are automatically tested, vetted, and deployed to production environments." (Glossary 1)</dd></div>
+<div class="term"><dt>Staging or baking<span class="src">slide wording</span></dt><dd>"A stage in the deployment pipeline in which developers test a new software version in a production-like environment. For example, some companies might bake a new version for eight hours before deployment." (Glossary 1)</dd></div>
+<div class="term"><dt>CI/CD</dt><dd>The two together: integrate and verify every change (CI), then carry it toward production (CD). Pronounced "see eye, see dee".</dd></div>
+</dl>
+</section>
+
+<section id="roles" data-terms>
+<h2>Roles, teams and organisation</h2>
+<dl class="terms">
+<div class="term"><dt>Service Owner<span class="src">slide wording</span></dt><dd>Outside coordination. Maintains and communicates the vision of the service.</dd></div>
+<div class="term"><dt>Gatekeeper<span class="src">slide wording</span></dt><dd>Responsible for decisions to move to the next stage in the deployment pipeline. Decisions might be automated.</dd></div>
+<div class="term"><dt>Release Engineer / Coordinator<span class="src">slide wording</span></dt><dd>Responsible for the entire release process, including approving late-breaking additions, the back-out decision, and refereeing bug-severity disputes.</dd></div>
+<div class="term"><dt>DevOps Engineer<span class="src">slide wording</span></dt><dd>Responsible for care and feeding of the tools used throughout the DevOps toolchain.</dd></div>
+<div class="term"><dt>Reliability Engineer<span class="src">slide wording</span></dt><dd>Responsible for the time period immediately after deployment.</dd></div>
+<div class="term"><dt>Two large pizzas rule<span class="src">slide wording</span></dt><dd>"At Amazon, development teams should be no larger than what can be fed from two pizzas."<span class="tn">It is about team size, not deployment time.</span></dd></div>
+<div class="term"><dt>Silo</dt><dd>A team working in isolation with its own goals, tools and knowledge. Traditionally Dev and Ops are siloed.</dd></div>
+<div class="term"><dt>Wall of confusion<span class="src">slide wording</span></dt><dd>The barrier between Dev and Ops. "Software goes over the wall. Ops owns provisioning and rollout."</dd></div>
+<div class="term"><dt>Ticket system (pre-DevOps)<span class="src">slide wording</span></dt><dd>The interface between Dev and Ops: developers demanded deployments through tickets that operations handled manually. In theory this gives stability; in practice, long delays and silos that "blame each other for production problems".</dd></div>
+<div class="term"><dt>Change ownership<span class="src">slide wording</span></dt><dd>"A practice in which developers are responsible for software changes for all phases, including development, testing, deployment, and fixing problems." (Glossary 2)<span class="tn">Summary slide: the developer has responsibility for the consequences of changes.</span></dd></div>
+<div class="term"><dt>Change management</dt><dd>How an organisation controls the risk of changing production. In DevOps: changes are small, reviewed, automatically verified, exposed gradually, owned by their author, reversible, and learned from.</dd></div>
+<div class="term"><dt>End-user communication<span class="src">slide wording</span></dt><dd>"A practice enabling communication with users to receive feedback and gather requirements." (Glossary 2)</dd></div>
+</dl>
+</section>
+
+<section id="env" data-terms>
+<h2>Computing environments and virtualization</h2>
+<dl class="terms">
+<div class="term"><dt>Shell</dt><dd>A program that reads commands and runs them (<code>sh</code>, <code>bash</code>, PowerShell). <code>/bin/sh</code> is "the shell", a very old Unix program.</dd></div>
+<div class="term"><dt>Why the command line?</dt><dd>Flexibility and remote access (cloud machines and devices have no screen), and understanding the computational context a program runs in.</dd></div>
+<div class="term"><dt>Redirect</dt><dd><code>&gt;</code> writes a command's output to a file; <code>&gt;&gt;</code> appends to it.</dd></div>
+<div class="term"><dt>Return code / exit code</dt><dd>The number a command returns when it ends. 0 means success; any other value means failure. Pipelines pass or fail on it.</dd></div>
+<div class="term"><dt>Package manager</dt><dd>A tool that knows which pre-built packages exist and installs them: <code>apk</code> on Alpine, <code>apt</code> on Ubuntu, <code>npm</code> for Node.</dd></div>
+<div class="term"><dt>Bit rot<span class="src">slide wording</span><small>"does code rot?"</small></dt><dd>Code that has not changed stops working because its environment and dependencies change around it. "Often, the default experience is failure."</dd></div>
+<div class="term"><dt>Computing environment<span class="src">slide wording</span></dt><dd>"A unified view of code and configuration needed to operate and maintain its value": configuration + code, including dependencies, environment, ecosystem, stakeholders and users.</dd></div>
+<div class="term"><dt>Ideal computing environment<span class="src">slide wording</span></dt><dd>Reproducible, resilient, secure, scalable, flexible, maintains quality of service, good resource utilization.</dd></div>
+<div class="term"><dt>"Software on your machine has no real value"</dt><dd>A program is worth nothing until it runs where users can reach it. Managing environments is hard, and programmers must be "end-user system admins".</dd></div>
+<div class="term"><dt>Virtualization</dt><dd>Making one physical machine appear as several isolated machines or environments.</dd></div>
+<div class="term"><dt>Virtual machine (VM)<span class="src">slide wording</span></dt><dd>"An efficient, isolated duplicate of the real machine." (Popek and Goldberg, 1974)</dd></div>
+<div class="term"><dt>Host / hypervisor<span class="src">slide wording</span></dt><dd>The operating system running on the physical machine.</dd></div>
+<div class="term"><dt>Guest<span class="src">slide wording</span></dt><dd>The operating system running in the virtual machine.</dd></div>
+<div class="term"><dt>Virtual machine monitor (VMM)<span class="src">slide wording</span></dt><dd>Helps run the guest on the host. Implements the virtualization interface and enforces the illusion of isolated virtual machines.</dd></div>
+<div class="term"><dt>Privileged instructions<span class="src">slide wording</span></dt><dd>Operations only the kernel may run: I/O, memory address mapping, loading and reading system registers, changing processor mode between kernel and user.</dd></div>
+<div class="term"><dt>Full emulation<span class="src">slide wording</span><small>hosted interpretation</small></dt><dd>Run the virtual machine as a user application, interpreting each instruction and emulating CPU, memory, disks and network. Examples: Bochs, video-game emulators.</dd></div>
+<div class="term"><dt>Trap-and-emulate</dt><dd>Safe instructions run directly on the CPU; privileged ones trap to the VMM, which emulates them. Example: System/370.</dd></div>
+<div class="term"><dt>Binary translation</dt><dd>Unsafe instructions are rewritten into safe calls before they run. Examples: QEMU, VMware, VirtualBox.</dd></div>
+<div class="term"><dt>Hardware-assisted virtualization<span class="src">slide wording</span></dt><dd>The CPU adds a guest mode and new instructions (VT-x) so VM operations are supported efficiently and the VMM is easier to implement. Examples: KVM, ESXi, Hyper-V.</dd></div>
+<div class="term"><dt>Paravirtualization<span class="src">slide wording</span></dt><dd>Patch the guest OS to enable virtualization through the VMM. Example: Xen.<span class="tn">Trend: AWS moved from Xen to KVM.</span></dd></div>
+<div class="term"><dt>OS-level virtualization<span class="src">slide wording</span></dt><dd>"The operating system provides mechanisms for virtualizing resources. You are not performing full virtualization of a system." This is what containers use.</dd></div>
+<div class="term"><dt>Headless</dt><dd>Without a graphical interface. Headless VMs, micro VMs and containers are infrastructure you "build, use, and throw away".</dd></div>
+<div class="term"><dt>Classic VM</dt><dd>A fully loaded operating system with a graphical interface: optimized but heavyweight.</dd></div>
+<div class="term"><dt>Bare metal</dt><dd>Running directly on physical hardware with no virtualization. Use: desktop, mobile, embedded, efficiency, CI harness.</dd></div>
+<div class="term"><dt>Micro VM</dt><dd>A minimal, fast-starting VM. Use: embedded appliances such as Docker for Mac and WSL. Firecracker is still a foundation of AWS.</dd></div>
+</dl>
+</section>
+
+<section id="containers" data-terms>
+<h2>Containers (Workshop 1)</h2>
+<dl class="terms">
+<div class="term"><dt>Container</dt><dd>An isolated process (or group of processes) with its own filesystem view, running on the host's kernel. A running instance of an image. Lightweight and disposable.</dd></div>
+<div class="term"><dt>Image</dt><dd>A read-only, layered template of a filesystem from which containers are started. A "binary artifact".</dd></div>
+<div class="term"><dt>Dockerfile</dt><dd>The text file of build instructions that produces an image.</dd></div>
+<div class="term"><dt>Layer</dt><dd>The filesystem change made by one Dockerfile instruction. Each instruction line creates a new layer.</dd></div>
+<div class="term"><dt>Build vs run</dt><dd>Building turns a Dockerfile into an image. Running starts a new container from an image.</dd></div>
+<div class="term"><dt>RUN vs CMD</dt><dd><code>RUN</code> executes a command while the image is being built and saves the result in a layer. <code>CMD</code> names the program a container starts when it runs.</dd></div>
+<div class="term"><dt>Ephemeral</dt><dd>A container's own changes live only in that container. A new container starts from the unchanged image, so files and installed software from the previous one are gone.</dd></div>
+<div class="term"><dt>Bind mount<span class="src">slide wording</span><small><code>-v host_path:container_path</code></small></dt><dd>"A temporary connection between your local machine and the environment inside the container." Both paths refer to the same files, so data written there outlives the container.<span class="tn">Host path on the left of the colon, container path on the right.</span></dd></div>
+<div class="term"><dt>Registry</dt><dd>A server that stores images, such as Docker Hub, where <code>FROM alpine:latest</code> is pulled from.</dd></div>
+<div class="term"><dt>Alpine Linux</dt><dd>A deliberately bare-bones Linux image. It has no Python, git or cloc until you install them with <code>apk</code>.</dd></div>
+<div class="term"><dt>Interactive mode (-it)</dt><dd>Starts the container with an interactive terminal. Omit it when the container should just run its program and exit.</dd></div>
+<div class="term"><dt>Docker vs Podman<span class="src">slide wording</span></dt><dd>"Docker is closed source and is a commercial project, while podman is open-source." Same concepts.</dd></div>
+<div class="term"><dt>latest vs pinned version</dt><dd><code>latest</code> always gets the newest version but may break later. A pinned version is repeatable but ages. "There is no perfect answer here, only tradeoffs."</dd></div>
+</dl>
+</section>
+
+<section id="secrets" data-terms>
+<h2>Environment variables and secrets (Workshop 2)</h2>
+<dl class="terms">
+<div class="term"><dt>Environment variable</dt><dd>A name=value string in a process's environment, inherited from whatever started it. The standard way to pass configuration to a program without changing its code.</dd></div>
+<div class="term"><dt>Terminal as a computational context</dt><dd>A terminal is a place where you can declare variables, like in a program. <code>env</code> lists them; <code>export X=Y</code> sets one; <code>$X</code> reads one.</dd></div>
+<div class="term"><dt>Env file (--env-file)</dt><dd>A file of <code>NAME=value</code> lines used to set environment variables inside a container at run time.</dd></div>
+<div class="term"><dt>Secret</dt><dd>Any value that controls access to a resource: token, password, private key. Tokens are a kind of secret.</dd></div>
+<div class="term"><dt>Personal access token (PAT)<span class="src">slide wording</span></dt><dd>A secret that lets a user access the GitHub API and automate actions on GitHub from a program.</dd></div>
+<div class="term"><dt>Principle of least privilege<span class="src">slide wording</span></dt><dd>Grant only the least amount of privilege required to complete the task.<span class="tn">Example: scope a PAT to one repo with an expiry date; open port 3306 only to VM1.</span></dd></div>
+<div class="term"><dt>Baked-in secret</dt><dd>A secret written into a Dockerfile, image or source file. Anyone who can read the artifact can extract it. Never do this.</dd></div>
+<div class="term"><dt>Secrets manager</dt><dd>A tool built to store secrets encrypted and hand them to programs at run time: GitHub repository secrets, podman secrets. Better than an env file, which is better than hard-coding.</dd></div>
+<div class="term"><dt>Leaked credentials</dt><dd>A token committed to a repository. Attackers scan GitHub continuously and exploit leaks within minutes. Every workshop penalised it.</dd></div>
+</dl>
+</section>
+
+<section id="rest" data-terms>
+<h2>REST APIs</h2>
+<dl class="terms">
+<div class="term"><dt>API<span class="src">slide wording</span><small>Application Programming Interface</small></dt><dd>The answer to "how can my software talk to other software?"</dd></div>
+<div class="term"><dt>REST<span class="src">slide wording</span><small>Representational State Transfer</small></dt><dd>A software architectural style from Roy Fielding's 2000 PhD thesis (chapter 5). REST APIs give clients an interface to back-end services, consume and produce JSON, and use HTTP requests such as GET, POST, PUT and DELETE.</dd></div>
+<div class="term"><dt>HTTP verbs<span class="src">slide wording</span></dt><dd>GET retrieves, POST creates, PUT updates, DELETE deletes.</dd></div>
+<div class="term"><dt>Resource</dt><dd>The noun in the URL. Collection <code>/dogs</code>, element <code>/dogs/1234</code>, association <code>/owners/5678/dogs</code>. States and attributes go after the <code>?</code>.</dd></div>
+<div class="term"><dt>REST constraints<span class="src">slide wording</span></dt><dd>Client-server, stateless, cacheable, layered system, uniform interface.</dd></div>
+<div class="term"><dt>Stateless</dt><dd>Each request carries everything the server needs; the server keeps no client session between requests.</dd></div>
+<div class="term"><dt>Status codes<span class="src">slide wording</span></dt><dd>200 OK and 201 Created: it worked. 400 Bad Request: the client did something wrong. 500 Internal Server Error: the API did something wrong.</dd></div>
+<div class="term"><dt>JSON</dt><dd>JavaScript Object Notation: a lightweight data format of objects (name/value pairs), arrays and values.</dd></div>
+<div class="term"><dt>Hyrum's Law<span class="src">slide wording</span></dt><dd>Cited under "do one thing well": once an API is public, "you can never remove it".</dd></div>
+<div class="term"><dt>API design principles</dt><dd>Do one thing well; names matter; don't leak implementation details; minimise accessibility; don't make the client do what the API could do; version the API; paginate.</dd></div>
+</dl>
+</section>
+
+<section id="actions" data-terms>
+<h2>GitHub Actions (Workshop 3)</h2>
+<dl class="terms">
+<div class="term"><dt>GitHub Actions<span class="src">slide wording</span></dt><dd>GitHub's automation platform. Actions are event-driven and run commands that automate work on the code in your repo.</dd></div>
+<div class="term"><dt>Workflow<span class="src">slide wording</span></dt><dd>A YAML file (<code>.yml</code> or <code>.yaml</code>) in <code>.github/workflows/</code> that specifies what the automation does. "Workflows, when run, become actions."</dd></div>
+<div class="term"><dt>on:<span class="src">slide wording</span></dt><dd>The required, critical key that names the events that trigger the workflow, such as <code>push</code> or <code>pull_request</code>.</dd></div>
+<div class="term"><dt>Job<span class="src">slide wording</span></dt><dd>One named task in a workflow. <code>jobs:</code> holds one or more.</dd></div>
+<div class="term"><dt>Step / run:<span class="src">slide wording</span></dt><dd><code>steps:</code> is the sequence of commands in a job. <code>- run:</code> is the prefix for a shell command.</dd></div>
+<div class="term"><dt>runs-on:<span class="src">slide wording</span></dt><dd>Specifies what compute handles the job, for example <code>self-hosted</code>.</dd></div>
+<div class="term"><dt>Action runner<span class="src">slide wording</span></dt><dd>"Some compute that has been configured to perform GitHub actions."</dd></div>
+<div class="term"><dt>Self-hosted vs GitHub-hosted runner</dt><dd>Self-hosted is your own machine (the workshop VM). GitHub-hosted is one of GitHub's headless VMs.</dd></div>
+<div class="term"><dt>Context<span class="src">slide wording</span></dt><dd>The variables GitHub provides to a workflow, such as <code>github.actor</code> and <code>github.repository</code>. Anything inside <code>${{ … }}</code> accesses the context and is evaluated when the workflow runs.</dd></div>
+<div class="term"><dt>Repository secret</dt><dd>A value stored encrypted in the repo's settings and read as <code>${{ secrets.NAME }}</code>, so the token never appears in the workflow file.</dd></div>
+<div class="term"><dt>YAML</dt><dd>A structured text format based on indentation. It converts one-to-one to and from JSON.</dd></div>
+<div class="term"><dt>SSH<small>secure shell</small></dt><dd>An encrypted connection that gives you a terminal on a remote machine. Needs a username and a hostname or IP.</dd></div>
+</dl>
+</section>
+
+<section id="ansible" data-terms>
+<h2>Configuration management and Ansible (Workshops 4 to 6)</h2>
+<dl class="terms">
+<div class="term"><dt>Configuration management<span class="src">slide wording</span></dt><dd>"A process in which an inventory of software and production assets is provisioned and controlled through package managers and tools such as Ansible."</dd></div>
+<div class="term"><dt>Ansible</dt><dd>A configuration management tool, created by Michael DeHaan. Agentless, declarative and idempotent.</dd></div>
+<div class="term"><dt>Infrastructure as Code (IaC)</dt><dd>Describing machines and their configuration in versioned files that tools apply automatically. In the matching example it pairs with Ansible.</dd></div>
+<div class="term"><dt>Agentless<span class="src">slide wording</span></dt><dd>"No ansible agents (software program) installed" on the machines being managed. The control node connects over SSH.</dd></div>
+<div class="term"><dt>Agent</dt><dd>A program that would have to be installed and kept running on every managed machine. Ansible does not use one.</dd></div>
+<div class="term"><dt>Control node<span class="src">slide wording</span><small>controller, Ansible workstation</small></dt><dd>"Any machine with Ansible installed." You run <code>ansible</code> or <code>ansible-playbook</code> from it. Any computer with Python can be one.</dd></div>
+<div class="term"><dt>Managed node<span class="src">slide wording</span><small>host, inventory</small></dt><dd>"The network devices (and/or servers) you manage with Ansible… Ansible is not installed on managed nodes."</dd></div>
+<div class="term"><dt>Inventory<span class="src">slide wording</span><small>hosts file</small></dt><dd>The list of managed nodes, optionally in groups such as <code>[webservers]</code>. "Inventory also known as hosts a.k.a. managed nodes."</dd></div>
+<div class="term"><dt>Role of SSH</dt><dd>SSH is Ansible's transport: the encrypted channel the control node uses to reach each managed node and run tasks. It must be key-based and password-less so automation can run unattended.</dd></div>
+<div class="term"><dt>SSH key pair</dt><dd>A private key that stays on the control node and a public key that is appended to <code>~/.ssh/authorized_keys</code> on the managed node.</dd></div>
+<div class="term"><dt>Playbook</dt><dd>A YAML file that lists plays. It describes the desired state of the hosts.</dd></div>
+<div class="term"><dt>Play</dt><dd>One section of a playbook that maps a group of hosts (<code>hosts:</code>) to a list of tasks.</dd></div>
+<div class="term"><dt>Task</dt><dd>One named step in a play that calls one module.</dd></div>
+<div class="term"><dt>Module</dt><dd>The unit of work a task uses: <code>apt</code>, <code>service</code>, <code>copy</code>, <code>template</code>, <code>uri</code>, <code>shell</code>.</dd></div>
+<div class="term"><dt>become</dt><dd>Privilege escalation: run the tasks as root, usually through <code>sudo</code>.</dd></div>
+<div class="term"><dt>state:</dt><dd>The desired condition a module should ensure: <code>present</code> (installed), <code>latest</code> (installed and newest), <code>started</code> (running).</dd></div>
+<div class="term"><dt>Declarative<span class="src">slide wording</span></dt><dd>"Defines WHAT tasks should be accomplished." Defines only the logic; mutating variables is unusual. Derived paradigms: functional, logic.<span class="tn">"Ansible is declarative."</span></dd></div>
+<div class="term"><dt>Imperative<span class="src">slide wording</span></dt><dd>"Defines HOW tasks should be accomplished." Defines the control flow and state changes; mutating variables is very usual. Derived paradigms: procedural, object-oriented.</dd></div>
+<div class="term"><dt>Idempotent<span class="src">slide wording</span></dt><dd>"When performing an operation again gives the same result." Running a playbook many times leaves the same end state.<span class="tn">Slide analogy: looking at a cake is idempotent, eating a slice is not. GET, HEAD, PUT, DELETE are idempotent; POST and PATCH are not.</span></dd></div>
+<div class="term"><dt>Handler</dt><dd>A task that runs once, later, only if a task that notifies it reported a change. Typically a service restart.</dd></div>
+<div class="term"><dt>Template</dt><dd>A file with <code>{{ variables }}</code> that Ansible fills in before copying it to the host.</dd></div>
+<div class="term"><dt>register / when</dt><dd><code>register</code> saves a task's result in a variable; <code>when</code> runs a task only if a condition holds. Together: check, then act.</dd></div>
+<div class="term"><dt>Orchestration</dt><dd>Coordinating configuration across several machines in a defined order, as in Workshop 6's database play followed by its app play.</dd></div>
+<div class="term"><dt>Actions vs playbooks<span class="src">slide wording</span></dt><dd>Both are YAML, declarative and used in CI/CD. Actions automate the Git repo's lifecycle, are tied to Git events, run on a runner, and are not always idempotent. Playbooks automate configuration management and deployment, run from a control node, and are always idempotent.</dd></div>
+</dl>
+</section>
+
+<section id="release" data-terms>
+<h2>Deploying and releasing</h2>
+<dl class="terms">
+<div class="term"><dt>Deploy vs release</dt><dd>Deploying puts the code on production servers. Releasing makes the feature available to users. "Deployment is not releasing."</dd></div>
+<div class="term"><dt>Feature flags<span class="src">slide wording</span><small>toggles, release toggles, feature flippers</small></dt><dd>"A mechanism for dynamically enabling features during production, often controlled by a global in-memory store and cached locally in service instances." (Glossary 1)<span class="tn">"How deployed features become released features."</span></dd></div>
+<div class="term"><dt>Anatomy of a feature flag<span class="src">slide wording</span></dt><dd>It has a unique name, has variations that an <code>if</code> uses to select a code path, and can have rules the evaluation engine uses to choose which variation to serve.</dd></div>
+<div class="term"><dt>Stale feature flags<span class="src">slide wording</span></dt><dd>A source of technical debt: flag management that leaves it ambiguous which flags are stale, and no developer incentive to clean up the code.</dd></div>
+<div class="term"><dt>Dark launching<span class="src">slide wording</span></dt><dd>"A practice in which code is incrementally deployed into production but remains invisible to users." (Glossary 1)<span class="tn">"Deployed but not released." Enabled by feature flags.</span></dd></div>
+<div class="term"><dt>Parallel run (Fowler)</dt><dd>A dark-launch variant: old and new code are both called and their results compared, but only one answer is returned to the interface.</dd></div>
+<div class="term"><dt>Canary release</dt><dd>Release the new version to a small share of real users first (for example 5% or 10%), watch it, then widen. Usually done at the networking layer. Before: all v1. During: mostly v1, some v2. After: all v2.</dd></div>
+<div class="term"><dt>A/B testing</dt><dd>Split users between variants (for example 50/50) and compare a metric such as conversion rate to see which is better. Done with feature flags or at the networking layer.</dd></div>
+<div class="term"><dt>Blue-green deployment</dt><dd>Two complete environments. One is live; the new version is prepared on the other, then all traffic is switched. Uses separate delivery infrastructure.</dd></div>
+<div class="term"><dt>Feature flags vs canary<span class="src">slide wording</span></dt><dd>Flags: placed in the application; orchestrated by developers, product managers and QA; support rule-based and group-based targeting; rollback is granular to a specific feature. Canary: infrastructure networking layer; orchestrated by DevOps and SREs; rollback is the entire deployment.</dd></div>
+<div class="term"><dt>Deflighting or rollback<span class="src">slide wording</span></dt><dd>"A method for rolling back or decommissioning a defective change and removing it from the deployment pipeline." (Glossary 1)</dd></div>
+<div class="term"><dt>Rollback options<span class="src">slide wording</span></dt><dd>1. Use the load balancer to shift traffic away from the canary release. 2. Disable the feature flag (application level, requires a push update or equivalent). "In any case, have a rollback plan."</dd></div>
+<div class="term"><dt>Load balancing</dt><dd>Distributing incoming requests across several instances of a service. The routing layer that makes scaling, canary releases, blue-green switches and rollback possible.</dd></div>
+<div class="term"><dt>Progressive delivery</dt><dd>The umbrella name used by the slides' source for gradual rollout methods: canary, feature flags, A/B tests, blue-green.</dd></div>
+<div class="term"><dt>Every feature is an experiment<span class="src">slide wording</span></dt><dd>In continuous deployment a feature must demonstrate that it is useful: ROI, customer retention, engagement, conversion rates.</dd></div>
+<div class="term"><dt>Cost of change (Boehm, 1981)<span class="src">slide wording</span></dt><dd>Relative cost to fix an error by when it is found: requirements 1, design 3–6, coding 10, development testing 15–40, acceptance testing 30–70, operation 40–100.<span class="tn">Much less true under CI/CD; still true for airplanes, power plants, aircraft carriers.</span></dd></div>
+</dl>
+</section>
+
+<section id="rings" data-terms>
+<h2>Rings, blast radius and where testing happens</h2>
+<dl class="terms">
+<div class="term"><dt>Deployment rings<span class="src">slide wording</span><small>rollout rings</small></dt><dd>Concentric groups that receive a change in order: canaries, then early adopters, then users.</dd></div>
+<div class="term"><dt>Canaries (ring 0)</dt><dd>The first, smallest group to get a change: internal users or volunteers. Most volatile; sees the most new features.</dd></div>
+<div class="term"><dt>Early adopters</dt><dd>Users who opt in to get changes before general availability.</dd></div>
+<div class="term"><dt>Blast radius</dt><dd>How much is affected if a change goes wrong: users, services, machines. It grows as a change moves to outer rings, so problems should be found in the inner ones.</dd></div>
+<div class="term"><dt>Exposed feature set</dt><dd>The set of features switched on for a group. It is larger for early adopters and smaller and more stable for production users.</dd></div>
+<div class="term"><dt>Shift-left<span class="src">slide wording</span></dt><dd>Move testing earlier in the lifecycle (plan, design, dev). "Shift-left reduces cost of defects."</dd></div>
+<div class="term"><dt>Shift-right</dt><dd>Extend testing later, into deploy, operate and measure: testing in production with canaries, monitoring, A/B tests and chaos experiments.</dd></div>
+<div class="term"><dt>Telemetry<span class="src">slide wording</span></dt><dd>"A practice in which code is instrumented to compute metrics about feature use and software performance and stability." (Glossary 2)</dd></div>
+<div class="term"><dt>Latency vs distribution</dt><dd>Report response time as a distribution (median, quartiles, tail), not one average. Workshop 6: 30 sequential requests per configuration.</dd></div>
+</dl>
+</section>
+
+<section id="learn" data-terms>
+<h2>Retrospectives</h2>
+<dl class="terms">
+<div class="term"><dt>Retrospectives<span class="src">slide wording</span></dt><dd>"A practice in which team members discuss the causes and consequences of an unexpected operation outage or deployment failure." (Glossary 2)</dd></div>
+<div class="term"><dt>Three objectives of a retrospective<span class="src">slide wording</span></dt><dd>What worked (went well)? What didn't work? What can we do better?</dd></div>
+<div class="term"><dt>Postmortem</dt><dd>A written retrospective after an incident: what happened, why, and what will change.</dd></div>
+<div class="term"><dt>Hotwash</dt><dd>An immediate after-action review held right after an event. The README lists it as another name for a retrospective.</dd></div>
+<div class="term"><dt>Why retrospectives<span class="src">slide wording</span></dt><dd>Build trust, try new things, improve continuously, (self) reflection, collaborative learning, shared understanding.</dd></div>
+<div class="term"><dt>Retrospective tips<span class="src">slide wording</span></dt><dd>Vocabulary, ice breakers, foster team psychological safety, make it fun. Also: keep it simple, incorporate novelty, stay focused, make it action-oriented, bring in an outside perspective.</dd></div>
+<div class="term"><dt>Psychological safety</dt><dd>People can say what really happened without fear of blame. Without it a retrospective cannot find the cause.</dd></div>
+<div class="term"><dt>Meta-analysis of retrospectives<span class="src">slide wording</span></dt><dd>With many retrospectives, developers can analyse them together "to uncover trends and systematic issues with deployment processes".</dd></div>
+</dl>
+</section>
+
+<section id="adages" data-terms>
+<h2>The ten adages of continuous deployment</h2>
+<dl class="terms">
+<div class="term"><dt>1. Every feature is an experiment<span class="src">slide wording</span></dt><dd>Features must prove their value with data (A/B tests, telemetry) and can be removed.</dd></div>
+<div class="term"><dt>2. The cost of change is dead<span class="src">slide wording</span></dt><dd>In continuously deployed systems, changing late is no longer far more expensive than changing early.</dd></div>
+<div class="term"><dt>3. Be fast to deploy but slow (or slower) to release<span class="src">slide wording</span></dt><dd>Put code in production quickly; expose it to users carefully with flags, dark launches and canaries.</dd></div>
+<div class="term"><dt>4. Invest for survival</dt><dd>Continuous deployment takes sustained investment in automation, tooling and infrastructure.<span class="tn">Listed on the slide, not expanded in lecture.</span></dd></div>
+<div class="term"><dt>5. You are the support person<span class="src">slide wording</span></dt><dd>Developers own their changes in production. Linked to change ownership and breaking down silos.</dd></div>
+<div class="term"><dt>6. Configuration is code<span class="src">slide wording</span></dt><dd>Configuration and infrastructure are versioned, reviewed and automated like source code. Linked to Ansible.</dd></div>
+<div class="term"><dt>7. Comfort the customer with discomfort<span class="src">slide wording</span></dt><dd>"Releases are part of the user experience." Frequent change can unsettle users, so manage it: does the user choose, or not?</dd></div>
+<div class="term"><dt>8. Looking back to move forward<span class="src">slide wording</span></dt><dd>Learn from outages and failures through retrospectives.</dd></div>
+<div class="term"><dt>9. Invite privacy and security in</dt><dd>Involve security and privacy early instead of at the end.<span class="tn">Listed on the slide, not expanded in lecture.</span></dd></div>
+<div class="term"><dt>10. Ready or not, here it comes<span class="src">slide wording</span></dt><dd>Continuous deployment is arriving whether or not teams are prepared. The slides' opening quote.</dd></div>
+</dl>
+</section>
+
+<section id="pairs">
+<h2>Pairs that get swapped in true / false questions</h2>
+<div class="scroll"><table>
+<tr><th>This</th><th>Not this</th><th>The difference</th></tr>
+<tr><td>Feature branches from <strong>develop</strong></td><td>from main</td><td style="font-weight:400">Only release and hotfix touch main</td></tr>
+<tr><td>Image</td><td>Container</td><td style="font-weight:400">Template that is built vs instance that is run</td></tr>
+<tr><td><code>RUN</code></td><td><code>CMD</code></td><td style="font-weight:400">Build time, makes a layer vs the program a container starts</td></tr>
+<tr><td>Host path (left of colon)</td><td>Container path (right)</td><td style="font-weight:400"><code>-v host:container</code></td></tr>
+<tr><td>Container shares the host kernel</td><td>VM runs its own guest kernel</td><td style="font-weight:400">OS-level virtualization vs hardware virtualization</td></tr>
+<tr><td>Host</td><td>Guest</td><td style="font-weight:400">OS on the physical machine vs OS inside the VM</td></tr>
+<tr><td><code>on:</code></td><td><code>runs-on:</code></td><td style="font-weight:400">Which event triggers vs which runner executes</td></tr>
+<tr><td>Self-hosted runner</td><td>GitHub-hosted runner</td><td style="font-weight:400">Your machine vs GitHub's VM</td></tr>
+<tr><td>Exit code 0</td><td>Non-zero exit code</td><td style="font-weight:400">Success vs failure</td></tr>
+<tr><td>Control node</td><td>Managed node</td><td style="font-weight:400">Where Ansible is installed vs the host being configured (no Ansible)</td></tr>
+<tr><td>Declarative (WHAT)</td><td>Imperative (HOW)</td><td style="font-weight:400">Ansible is declarative</td></tr>
+<tr><td>Agentless</td><td>Agent-based</td><td style="font-weight:400">Ansible installs nothing on hosts; it uses SSH</td></tr>
+<tr><td>Public key on the server</td><td>Private key on the server</td><td style="font-weight:400">The private key never leaves the control node</td></tr>
+<tr><td>Idempotent: same result every run</td><td>Runs only once</td><td style="font-weight:400">It may run many times; the end state does not change</td></tr>
+<tr><td>Deploy</td><td>Release</td><td style="font-weight:400">Code is in production vs users can see it</td></tr>
+<tr><td>Dark launch</td><td>Canary</td><td style="font-weight:400">Invisible to users vs visible to a small share of users</td></tr>
+<tr><td>Canary</td><td>A/B test</td><td style="font-weight:400">"Is it safe?" with a small share vs "which is better?" by a metric</td></tr>
+<tr><td>Feature-flag rollback</td><td>Canary rollback</td><td style="font-weight:400">One specific feature vs the entire deployment</td></tr>
+<tr><td>Feature flags: application level</td><td>Canary: networking layer</td><td style="font-weight:400">Developers / PMs / QA vs DevOps / SREs</td></tr>
+<tr><td>Shift-left</td><td>Shift-right</td><td style="font-weight:400">Test earlier vs test in production</td></tr>
+<tr><td>Canaries first</td><td>All users first</td><td style="font-weight:400">Rings go inner to outer; blast radius grows outward</td></tr>
+<tr><td>Retrospective</td><td>Telemetry</td><td style="font-weight:400">Team discussion of a failure vs instrumented metrics</td></tr>
+<tr><td>Two pizzas: team size</td><td>Deployment time</td><td style="font-weight:400">The slides' own sample trap</td></tr>
+<tr><td>Gatekeeper</td><td>Reliability Engineer</td><td style="font-weight:400">Decides stage promotion vs owns the period right after deployment</td></tr>
+<tr><td>Continuous Deployment: automatic to production</td><td>Manual, scheduled releases</td><td style="font-weight:400">"Automatically tested, vetted, and deployed"</td></tr>
+<tr><td>Change ownership: the developer</td><td>The operations team</td><td style="font-weight:400">"You are the support person"</td></tr>
+<tr><td>Cost of change is dead <em>in CD systems</em></td><td>Everywhere</td><td style="font-weight:400">Still applies to airplanes, power plants</td></tr>
+</table></div>
+</section>
+
+<section id="names">
+<h2>Names, papers and quotes to recognise</h2>
+<div class="scroll"><table>
+<tr><th>Name or source</th><th>Connects to</th></tr>
+<tr><td>Roy Fielding (PhD thesis, 2000)</td><td style="font-weight:400">REST, "Representational State Transfer"</td></tr>
+<tr><td>Barry Boehm, <em>Software Engineering Economics</em> (1981)</td><td style="font-weight:400">Relative cost to fix an error; "the cost of change is dead"</td></tr>
+<tr><td>Popek and Goldberg (1974)</td><td style="font-weight:400">Definition of a virtual machine</td></tr>
+<tr><td>Michael DeHaan (NC State, 2001)</td><td style="font-weight:400">Creator of Ansible</td></tr>
+<tr><td>Martin Fowler</td><td style="font-weight:400">"Continuous Integration" (2000); the parallel-run description of dark launching</td></tr>
+<tr><td>Parnin et al., IEEE Software (2017)</td><td style="font-weight:400">"The Top 10 Adages in Continuous Deployment"; both glossaries</td></tr>
+<tr><td>Sadowski et al., Google (2018)</td><td style="font-weight:400">Modern Code Review</td></tr>
+<tr><td>Distefano et al., Facebook (2019)</td><td style="font-weight:400">Static analysis at diff time</td></tr>
+<tr><td>Leite et al., ACM Computing Surveys (2019)</td><td style="font-weight:400">Silos, the ticket system, blame between Dev and Ops</td></tr>
+<tr><td>Amazon</td><td style="font-weight:400">Two large pizzas rule</td></tr>
+<tr><td>Netflix</td><td style="font-weight:400">Spinnaker, Chaos Monkey</td></tr>
+<tr><td>Leslie Lamport</td><td style="font-weight:400">"A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable."</td></tr>
+<tr><td>Phil Karlton</td><td style="font-weight:400">"There are only two hard things in Computer Science: cache invalidation and naming things."</td></tr>
+<tr><td>Joshua Bloch</td><td style="font-weight:400">"How to Design a Good API and Why it Matters"</td></tr>
+</table></div>
+<p>CI timeline items from the slides: Extreme Programming "integrate often" and the 10-minute build (1999), CruiseControl (2001), Hudson / Jenkins (2005), Travis CI (2011), Spinnaker (2015), Jenkins 2 "pipeline-as-code" (2016), GitOps (2017).</p>
+</section>
+
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="notes.html" rel="prev"><small>← Previous</small>DevOps Lecture Deck Notes</a></nav>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>

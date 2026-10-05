@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps WS6 Multi-Host Orchestration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section[id^="d"] table td:first-child{min-width:10.5rem}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><span class="cur" aria-current="page">WS6<small>Multi-host &amp; rings</small></span><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<header class="top">
+<div class="eyebrow">CSC 519 · Midterm prep · Workshop 6</div>
+<h1>Multi-host orchestration and performance profiling</h1>
+<p class="lede">Workshop 6 split the Workshop 5 system across two machines, an app server and a database server, and then measured what the split did to response time. The lecture that day introduced deployment rings, blast radius, and shift-left / shift-right testing, all of which are about controlling risk as a change spreads.</p>
+<ul class="tags"><li>hosts / inventory groups</li><li>orchestration</li><li>environment variables</li><li>telemetry</li><li>deployment rings</li><li>blast radius</li><li>shift left / shift right</li><li>load balancing</li></ul>
+<ul class="toc"><li><a href="#arch">One host vs two</a></li><li><a href="#playbook">Multi-play playbook</a></li><li><a href="#net">Opening the database</a></li><li><a href="#bench">Benchmarking</a></li><li><a href="#results">Your results</a></li><li><a href="#rings">Deployment rings</a></li><li><a href="#blast">Blast radius</a></li><li><a href="#shift">Shift left / right</a></li><li><a href="#lb">Load balancing</a></li><li><a href="#quiz">Practice</a></li></ul>
+</header>
+
+<section id="arch">
+<h2>One host vs two</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 230" role="img" aria-label="Configuration 1 keeps the app and database on one VM; configuration 2 puts the database on a second VM, adding a network hop" style="max-width:760px;min-width:600px"><text x="185" y="22" text-anchor="middle" class="l">Config 1: single host (WS5)</text>
+<rect class="d-box" x="20" y="96" width="76" height="44" rx="5"/><text x="58" y="122" text-anchor="middle" class="b">Client</text>
+<line class="d-ln" x1="96" y1="118" x2="150" y2="118" marker-end="url(#ah)"/><text x="112" y="108" text-anchor="middle" class="m">HTTP</text>
+<rect class="d-box soft" x="130" y="46" width="230" height="150" rx="5"/><text x="140" y="63" class="b">VM1</text>
+<rect class="d-box acc" x="150" y="96" width="90" height="44" rx="5"/><text x="195" y="114.5" text-anchor="middle" class="b">Node app</text><text x="195" y="129.5" text-anchor="middle" class="m">port 80</text>
+<line class="d-ln" x1="240" y1="118" x2="260" y2="118" marker-end="url(#ah)"/>
+<rect class="d-box" x="260" y="96" width="86" height="44" rx="5"/><text x="303" y="114.5" text-anchor="middle" class="b">MySQL</text><text x="303" y="129.5" text-anchor="middle" class="m">127.0.0.1</text>
+<text x="245" y="168" text-anchor="middle" class="m">query stays on localhost</text>
+<line class="d-ln grid" x1="380" y1="30" x2="380" y2="210"/>
+<text x="575" y="22" text-anchor="middle" class="l">Config 2: distributed (WS6)</text>
+<rect class="d-box" x="400" y="96" width="66" height="44" rx="5"/><text x="433" y="122" text-anchor="middle" class="b">Client</text>
+<line class="d-ln" x1="466" y1="118" x2="500" y2="118" marker-end="url(#ah)"/>
+<rect class="d-box soft" x="490" y="46" width="120" height="150" rx="5"/><text x="500" y="63" class="b">VM1: app server</text>
+<rect class="d-box acc" x="500" y="96" width="100" height="44" rx="5"/><text x="550" y="114.5" text-anchor="middle" class="b">Node app</text><text x="550" y="129.5" text-anchor="middle" class="m">port 80</text>
+<line class="d-ln a" x1="600" y1="118" x2="650" y2="118" marker-end="url(#aha)"/>
+<rect class="d-box soft" x="640" y="46" width="110" height="150" rx="5"/><text x="650" y="63" class="b">VM2: database</text>
+<rect class="d-box" x="650" y="96" width="90" height="44" rx="5"/><text x="695" y="114.5" text-anchor="middle" class="b">MySQL</text><text x="695" y="129.5" text-anchor="middle" class="m">port 3306</text>
+<text x="625" y="86" text-anchor="middle" class="a">network hop</text>
+<text x="620" y="214" text-anchor="middle" class="m">DB_HOST = VM2&#x27;s address</text></svg></div><figcaption>The only new edge is the teal one. Every request now pays a network round trip to the database, and VM2 must be told to accept that connection.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th></th><th>Single host</th><th>Two hosts</th></tr>
+<tr><td>Latency</td><td>Lowest: no network between app and DB</td><td>Higher: one extra hop per query</td></tr>
+<tr><td>Scaling</td><td>App and DB compete for the same CPU and memory</td><td>Each tier can be sized and scaled on its own; several app servers can share one DB</td></tr>
+<tr><td>Failure / blast radius</td><td>One VM down takes everything down</td><td>Failures are separable, but there are now more ways to fail (network, firewall, second VM)</td></tr>
+<tr><td>Security</td><td>DB listens only on localhost</td><td>DB is exposed on the network, so binding, firewall and user host must be configured carefully</td></tr>
+<tr><td>Configuration effort</td><td>One play</td><td>Two plays, ordering, cross-host variables</td></tr>
+</table></div>
+</section>
+
+<section id="playbook">
+<h2>One playbook, two plays, two host groups</h2>
+<div class="two"><div>
+<div class="cap">Inventory: two groups</div>
+<pre class="code">[myserver]<span class="c">                # VM1, app server</span>
+&lt;VM1-IP&gt; ansible_user=&lt;unityid&gt;
+
+[myserver1]<span class="c">               # VM2, database server</span>
+&lt;VM2-IP&gt; ansible_user=&lt;unityid&gt;</pre>
+<div class="cap">group_vars/all.yaml: shared by every host</div>
+<pre class="code">db_name: pointsdb
+db_user: appuser
+app_dir: /opt/nearest-app</pre>
+</div><div>
+<div class="cap">2-setup-config.yaml (condensed)</div>
+<pre class="code"><mark>- name: Configure VM2 with mysql server</mark>
+  hosts: myserver1<span class="c">                  # PLAY 1 → database host</span>
+  vars:
+    db_client_host: &quot;{{ hostvars[groups[&#x27;myserver&#x27;][0]].inventory_hostname }}&quot;
+  tasks:
+    - set_fact: { db_password_shared: &quot;{{ db_password }}&quot; }
+    - apt: { name: mysql-server, state: present }
+    - lineinfile: …bind-address = 0.0.0.0
+      notify: restart mysql
+    - …firewall, database, user, CSV import…
+
+<mark>- name: Configure VM1 with Node.js app</mark>
+  hosts: myserver<span class="c">                   # PLAY 2 → app host</span>
+  vars:
+    db_host: &quot;{{ hostvars[groups[&#x27;myserver1&#x27;][0]].inventory_hostname }}&quot;
+  tasks:
+    - …nodejs, npm, app files, systemd unit, verify…</pre>
+</div></div>
+<ul>
+<li><strong>A playbook is a list of plays.</strong> Each play maps one group of hosts to its tasks. This is what "orchestration" means here: one command configures different machines differently, in a defined order.</li>
+<li><strong>Order matters.</strong> The database play runs first so the database exists before the app starts and the final "verify the app" check can pass.</li>
+<li><strong>Hosts know about each other</strong> through the inventory: <code>groups['myserver1'][0]</code> is "the first host in group myserver1", and <code>hostvars[…]</code> reads another host's variables. Nothing is hard-coded, so re-provisioned VMs with new IPs only need an inventory edit.</li>
+<li><strong>The app code did not change.</strong> The systemd template now renders <code>Environment=DB_HOST={{ db_host }}</code> instead of <code>127.0.0.1</code>. Same <code>server.js</code>, different environment variable: the README's "configure connection settings dynamically using Ansible environment variables or parameters".</li>
+</ul>
+<aside class="exam"><b>Exam angle</b>A likely short answer: "How did you point the app at the remote database without editing the app?" Through configuration injected at deploy time: an Ansible variable rendered into the service's environment (<code>DB_HOST</code>), which the program reads with <code>process.env</code>.</aside>
+</section>
+
+<section id="net">
+<h2>Opening the database to exactly one client</h2>
+<p>Three things had to change on VM2 before VM1 could connect. Each is a declared piece of configuration, and each is scoped to VM1's address, not to the world (least privilege again).</p>
+<div class="scroll"><table>
+<tr><th>Layer</th><th>Default</th><th>What the playbook sets</th></tr>
+<tr><td>MySQL bind address</td><td><code>127.0.0.1</code>: local connections only</td><td><code>lineinfile</code> sets <code>bind-address = 0.0.0.0</code>, then a handler restarts MySQL</td></tr>
+<tr><td>Firewall</td><td>VCL images reject inbound traffic on unlisted ports</td><td>Allow TCP 3306 <strong>only from VM1's IP</strong></td></tr>
+<tr><td>Database user</td><td><code>'appuser'@'localhost'</code></td><td><code>'appuser'@'&lt;VM1 address&gt;'</code> with <code>GRANT SELECT</code> only</td></tr>
+</table></div>
+<pre class="code">- name: Bind MySQL to all interfaces
+  <mark>lineinfile:</mark><span class="c">                       # ensure one line of a file has this content (idempotent)</span>
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: &#x27;^bind-address&#x27;
+    line: &#x27;bind-address = 0.0.0.0&#x27;
+  <mark>notify: restart mysql</mark>
+- meta: flush_handlers<span class="c">              # restart now, because later tasks need the new setting</span></pre>
+</section>
+
+<section id="bench">
+<h2>Benchmarking: collecting the data</h2>
+<p>The requirement: issue <strong>30 sequential HTTP requests</strong> to each configuration and record each request's duration in milliseconds plus the total elapsed time.</p>
+<pre class="code">function benchmark(url, n = 30):
+    samples = []
+    run_start = now()
+    for i in 1..n:<span class="c">                        # sequential: one finishes before the next starts</span>
+        t0 = now()
+        response = HTTP GET url<span class="c">           # includes connect + server work + full read</span>
+        samples.append((now() - t0) in ms)
+    total_elapsed = (now() - run_start) in ms
+    return samples, total_elapsed, mean / median / min / max / p95 of samples
+
+results1 = benchmark(&quot;http://&lt;config-1-host&gt;/&quot;)
+results2 = benchmark(&quot;http://&lt;config-2-host&gt;/&quot;)
+write CSV: config, request number, duration_ms, status</pre>
+<ul>
+<li><strong>Sequential</strong> requests measure per-request latency. They say nothing about behaviour under concurrent load (throughput).</li>
+<li><strong>Total elapsed</strong> is measured around the whole loop, so it is slightly more than the sum of the durations.</li>
+<li><strong>Report a distribution, not one number.</strong> The mean hides outliers; the median and a high percentile (p95) describe typical and worst-case experience. That is why the deliverable was a histogram or box plot.</li>
+<li>Use a monotonic high-resolution clock (<code>time.perf_counter()</code> in Python) and keep everything else equal between the two runs.</li>
+</ul>
+<aside class="note">This is <strong>telemetry</strong> in miniature. Glossary 2 defines telemetry as "a practice in which code is instrumented to compute metrics about feature use and software performance and stability". Decisions about architecture should rest on measurements like these.</aside>
+</section>
+
+<section id="results">
+<h2>Your results</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 252" role="img" aria-label="Box plots of your response times: configuration 1 median 77.6 milliseconds, configuration 2 median 88.2 milliseconds" style="max-width:740px;min-width:600px"><line class="d-ln grid" x1="150" y1="30" x2="150" y2="206"/>
+<text x="150" y="224" text-anchor="middle" class="m">60</text>
+<line class="d-ln grid" x1="240" y1="30" x2="240" y2="206"/>
+<text x="240" y="224" text-anchor="middle" class="m">70</text>
+<line class="d-ln grid" x1="330" y1="30" x2="330" y2="206"/>
+<text x="330" y="224" text-anchor="middle" class="m">80</text>
+<line class="d-ln grid" x1="420" y1="30" x2="420" y2="206"/>
+<text x="420" y="224" text-anchor="middle" class="m">90</text>
+<line class="d-ln grid" x1="510" y1="30" x2="510" y2="206"/>
+<text x="510" y="224" text-anchor="middle" class="m">100</text>
+<line class="d-ln grid" x1="600" y1="30" x2="600" y2="206"/>
+<text x="600" y="224" text-anchor="middle" class="m">110</text>
+<line class="d-ln grid" x1="690" y1="30" x2="690" y2="206"/>
+<text x="690" y="224" text-anchor="middle" class="m">120</text>
+<text x="420" y="244" text-anchor="middle" class="m">response time per request (ms), 30 sequential requests each</text>
+<text x="20" y="68" class="b">Config 1</text><text x="20" y="83" class="m">single host</text>
+<line class="d-ln" x1="222.7" y1="70" x2="271.9" y2="70"/><line class="d-ln" x1="353.1" y1="70" x2="663.2" y2="70"/>
+<line class="d-ln" x1="222.7" y1="63" x2="222.7" y2="77"/><line class="d-ln" x1="663.2" y1="63" x2="663.2" y2="77"/>
+<rect x="271.9" y="56" width="81.1" height="28" rx="3" style="fill:var(--s1);opacity:.3"><title>Config 1: Q1 73.5 ms, Q3 82.6 ms</title></rect>
+<rect x="271.9" y="56" width="81.1" height="28" rx="3" style="fill:none;stroke:var(--s1);stroke-width:1.5"/>
+<line x1="308.8" y1="56" x2="308.8" y2="84" style="stroke:var(--s1);stroke-width:3"/>
+<text x="308.8" y="49" text-anchor="middle" class="b">median 77.6</text>
+<text x="671.2" y="74" class="m">max 117</text>
+<circle class="d-dot1" cx="427.3" cy="100" r="4" opacity=".75"><title>Config 1, request 1: 90.8 ms</title></circle>
+<circle class="d-dot1" cx="574.8" cy="100" r="4" opacity=".75"><title>Config 1, request 2: 107.2 ms</title></circle>
+<circle class="d-dot1" cx="309.5" cy="100" r="4" opacity=".75"><title>Config 1, request 3: 77.7 ms</title></circle>
+<circle class="d-dot1" cx="307.3" cy="100" r="4" opacity=".75"><title>Config 1, request 4: 77.5 ms</title></circle>
+<circle class="d-dot1" cx="380.5" cy="100" r="4" opacity=".75"><title>Config 1, request 5: 85.6 ms</title></circle>
+<circle class="d-dot1" cx="388.3" cy="100" r="4" opacity=".75"><title>Config 1, request 6: 86.5 ms</title></circle>
+<circle class="d-dot1" cx="257.1" cy="100" r="4" opacity=".75"><title>Config 1, request 7: 71.9 ms</title></circle>
+<circle class="d-dot1" cx="271.8" cy="100" r="4" opacity=".75"><title>Config 1, request 8: 73.5 ms</title></circle>
+<circle class="d-dot1" cx="245.3" cy="100" r="4" opacity=".75"><title>Config 1, request 9: 70.6 ms</title></circle>
+<circle class="d-dot1" cx="321.1" cy="100" r="4" opacity=".75"><title>Config 1, request 10: 79.0 ms</title></circle>
+<circle class="d-dot1" cx="330.1" cy="100" r="4" opacity=".75"><title>Config 1, request 11: 80.0 ms</title></circle>
+<circle class="d-dot1" cx="311.2" cy="100" r="4" opacity=".75"><title>Config 1, request 12: 77.9 ms</title></circle>
+<circle class="d-dot1" cx="456.1" cy="100" r="4" opacity=".75"><title>Config 1, request 13: 94.0 ms</title></circle>
+<circle class="d-dot1" cx="283.9" cy="100" r="4" opacity=".75"><title>Config 1, request 14: 74.9 ms</title></circle>
+<circle class="d-dot1" cx="259.3" cy="100" r="4" opacity=".75"><title>Config 1, request 15: 72.1 ms</title></circle>
+<circle class="d-dot1" cx="663.2" cy="100" r="4" opacity=".75"><title>Config 1, request 16: 117.0 ms</title></circle>
+<circle class="d-dot1" cx="272.2" cy="100" r="4" opacity=".75"><title>Config 1, request 17: 73.6 ms</title></circle>
+<circle class="d-dot1" cx="353.7" cy="100" r="4" opacity=".75"><title>Config 1, request 18: 82.6 ms</title></circle>
+<circle class="d-dot1" cx="282.1" cy="100" r="4" opacity=".75"><title>Config 1, request 19: 74.7 ms</title></circle>
+<circle class="d-dot1" cx="330.3" cy="100" r="4" opacity=".75"><title>Config 1, request 20: 80.0 ms</title></circle>
+<circle class="d-dot1" cx="396.1" cy="100" r="4" opacity=".75"><title>Config 1, request 21: 87.3 ms</title></circle>
+<circle class="d-dot1" cx="351.2" cy="100" r="4" opacity=".75"><title>Config 1, request 22: 82.4 ms</title></circle>
+<circle class="d-dot1" cx="265.1" cy="100" r="4" opacity=".75"><title>Config 1, request 23: 72.8 ms</title></circle>
+<circle class="d-dot1" cx="260.9" cy="100" r="4" opacity=".75"><title>Config 1, request 24: 72.3 ms</title></circle>
+<circle class="d-dot1" cx="279.4" cy="100" r="4" opacity=".75"><title>Config 1, request 25: 74.4 ms</title></circle>
+<circle class="d-dot1" cx="255.8" cy="100" r="4" opacity=".75"><title>Config 1, request 26: 71.8 ms</title></circle>
+<circle class="d-dot1" cx="222.7" cy="100" r="4" opacity=".75"><title>Config 1, request 27: 68.1 ms</title></circle>
+<circle class="d-dot1" cx="298.7" cy="100" r="4" opacity=".75"><title>Config 1, request 28: 76.5 ms</title></circle>
+<circle class="d-dot1" cx="332.0" cy="100" r="4" opacity=".75"><title>Config 1, request 29: 80.2 ms</title></circle>
+<circle class="d-dot1" cx="308.2" cy="100" r="4" opacity=".75"><title>Config 1, request 30: 77.6 ms</title></circle>
+<text x="20" y="148" class="b">Config 2</text><text x="20" y="163" class="m">app VM + DB VM</text>
+<line class="d-ln" x1="293.0" y1="150" x2="341.8" y2="150"/><line class="d-ln" x1="465.3" y1="150" x2="653.6" y2="150"/>
+<line class="d-ln" x1="293.0" y1="143" x2="293.0" y2="157"/><line class="d-ln" x1="653.6" y1="143" x2="653.6" y2="157"/>
+<rect x="341.8" y="136" width="123.5" height="28" rx="3" style="fill:var(--s2);opacity:.3"><title>Config 2: Q1 81.3 ms, Q3 95.0 ms</title></rect>
+<rect x="341.8" y="136" width="123.5" height="28" rx="3" style="fill:none;stroke:var(--s2);stroke-width:1.5"/>
+<line x1="403.4" y1="136" x2="403.4" y2="164" style="stroke:var(--s2);stroke-width:3"/>
+<text x="403.4" y="129" text-anchor="middle" class="b">median 88.2</text>
+<text x="661.6" y="154" class="m">max 116</text>
+<circle class="d-dot2" cx="557.9" cy="180" r="4" opacity=".75"><title>Config 2, request 1: 105.3 ms</title></circle>
+<circle class="d-dot2" cx="454.2" cy="180" r="4" opacity=".75"><title>Config 2, request 2: 93.8 ms</title></circle>
+<circle class="d-dot2" cx="571.2" cy="180" r="4" opacity=".75"><title>Config 2, request 3: 106.8 ms</title></circle>
+<circle class="d-dot2" cx="465.6" cy="180" r="4" opacity=".75"><title>Config 2, request 4: 95.1 ms</title></circle>
+<circle class="d-dot2" cx="293.0" cy="180" r="4" opacity=".75"><title>Config 2, request 5: 75.9 ms</title></circle>
+<circle class="d-dot2" cx="325.9" cy="180" r="4" opacity=".75"><title>Config 2, request 6: 79.5 ms</title></circle>
+<circle class="d-dot2" cx="308.7" cy="180" r="4" opacity=".75"><title>Config 2, request 7: 77.6 ms</title></circle>
+<circle class="d-dot2" cx="336.1" cy="180" r="4" opacity=".75"><title>Config 2, request 8: 80.7 ms</title></circle>
+<circle class="d-dot2" cx="445.5" cy="180" r="4" opacity=".75"><title>Config 2, request 9: 92.8 ms</title></circle>
+<circle class="d-dot2" cx="495.1" cy="180" r="4" opacity=".75"><title>Config 2, request 10: 98.3 ms</title></circle>
+<circle class="d-dot2" cx="352.4" cy="180" r="4" opacity=".75"><title>Config 2, request 11: 82.5 ms</title></circle>
+<circle class="d-dot2" cx="464.7" cy="180" r="4" opacity=".75"><title>Config 2, request 12: 95.0 ms</title></circle>
+<circle class="d-dot2" cx="363.9" cy="180" r="4" opacity=".75"><title>Config 2, request 13: 83.8 ms</title></circle>
+<circle class="d-dot2" cx="401.2" cy="180" r="4" opacity=".75"><title>Config 2, request 14: 87.9 ms</title></circle>
+<circle class="d-dot2" cx="471.3" cy="180" r="4" opacity=".75"><title>Config 2, request 15: 95.7 ms</title></circle>
+<circle class="d-dot2" cx="347.6" cy="180" r="4" opacity=".75"><title>Config 2, request 16: 82.0 ms</title></circle>
+<circle class="d-dot2" cx="392.5" cy="180" r="4" opacity=".75"><title>Config 2, request 17: 86.9 ms</title></circle>
+<circle class="d-dot2" cx="334.2" cy="180" r="4" opacity=".75"><title>Config 2, request 18: 80.5 ms</title></circle>
+<circle class="d-dot2" cx="502.3" cy="180" r="4" opacity=".75"><title>Config 2, request 19: 99.1 ms</title></circle>
+<circle class="d-dot2" cx="397.0" cy="180" r="4" opacity=".75"><title>Config 2, request 20: 87.4 ms</title></circle>
+<circle class="d-dot2" cx="323.6" cy="180" r="4" opacity=".75"><title>Config 2, request 21: 79.3 ms</title></circle>
+<circle class="d-dot2" cx="478.6" cy="180" r="4" opacity=".75"><title>Config 2, request 22: 96.5 ms</title></circle>
+<circle class="d-dot2" cx="457.7" cy="180" r="4" opacity=".75"><title>Config 2, request 23: 94.2 ms</title></circle>
+<circle class="d-dot2" cx="653.6" cy="180" r="4" opacity=".75"><title>Config 2, request 24: 116.0 ms</title></circle>
+<circle class="d-dot2" cx="408.1" cy="180" r="4" opacity=".75"><title>Config 2, request 25: 88.7 ms</title></circle>
+<circle class="d-dot2" cx="405.7" cy="180" r="4" opacity=".75"><title>Config 2, request 26: 88.4 ms</title></circle>
+<circle class="d-dot2" cx="430.6" cy="180" r="4" opacity=".75"><title>Config 2, request 27: 91.2 ms</title></circle>
+<circle class="d-dot2" cx="370.9" cy="180" r="4" opacity=".75"><title>Config 2, request 28: 84.5 ms</title></circle>
+<circle class="d-dot2" cx="339.9" cy="180" r="4" opacity=".75"><title>Config 2, request 29: 81.1 ms</title></circle>
+<circle class="d-dot2" cx="318.0" cy="180" r="4" opacity=".75"><title>Config 2, request 30: 78.7 ms</title></circle></svg></div><figcaption>From your <code>benchmark-results.json</code>. Box = middle 50% (Q1 to Q3), thick line = median, whiskers = min and max, dots = the 30 individual requests (hover for values).</figcaption></figure>
+<div class="scroll"><table>
+<tr><th>Statistic (ms)</th><th class="num">Config 1: single host</th><th class="num">Config 2: two hosts</th><th class="num">Difference</th></tr>
+<tr><td>Min</td><td class="num">68.1</td><td class="num">75.9</td><td class="num">+7.8</td></tr>
+<tr><td>Q1</td><td class="num">73.5</td><td class="num">81.3</td><td class="num">+7.8</td></tr>
+<tr><td>Median</td><td class="num">77.6</td><td class="num">88.2</td><td class="num">+10.5</td></tr>
+<tr><td>Mean</td><td class="num">80.4</td><td class="num">89.5</td><td class="num">+9.2</td></tr>
+<tr><td>Q3</td><td class="num">82.6</td><td class="num">95.0</td><td class="num">+12.4</td></tr>
+<tr><td>p95</td><td class="num">107.2</td><td class="num">106.8</td><td class="num">−0.4</td></tr>
+<tr><td>Max</td><td class="num">117.0</td><td class="num">116.0</td><td class="num">−1.1</td></tr>
+<tr><td>Std dev</td><td class="num">10.7</td><td class="num">9.6</td><td class="num"></td></tr>
+<tr><td>Total for 30 requests</td><td class="num">2,415</td><td class="num">2,691</td><td class="num">+276</td></tr>
+</table></div>
+<p><strong>Reading it:</strong> the whole distribution shifts right by roughly 8 to 12 ms. The typical request is about 11% slower with the database on another VM (mean 80.4 → 89.5 ms), which is the cost of the extra network round trip. The tails are about the same (max 117 vs 116 ms), so the slowest requests are dominated by something other than the DB hop. With 30 samples and a standard deviation near 10 ms, treat the size of the gap as approximate, but the direction is consistent across min, quartiles, median and mean.</p>
+<p><strong>The trade:</strong> you pay about 10 ms per request and extra configuration to get tiers that scale and fail independently. Whether that is worth it is a judgment about the system, and the measurement is what lets you make it.</p>
+</section>
+
+<section id="rings">
+<h2>Deployment rings</h2>
+<p>Deployment rings (a.k.a. rollout rings) release a change to progressively larger groups of users. Each ring must look healthy before the change is promoted to the next.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 270" role="img" aria-label="Three concentric rings, canaries inside early adopters inside all users, and the blast radius growing as a change is promoted outward" style="max-width:740px;min-width:600px"><circle class="d-box soft" cx="130" cy="138" r="108"/>
+<circle class="d-box" cx="130" cy="138" r="78"/>
+<circle class="d-box acc" cx="130" cy="138" r="34"/>
+<text x="130" y="142" text-anchor="middle" class="b">Canaries</text>
+<text x="130" y="94" text-anchor="middle" class="b">Early adopters</text>
+<text x="130" y="50" text-anchor="middle" class="b">Users</text>
+<polygon points="290,222 722,222 722,64" style="fill:var(--bad-soft);stroke:var(--bad);stroke-width:1"/>
+<rect class="d-box acc" x="290" y="168" width="110" height="48" rx="5"/><text x="345" y="188.5" text-anchor="middle" class="b">Ring 0</text><text x="345" y="203.5" text-anchor="middle" class="m">canaries</text>
+<line class="d-ln" x1="400" y1="192" x2="450" y2="192" marker-end="url(#ah)"/>
+<text x="425" y="184" text-anchor="middle" class="m s">gate</text>
+<rect class="d-box" x="450" y="138" width="110" height="78" rx="5"/><text x="505" y="173.5" text-anchor="middle" class="b">Ring 1</text><text x="505" y="188.5" text-anchor="middle" class="m">early adopters</text>
+<line class="d-ln" x1="560" y1="177" x2="610" y2="177" marker-end="url(#ah)"/>
+<text x="585" y="169" text-anchor="middle" class="m s">gate</text>
+<rect class="d-box" x="610" y="94" width="110" height="122" rx="5"/><text x="665" y="151.5" text-anchor="middle" class="b">Ring 2</text><text x="665" y="166.5" text-anchor="middle" class="m">all users</text>
+<text x="500" y="244" text-anchor="middle" class="bad b">Blast radius grows with every ring</text>
+<text x="500" y="40" text-anchor="middle" class="m">CI → CD pipeline deploys to ring 0 automatically;</text>
+<text x="500" y="55" text-anchor="middle" class="m">promotion outward needs an approval (a quality gate)</text></svg></div><figcaption>A defect caught in ring 0 hurts a handful of volunteers. The same defect found in ring 2 hurts everyone. Rings exist to keep the first discovery small.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th>Ring</th><th>Who</th><th>Purpose</th><th>Character</th></tr>
+<tr><td>0: Canaries</td><td>Internal users, volunteers, a small slice of traffic</td><td>Catch defects first, at minimum impact</td><td>Most volatile; sees the largest set of new features</td></tr>
+<tr><td>1: Early adopters</td><td>Users who opted in to previews</td><td>Validate with real usage at moderate scale</td><td>In between</td></tr>
+<tr><td>2: Users</td><td>Everyone in production</td><td>General availability</td><td>Most stable; the exposed feature set is smaller</td></tr>
+</table></div>
+<p>The third slide ("exposed feature set + rings") makes one more point: from early adopters to production users, volatility falls and stability rises, and <strong>the set of features switched on shrinks</strong>. Feature flags are the mechanism: inner rings have more flags on, and some users get custom exposure.</p>
+<p>"Canary" comes from the canary in a coal mine: a small early warning before the danger reaches everyone.</p>
+</section>
+
+<section id="blast">
+<h2>Blast radius</h2>
+<p><strong>Blast radius</strong> is the extent of the damage if a change goes wrong: how many users, services or machines are affected. Much of DevOps practice is a way of shrinking it.</p>
+<div class="scroll"><table>
+<tr><th>Practice</th><th>How it limits blast radius</th></tr>
+<tr><td>Deployment rings / canary release</td><td>Only a small group sees the change first</td></tr>
+<tr><td>Feature flags</td><td>One feature can be turned off without touching the rest</td></tr>
+<tr><td>Small, frequent changes (CI)</td><td>Less can break per change, and the cause is easy to find</td></tr>
+<tr><td>Microservices / separate hosts</td><td>A failure is contained in one service (though dependencies can spread it, as Lamport's quote warns)</td></tr>
+<tr><td>Least privilege</td><td>A leaked token or compromised host can reach less. WS6: port 3306 open to VM1 only, <code>GRANT SELECT</code> only</td></tr>
+<tr><td>Staging / baking</td><td>The first place a bad build explodes is not production</td></tr>
+</table></div>
+</section>
+
+<section id="shift">
+<h2>Shift left and shift right</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 280" role="img" aria-label="Testing can shift left toward planning and design or shift right into operation; the cost of fixing a defect rises the later it is found" style="max-width:740px;min-width:600px"><line class="d-ln a" x1="350" y1="30" x2="60" y2="30" marker-end="url(#aha)"/>
+<text x="205" y="20" text-anchor="middle" class="a">Shift-left: test earlier</text>
+<line class="d-ln" x1="390" y1="30" x2="690" y2="30" marker-end="url(#ah)"/>
+<text x="540" y="20" text-anchor="middle" class="b">Shift-right: test in production</text>
+<rect class="d-box" x="40" y="50" width="96" height="36" rx="5"/><text x="88" y="72" text-anchor="middle" class="b">Plan</text>
+<rect class="d-box" x="148" y="50" width="96" height="36" rx="5"/><text x="196" y="72" text-anchor="middle" class="b">Design</text>
+<rect class="d-box" x="256" y="50" width="96" height="36" rx="5"/><text x="304" y="72" text-anchor="middle" class="b">Dev</text>
+<rect class="d-box" x="364" y="50" width="96" height="36" rx="5"/><text x="412" y="72" text-anchor="middle" class="b">Deploy</text>
+<rect class="d-box" x="472" y="50" width="96" height="36" rx="5"/><text x="520" y="72" text-anchor="middle" class="b">Operate</text>
+<rect class="d-box" x="580" y="50" width="96" height="36" rx="5"/><text x="628" y="72" text-anchor="middle" class="b">Measure</text>
+<line class="d-ln" x1="40" y1="250" x2="690" y2="250"/>
+<rect class="d-box s1" x="58" y="232" width="60" height="18" rx="3"><title>Plan: cheapest to fix</title></rect>
+<rect class="d-box s1" x="166" y="220" width="60" height="30" rx="3"><title>Design</title></rect>
+<rect class="d-box s1" x="274" y="204" width="60" height="46" rx="3"><title>Dev</title></rect>
+<rect class="d-box s1" x="382" y="184" width="60" height="66" rx="3"><title>Deploy</title></rect>
+<rect class="d-box s1" x="490" y="156" width="60" height="94" rx="3"><title>Operate</title></rect>
+<rect class="d-box s1" x="598" y="126" width="60" height="124" rx="3"><title>Measure: most expensive to fix</title></rect>
+<text x="40" y="114" class="b">Cost of fixing a defect</text>
+<text x="40" y="130" class="m">rises with time and lifecycle progress</text>
+<text x="40" y="146" class="m">(shape only; the slide gives no numbers)</text>
+<text x="365" y="270" text-anchor="middle" class="m">time and lifecycle progress →</text></svg></div><figcaption>The slide's title was "Shift-left reduces cost of defects". The bars are the same idea as Boehm's curve on the Workshop 5 page.</figcaption></figure>
+<div class="two"><div>
+<h3>Shift left</h3>
+<p>Move testing and quality checks <strong>earlier</strong>, toward plan, design and dev, where defects are cheap to fix.</p>
+<ul><li>Static analysis and linting at diff time</li><li>Unit tests on every commit (CI)</li><li>Pre-commit hooks, pre-build checks</li><li>Code review before merge</li><li>Security review early ("Invite Privacy and Security In")</li></ul>
+</div><div>
+<h3>Shift right</h3>
+<p>Extend testing <strong>later</strong>, into deploy, operate and measure, because some problems only show with real users, real data and real load.</p>
+<ul><li>Canary releases and deployment rings</li><li>A/B tests and feature-flag experiments</li><li>Monitoring, telemetry, alerting</li><li>Post-deploy testing in production</li><li>Chaos engineering (Chaos Monkey)</li></ul>
+</div></div>
+<aside class="exam"><b>Exam angle</b>The two are complements, not rivals. Shift left <em>prevents</em> defects cheaply; shift right <em>detects</em> what could not be predicted and limits its blast radius. Your WS6 benchmark was a shift-right style activity: measuring the deployed system.</aside>
+</section>
+
+<section id="lb">
+<h2>Load balancing</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 220" role="img" aria-label="A load balancer in front of several instances sends most traffic to version 1 and a small share to the canary, and can cut the canary to zero" style="max-width:740px;min-width:600px"><rect class="d-box" x="20" y="86" width="110" height="48" rx="5"/><text x="75" y="106.5" text-anchor="middle" class="b">Users</text><text x="75" y="121.5" text-anchor="middle" class="m">all requests</text>
+<line class="d-ln" x1="130" y1="110" x2="200" y2="110" marker-end="url(#ah)"/>
+<rect class="d-box acc" x="200" y="80" width="140" height="60" rx="5"/><text x="270" y="106.5" text-anchor="middle" class="b">Load balancer</text><text x="270" y="121.5" text-anchor="middle" class="m">chooses an instance</text>
+<line class="d-ln" x1="340" y1="98" x2="450" y2="38" marker-end="url(#ah)"/>
+<line class="d-ln" x1="340" y1="106" x2="450" y2="84" marker-end="url(#ah)"/><text x="388" y="62" text-anchor="middle" class="m">90%</text>
+<line class="d-ln" x1="340" y1="114" x2="450" y2="130" marker-end="url(#ah)"/>
+<line class="d-ln a" x1="340" y1="124" x2="450" y2="184" marker-end="url(#aha)"/><text x="388" y="172" text-anchor="middle" class="m a">10%</text>
+<rect class="d-box" x="450" y="20" width="130" height="36" rx="5"/><text x="515" y="42" text-anchor="middle" class="b">v1 instance</text>
+<rect class="d-box" x="450" y="66" width="130" height="36" rx="5"/><text x="515" y="88" text-anchor="middle" class="b">v1 instance</text>
+<rect class="d-box" x="450" y="112" width="130" height="36" rx="5"/><text x="515" y="134" text-anchor="middle" class="b">v1 instance</text>
+<rect class="d-box warn" x="450" y="166" width="130" height="36" rx="5"/><text x="515" y="188" text-anchor="middle" class="b">v2 canary</text>
+<text x="600" y="180" class="m">rollback: set this</text>
+<text x="600" y="195" class="m">share to 0%</text>
+<text x="600" y="80" class="m">stable pool</text></svg></div><figcaption>The same component gives you scaling (add instances), resilience (skip a dead one), canary releases (weighted routing), blue-green switches and rollback.</figcaption></figure>
+<ul>
+<li>A load balancer distributes incoming requests across multiple instances of a service.</li>
+<li>It is the "networking layer" that the Workshop 5 page says canary and blue-green releases are implemented in.</li>
+<li>Rollback option 1 from lecture is a load-balancer action: shift traffic away from the canary.</li>
+<li>WS4 mentioned that nginx in front of Node.js is useful for static caching and load balancing. (The term "reverse proxy" is excluded from the midterm.)</li>
+</ul>
+</section>
+
+<section id="quiz">
+<h2>Practice</h2>
+<div class="quizbar"><button class="reveal" type="button" id="reveal-all">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On the real T/F questions you underline the wrong word and write the fix. A plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>In a ring-based rollout, a change is deployed to all users first and then to canaries.</summary><div class="ans"><span class="F">False.</span> Reverse the order: <strong>canaries</strong> first, then early adopters, then <strong>all users</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The blast radius of a change shrinks as it is promoted to outer deployment rings.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">shrinks</u> to <strong>grows</strong>. More users are exposed with each ring.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Shift-left testing means moving testing later in the lifecycle, into production.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">Shift-left</u> to <strong>Shift-right</strong> (or: shift-left moves testing <strong>earlier</strong>, toward design and development).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Canary releases and monitoring in production are examples of shift-right testing.</summary><div class="ans"><span class="T">True.</span> They test with real users and real traffic after deployment.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In an Ansible playbook, each play targets a group of hosts, and one playbook may contain several plays.</summary><div class="ans"><span class="T">True.</span> WS6 used one play for the database host and one for the app host.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Moving the database to a second VM reduced the median response time in the workshop.</summary><div class="ans"><span class="F">False.</span> It <strong>increased</strong> it (about 77.6 → 88.2 ms in your data) because each query now crosses the network.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Telemetry is a practice in which team members discuss the causes of an outage.</summary><div class="ans"><span class="F">False.</span> That is a <strong>retrospective</strong>. Telemetry is instrumenting code to compute metrics about feature use, performance and stability.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A load balancer can be used to roll back a canary release by shifting traffic away from it.</summary><div class="ans"><span class="T">True.</span> Rollback option 1 from the lecture.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Production users see a larger exposed feature set than canary users.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">larger</u> to <strong>smaller</strong>. Inner rings have more new features switched on; production is the most stable.</div></details>
+<details class="q"><summary><span class="chip">Read the code</span><code>db_host: &quot;{{ hostvars[groups[&#x27;myserver1&#x27;][0]].inventory_hostname }}&quot;</code> What does this expression evaluate to, and why write it this way?</summary><div class="ans">The address of the first host in the inventory group <code>myserver1</code> (the database VM). The value comes from the inventory, so if the VMs are re-provisioned with new IPs you edit only the hosts file, not the playbook or the app.</div></details>
+<details class="q"><summary><span class="chip">Read the code</span>A benchmark script measures <code>total_elapsed</code> around the whole loop and also sums the 30 durations. Which is larger and why?</summary><div class="ans"><code>total_elapsed</code>, slightly, because it also includes the script's own overhead between requests (loop bookkeeping, recording the sample). In your run: 2,415 ms total vs 2,411 ms summed for Config 1.</div></details>
+<details class="q"><summary><span class="chip">Short answer</span>Why does the database play come before the app play in the playbook?</summary><div class="ans">The app depends on the database. Running the DB play first means the database, user, firewall rule and data exist before the app service starts, so the playbook's final check that the app responds can succeed in a single run.</div></details>
+<details class="q"><summary><span class="chip">Short answer</span>Give two reasons to separate an app server and a database server despite the added latency.</summary><div class="ans">Independent scaling and sizing of each tier (several app servers can share one database); fault and resource isolation, so a busy or crashed app does not starve or take down the database; tighter security boundaries per machine.</div></details>
+<details class="q"><summary><span class="chip">Short answer</span>Explain blast radius and name two practices that reduce it.</summary><div class="ans">Blast radius is how much is affected when a change fails: users, services, machines. Deployment rings / canary releases expose few users first; feature flags let one feature be switched off; small frequent changes, least privilege and staging also limit it.</div></details>
+<details class="q"><summary><span class="chip">Short answer</span>Why report a box plot or histogram instead of just the average response time?</summary><div class="ans">An average hides spread and outliers. Two systems with the same mean can have very different worst cases. The median, quartiles and tail show what a typical request and a bad request look like.</div></details>
+</div>
+</section>
+
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws5.html" rel="prev"><small>← Previous</small>DevOps WS5 Ansible Deployment</a><a class="next" href="ws7.html" rel="next"><small>Next →</small>DevOps WS7 Retrospectives</a></nav>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>

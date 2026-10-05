@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps WS4 Ansible Fundamentals</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section[id^="d"] table td:first-child{min-width:10.5rem}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><span class="cur" aria-current="page">WS4<small>Ansible basics</small></span><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<header class="top">
+<div class="eyebrow">CSC 519 · Midterm prep · Workshop 4</div>
+<h1>Intro to Ansible and configuration management</h1>
+<p class="lede">Workshop 4 ran Ansible from a container on your laptop, reached a fresh Ubuntu VM over password-less SSH, and used a playbook to install nginx and then your own Node.js app. The study guide lists six Ansible ideas by name: idempotent, declarative vs imperative, agents, controllers, the role of SSH, and hosts.</p>
+<ul class="tags"><li>configuration management</li><li>idempotent</li><li>declarative | imperative</li><li>agentless</li><li>control node</li><li>role of SSH</li><li>hosts / inventory</li><li>"Configuration is Code"</li></ul>
+<ul class="toc"><li><a href="#cm">Configuration management</a></li><li><a href="#arch">Architecture</a></li><li><a href="#ssh">Role of SSH</a></li><li><a href="#inventory">Inventory</a></li><li><a href="#playbook">Playbook anatomy</a></li><li><a href="#decl">Declarative vs imperative</a></li><li><a href="#idem">Idempotence</a></li><li><a href="#run">Running it</a></li><li><a href="#node">Node.js playbook</a></li><li><a href="#vs">Ansible vs Actions</a></li><li><a href="#quiz">Practice</a></li></ul>
+</header>
+
+<section id="cm">
+<h2>Configuration management</h2>
+<p>Slide definition: <strong>"A process in which an inventory of software and production assets is provisioned and controlled through package managers and tools such as Ansible."</strong> In practice: you describe in files what every machine should look like (packages, services, files, users, firewall rules) and a tool makes the machines match.</p>
+<p>The matching adage is <strong>"Configuration is Code"</strong>. Configuration lives in version control, is reviewed in pull requests, and is run by automation, exactly like source code. This is the direct cure for bit rot and for "snowflake" servers that someone configured by hand and nobody can rebuild.</p>
+<aside class="exam"><b>Exam angle</b>The three properties the lecture objectives listed, word for word: Ansible is <strong>agentless</strong>, Ansible is <strong>declarative</strong>, Ansible is <strong>idempotent</strong>. Any T/F that flips one of these is false. The slides' own sample: "Ansible is mostly an <u class="fix">imperative</u> language" → <strong>declarative</strong>.</aside>
+</section>
+
+<section id="arch">
+<h2>Architecture: control node, managed nodes, no agents</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 250" role="img" aria-label="The Ansible control node reads a playbook and an inventory and pushes changes over SSH to managed nodes that have no Ansible software installed" style="max-width:740px;min-width:600px"><rect class="d-box soft" x="20" y="20" width="320" height="210" rx="5"/><text x="30" y="37" class="b">Control node (your laptop)</text>
+<rect class="d-box" x="40" y="58" width="280" height="152" rx="5"/><text x="50" y="75" class="b">Docker container ws4, Ansible installed here</text>
+<rect class="d-box acc" x="58" y="98" width="116" height="46" rx="5"/><text x="116" y="117.5" text-anchor="middle" class="b">Playbook</text><text x="116" y="132.5" text-anchor="middle" class="m">what state is wanted</text>
+<rect class="d-box acc" x="186" y="98" width="116" height="46" rx="5"/><text x="244" y="117.5" text-anchor="middle" class="b">Inventory</text><text x="244" y="132.5" text-anchor="middle" class="m">which hosts</text>
+<text x="180" y="170" text-anchor="middle" class="m">bind mounts: project folder → /ws4</text>
+<text x="180" y="186" text-anchor="middle" class="m">~/.ssh → /root/.ssh</text>
+<line class="d-ln a" x1="340" y1="70" x2="500" y2="54" marker-end="url(#aha)"/>
+<line class="d-ln a" x1="340" y1="125" x2="500" y2="125" marker-end="url(#aha)"/><text x="420" y="115" text-anchor="middle" class="m a">SSH, key-based</text>
+<line class="d-ln a" x1="340" y1="180" x2="500" y2="196" marker-end="url(#aha)"/>
+<rect class="d-box" x="500" y="24" width="220" height="56" rx="5"/><text x="610" y="48.5" text-anchor="middle" class="b">Managed node</text><text x="610" y="63.5" text-anchor="middle" class="m">sshd + Python, no agent</text>
+<rect class="d-box" x="500" y="97" width="220" height="56" rx="5"/><text x="610" y="121.5" text-anchor="middle" class="b">Managed node</text><text x="610" y="136.5" text-anchor="middle" class="m">sshd + Python, no agent</text>
+<rect class="d-box" x="500" y="170" width="220" height="56" rx="5"/><text x="610" y="194.5" text-anchor="middle" class="b">Managed node</text><text x="610" y="209.5" text-anchor="middle" class="m">sshd + Python, no agent</text></svg></div><figcaption>Ansible is a <em>push</em> model: the control node connects out to each host, runs small modules there, and disconnects. Workshop 4 had a single managed node, the VCL Ubuntu VM.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th>Term (and synonyms)</th><th>Meaning</th></tr>
+<tr><td>Control node<br><span style="font-weight:400">a.k.a. controller, Ansible workstation</span></td><td>"Any machine with Ansible installed." You run <code>ansible</code> or <code>ansible-playbook</code> from it. Any computer with Python can be one: laptop, shared desktop, server</td></tr>
+<tr><td>Managed nodes<br><span style="font-weight:400">a.k.a. hosts, inventory</span></td><td>"The network devices (and/or servers) you manage with Ansible… <strong>Ansible is not installed on managed nodes.</strong>"</td></tr>
+<tr><td>Agent</td><td>A software program that would have to be installed and kept running on every managed machine. Ansible has none: it is <strong>agentless</strong></td></tr>
+<tr><td>Inventory</td><td>The file listing managed nodes and groups (<code>hosts.yaml</code>)</td></tr>
+<tr><td>Playbook</td><td>YAML file of plays and tasks describing the desired state</td></tr>
+<tr><td>Module</td><td>A unit of work a task calls: <code>apt</code>, <code>service</code>, <code>copy</code>, <code>template</code>, <code>shell</code>, <code>uri</code>…</td></tr>
+</table></div>
+<p><strong>Why agentless matters:</strong> nothing to install, upgrade or secure on every server; a brand-new machine can be managed the moment it accepts SSH; fewer moving parts. The cost is that the control node must be able to reach every host over SSH. Ansible was created by Michael DeHaan (NC State, 2001).</p>
+</section>
+
+<section id="ssh">
+<h2>The role of SSH</h2>
+<p>SSH (secure shell) is Ansible's <strong>transport</strong>. Because there is no agent, SSH is how the control node gets an encrypted channel to each managed node and runs commands there. Ansible is non-interactive, so nobody is there to type a password: you must set up <strong>key-based, password-less</strong> login first.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 180" role="img" aria-label="The private key stays on the control node and the public key is appended to the authorized_keys file on the managed node" style="max-width:740px;min-width:600px"><rect class="d-box soft" x="20" y="20" width="300" height="140" rx="5"/><text x="30" y="37" class="b">Control node</text>
+<rect class="d-box bad" x="40" y="58" width="125" height="50" rx="5"/><text x="102.5" y="79.5" text-anchor="middle" class="b">id_rsa (private)</text><text x="102.5" y="94.5" text-anchor="middle" class="m">never leaves here</text>
+<rect class="d-box ok" x="177" y="58" width="125" height="50" rx="5"/><text x="239.5" y="79.5" text-anchor="middle" class="b">id_rsa.pub (public)</text><text x="239.5" y="94.5" text-anchor="middle" class="m">safe to share</text>
+<line class="d-ln a" x1="302" y1="83" x2="450" y2="83" marker-end="url(#aha)"/><text x="376" y="73" text-anchor="middle" class="m a">ssh-copy-id</text>
+<text x="376" y="100" text-anchor="middle" class="m">or scp + cat &gt;&gt;</text>
+<rect class="d-box soft" x="430" y="20" width="290" height="140" rx="5"/><text x="440" y="37" class="b">Managed node</text>
+<rect class="d-box ok" x="450" y="58" width="250" height="50" rx="5"/><text x="575" y="79.5" text-anchor="middle" class="b">~/.ssh/authorized_keys</text><text x="575" y="94.5" text-anchor="middle" class="m">public key appended here</text>
+<text x="575" y="134" text-anchor="middle" class="m">Later logins prove possession of the</text>
+<text x="575" y="149" text-anchor="middle" class="m">private key, so no password is asked.</text></svg></div><figcaption>Generated once with <code>ssh-keygen</code>. Workshop steps 2 to 5 were all about reaching this state before any Ansible ran.</figcaption></figure>
+<div class="two"><div>
+<div class="cap">The short way</div>
+<pre class="code">ssh-keygen<span class="c">                       # make the key pair</span>
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@IP
+ssh user@IP<span class="c">                      # no password now</span></pre>
+</div><div>
+<div class="cap">The long way (what ssh-copy-id does)</div>
+<pre class="code">scp ~/.ssh/id_rsa.pub user@IP:<span class="c">   # trailing &quot;:&quot; = home dir</span>
+ssh user@IP
+mkdir ~/.ssh
+cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys<span class="c">   # &gt;&gt; appends</span>
+rm id_rsa.pub ; exit</pre>
+</div></div>
+<ul>
+<li>The first connection asks you to confirm the host's fingerprint ("authenticity of host can't be established"); answer yes once.</li>
+<li><code>scp</code> is "secure copy": a file copy that rides on SSH.</li>
+<li>Never commit SSH keys or tokens. The rubric penalty was −2.</li>
+</ul>
+</section>
+
+<section id="inventory">
+<h2>Inventory: the hosts file</h2>
+<div class="two"><div>
+<div class="cap">Workshop 4 hosts.yaml (INI style)</div>
+<pre class="code"><mark>[myserver]</mark>
+&lt;VM-IP-ADDRESS&gt; ansible_user=&lt;unityid&gt; ansible_python_interpreter=/usr/bin/python3</pre>
+</div><div>
+<div class="cap">Slide example with groups</div>
+<pre class="code">host1.domain.com
+192.168.1.193
+
+[routers]
+router1.domain.com
+CSR-1 ansible_host=192.168.1.199
+
+[webservers]
+www1.domain.com
+www2.domain.com</pre>
+</div></div>
+<ul>
+<li><code>[name]</code> defines a <strong>group</strong>. A play's <code>hosts:</code> line names a group (or <code>all</code>), which is how one playbook can target one machine or a thousand.</li>
+<li><code>ansible_user</code> tells Ansible which username to use when it builds its internal <code>ssh</code> command. <code>ansible_host</code> gives an address for an alias.</li>
+<li>Vocabulary trap: <em>inventory</em>, <em>hosts</em> and <em>managed nodes</em> all mean the same machines.</li>
+</ul>
+</section>
+
+<section id="playbook">
+<h2>Playbook anatomy</h2>
+<pre class="code">---<span class="c">                                  # YAML document start</span>
+- name: Demo playbook<span class="c">                # a PLAY: maps a group of hosts to tasks</span>
+  hosts: myserver<span class="c">                    # which inventory group</span>
+  become: yes<span class="c">                        # escalate privileges…</span>
+  become_method: sudo<span class="c">                # …using sudo (needed to install packages)</span>
+  tasks:<span class="c">                             # ordered list</span>
+    - name: Install nginx<span class="c">            # a TASK: human-readable name + one module</span>
+      <mark>apt:</mark><span class="c">                           # module: Ubuntu&#x27;s package manager</span>
+        name: nginx
+        <mark>state: latest</mark><span class="c">                # desired state, not a command</span>
+    - name: Start nginx service
+      <mark>service:</mark>
+        name: nginx
+        enabled: true<span class="c">                # start at boot</span>
+        <mark>state: started</mark><span class="c">               # ensure it is running</span>
+    - name: Create a custom index.html file
+      <mark>copy:</mark>
+        dest: /var/www/html/index.html
+        content: |
+          &lt;h1&gt;Hello CSC-519 World!&lt;/h1&gt;
+    - name: Expose port 80 with iptables
+      <mark>shell:</mark> &quot;sudo iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT&quot;</pre>
+<div class="scroll"><table>
+<tr><th>Piece</th><th>Read it as</th></tr>
+<tr><td><code>hosts:</code></td><td>"Apply this play to these inventory machines"</td></tr>
+<tr><td><code>become: yes</code></td><td>"Do this as root via sudo"</td></tr>
+<tr><td><code>state: present</code></td><td>"Make sure it is installed" (any version)</td></tr>
+<tr><td><code>state: latest</code></td><td>"Make sure it is installed and at the newest available version"</td></tr>
+<tr><td><code>state: started</code> / <code>enabled: true</code></td><td>"Make sure the service is running" / "…and starts on boot"</td></tr>
+<tr><td><code>copy</code> with <code>content:</code></td><td>"Make sure this file exists with exactly this content"</td></tr>
+<tr><td><code>shell:</code></td><td>"Run this command." The imperative escape hatch</td></tr>
+</table></div>
+<h3>Two judgment calls the README raises</h3>
+<ul>
+<li><strong>Latest vs pinned version.</strong> <code>latest</code> gets you the newest (as packaged by apt) but a future version may break you. A pinned version is known and repeatable but ages. "There is no perfect answer here, only tradeoffs."</li>
+<li><strong>Don't inline one language inside another.</strong> Embedding HTML in the playbook was "for demonstration purposes only". Normally copy or clone the file from its own source.</li>
+</ul>
+</section>
+
+<section id="decl">
+<h2>Declarative vs imperative</h2>
+<div class="two"><div>
+<div class="cap">Imperative: HOW (shell script)</div>
+<pre class="code"><span class="c"># step-by-step control flow, you track state</span>
+apt-get update
+if ! dpkg -s nginx &gt;/dev/null 2&gt;&amp;1; then
+  apt-get install -y nginx
+fi
+if ! systemctl is-active nginx; then
+  systemctl start nginx
+fi
+systemctl enable nginx</pre>
+</div><div>
+<div class="cap">Declarative: WHAT (Ansible)</div>
+<pre class="code"><span class="c"># describe the end state; the module</span>
+<span class="c"># works out whether anything must change</span>
+- apt:
+    name: nginx
+    state: present
+- service:
+    name: nginx
+    state: started
+    enabled: true</pre>
+</div></div>
+<div class="scroll"><table>
+<tr><th>Paradigm</th><th>Imperative</th><th>Declarative</th></tr>
+<tr><td>Operation</td><td>Defines <strong>HOW</strong> tasks should be accomplished</td><td>Defines <strong>WHAT</strong> tasks should be accomplished</td></tr>
+<tr><td>Computation</td><td>Defines the control flow and state changes</td><td>Defines only the logic</td></tr>
+<tr><td>Mutating variables</td><td>Very usual</td><td>Unusual and not recommended</td></tr>
+<tr><td>Advantages</td><td>Easy-to-learn notation; machine-architecture compliant</td><td>Easy-to-optimize code; high abstraction level</td></tr>
+<tr><td>Disadvantages</td><td>Hard debugging; vulnerable to data races</td><td>Unfamiliar notation; less customizable code</td></tr>
+<tr><td>Derived paradigms</td><td>Procedural, object-oriented</td><td>Functional, logic</td></tr>
+</table></div>
+<p>The slide says Ansible is "mostly" declarative for a reason: tasks still run top to bottom, and the <code>shell</code> and <code>command</code> modules are plain imperative commands. Those are where idempotence breaks.</p>
+</section>
+
+<section id="idem">
+<h2>Idempotence</h2>
+<p><strong>Idempotent: performing the operation again gives the same result.</strong> Run a playbook once or ten times and the machine ends in the same state. The slide's picture: <em>looking at a cake</em> is idempotent, <em>eating a slice</em> is not.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 230" role="img" aria-label="Running a declarative playbook twice leaves the same state, while running an appending shell command twice changes state again" style="max-width:740px;min-width:600px"><text x="20" y="24" class="b">Declarative task (apt: name=nginx state=present)</text>
+<rect class="d-box" x="20" y="36" width="130" height="44" rx="5"/><text x="85" y="54.5" text-anchor="middle" class="b">Fresh VM</text><text x="85" y="69.5" text-anchor="middle" class="m">nginx absent</text>
+<line class="d-ln" x1="150" y1="58" x2="250" y2="58" marker-end="url(#ah)"/><text x="200" y="48" text-anchor="middle" class="m">run 1: changed</text>
+<rect class="d-box ok" x="250" y="36" width="150" height="44" rx="5"/><text x="325" y="62" text-anchor="middle" class="b">nginx installed</text>
+<line class="d-ln" x1="400" y1="58" x2="520" y2="58" marker-end="url(#ah)"/><text x="460" y="48" text-anchor="middle" class="m">run 2: ok, no change</text>
+<rect class="d-box ok" x="520" y="36" width="150" height="44" rx="5"/><text x="595" y="62" text-anchor="middle" class="b">nginx installed</text>
+<text x="684" y="62" class="ok b">same</text>
+<text x="20" y="134" class="b">Imperative task (shell: iptables -I INPUT … -j ACCEPT)</text>
+<rect class="d-box" x="20" y="146" width="130" height="44" rx="5"/><text x="85" y="164.5" text-anchor="middle" class="b">Firewall</text><text x="85" y="179.5" text-anchor="middle" class="m">0 rules for port 80</text>
+<line class="d-ln" x1="150" y1="168" x2="250" y2="168" marker-end="url(#ah)"/><text x="200" y="158" text-anchor="middle" class="m">run 1</text>
+<rect class="d-box" x="250" y="146" width="150" height="44" rx="5"/><text x="325" y="172" text-anchor="middle" class="b">1 rule</text>
+<line class="d-ln" x1="400" y1="168" x2="520" y2="168" marker-end="url(#ah)"/><text x="460" y="158" text-anchor="middle" class="m">run 2 inserts again</text>
+<rect class="d-box bad" x="520" y="146" width="150" height="44" rx="5"/><text x="595" y="172" text-anchor="middle" class="b">2 duplicate rules</text>
+<text x="684" y="172" class="bad b">drift</text></svg></div><figcaption>A module checks current state first and acts only on the difference. A raw command just executes. Your second <code>ansible-playbook</code> run was faster for this reason: most tasks reported "ok" instead of "changed".</figcaption></figure>
+<div class="two"><div>
+<h3>HTTP methods (from the slide)</h3>
+<div class="scroll"><table>
+<tr><th>Method</th><th>Idempotent</th><th>Safe</th></tr>
+<tr><td>GET, HEAD</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>PUT, DELETE</td><td>Yes</td><td>No</td></tr>
+<tr><td>POST, PATCH</td><td>No</td><td>No</td></tr>
+</table></div>
+</div><div>
+<h3>Why it matters</h3>
+<ul><li>Safe to re-run after a failure half-way through</li><li>Safe to run on a schedule to correct drift</li><li>The same playbook works on a fresh machine and on a configured one</li><li>The "changed" count becomes a signal: zero means the machine already matched</li></ul>
+</div></div>
+<h3>Making a shell task idempotent</h3>
+<pre class="code">- name: Initialize the database
+  shell: sqlite3 /opt/myapp/data.db &lt; /opt/myapp/init.sql
+  args:
+    <mark>creates: /opt/myapp/data.db</mark><span class="c">     # skip the task if this file already exists</span></pre>
+<p>Other guards you used in later workshops: <code>when:</code> (run only if a registered check says so), <code>changed_when:</code> (tell Ansible whether the command really changed anything), SQL <code>IF NOT EXISTS</code>, and "check then insert" (<code>iptables -C … || iptables -I …</code>).</p>
+<aside class="exam"><b>Exam angle</b>Idempotent does not mean "runs only once" or "nothing happens". It means repeated runs converge on the same end state. A first run that changes five things and a second run that changes zero is idempotence working.</aside>
+</section>
+
+<section id="run">
+<h2>Running it from the container</h2>
+<pre class="code">docker build . --tag ws4
+docker run -it <mark>-v $(pwd):/ws4</mark> <mark>-v ~/.ssh:/root/.ssh</mark> ws4<span class="c">     # two bind mounts (WS1 idea)</span>
+ansible-playbook -i hosts.yaml deploy-webserver.yaml<span class="c">          # inside the container</span></pre>
+<p>The README printed a command that was "intentionally wrong in 3 ways": <code>ansible-runplaybook -i ./hosts deploy-webserver.yml</code>. The fixes:</p>
+<div class="scroll"><table>
+<tr><th>Wrong</th><th>Right</th><th>Why</th></tr>
+<tr><td><code>ansible-runplaybook</code></td><td><code>ansible-playbook</code></td><td>That is the real command name</td></tr>
+<tr><td><code>-i ./hosts</code></td><td><code>-i hosts.yaml</code></td><td><code>-i</code> points at the inventory file you actually created</td></tr>
+<tr><td><code>deploy-webserver.yml</code></td><td><code>deploy-webserver.yaml</code></td><td>The file was saved with the <code>.yaml</code> suffix</td></tr>
+</table></div>
+<p>The picture to hold: the control node is <em>inside a container on your laptop</em>; the container borrows your project folder and SSH keys through bind mounts; the managed node is the remote Ubuntu VM. Visiting <code>http://IP</code> afterwards shows "Hello CSC-519 World!".</p>
+<p>Reading the output: each task prints <code>ok</code> (already in desired state), <code>changed</code> (Ansible modified something), or <code>failed</code>, and the play recap totals them per host.</p>
+</section>
+
+<section id="node">
+<h2>The Node.js playbook (your deploy-node.yaml)</h2>
+<p>Requirements: install nginx and nodejs, deploy an app you wrote, install npm packages, serve "Hello CSC-519 World!" on port 80, create a SQL database the app reads, and have <strong>Ansible itself test that the server is up</strong>.</p>
+<pre class="code">- name: Deploy Node.js app
+  hosts: myserver
+  become: yes
+  tasks:
+    - name: Install Node.js and npm
+      apt: { name: [nodejs, npm], state: present, update_cache: yes }
+    - name: Copy app files to remote
+      copy: { src: app/, dest: /opt/myapp/ }<span class="c">          # control node → managed node</span>
+    - name: Install npm dependencies
+      npm: { path: /opt/myapp }
+    - name: Initialize the database
+      shell: sqlite3 /opt/myapp/data.db &lt; /opt/myapp/init.sql
+      args: { creates: /opt/myapp/data.db }<span class="c">           # idempotence guard</span>
+    - name: Install systemd service for the app
+      <mark>template:</mark> { src: templates/myapp.service.j2, dest: /etc/systemd/system/myapp.service }
+    - name: Reload systemd and start app
+      <mark>systemd:</mark> { name: myapp, state: restarted, enabled: yes, daemon_reload: yes }
+    - name: Wait for app to come up
+      <mark>uri:</mark> { url: &quot;http://localhost:80&quot;, status_code: 200 }
+      <mark>register: result</mark><span class="c">                                # save the module&#x27;s output</span>
+      <mark>until: result.status == 200</mark><span class="c">                     # retry loop</span>
+      retries: 5
+      delay: 2</pre>
+<ul>
+<li><strong>Don't get stuck.</strong> <code>shell: node server.js</code> would never return, and the playbook would hang. Running the app as a <strong>systemd service</strong> starts it in the background, restarts it on failure, and survives reboots.</li>
+<li><strong>The <code>uri</code> task is a test in the pipeline.</strong> The playbook fails loudly if the app does not answer 200, instead of reporting success for a broken deployment.</li>
+<li><strong><code>template</code> vs <code>copy</code>:</strong> a <code>.j2</code> template can contain <code>{{ variables }}</code> that Ansible fills in; <code>copy</code> transfers a file as is.</li>
+</ul>
+</section>
+
+<section id="vs">
+<h2>GitHub Actions vs Ansible playbooks</h2>
+<p>This comparison was its own slide, in a form that maps neatly onto a matching question.</p>
+<div class="scroll"><table>
+<tr><th>Actions only</th><th>Both</th><th>Playbooks only</th></tr>
+<tr><td style="font-weight:400">Not always idempotent; you add extra checks to make them so</td><td style="font-weight:400">YAML</td><td style="font-weight:400">Always idempotent (by design, when you use modules)</td></tr>
+<tr><td style="font-weight:400">Automates the Git repo's lifecycle; tied to Git events</td><td style="font-weight:400">Declarative syntax</td><td style="font-weight:400">Automates configuration management and application deployment</td></tr>
+<tr><td style="font-weight:400">Runs on a runner, each job in its own clean environment</td><td style="font-weight:400">Used in CI/CD</td><td style="font-weight:400">Executed from a control node that connects to target nodes</td></tr>
+<tr><td style="font-weight:400">Can run Ansible playbooks</td><td></td><td style="font-weight:400">Does not trigger GitHub Actions</td></tr>
+</table></div>
+</section>
+
+<section id="quiz">
+<h2>Practice</h2>
+<div class="quizbar"><button class="reveal" type="button" id="reveal-all">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On the real T/F questions you underline the wrong word and write the fix. A plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>Ansible is mostly an imperative language.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">imperative</u> to <strong>declarative</strong>. (Sample question from the slides.)</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Ansible requires an agent program to be installed on every managed node.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">requires an agent program</u> to <strong>requires no agent</strong>: it is agentless and connects over SSH.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The control node is the remote server that Ansible configures.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">control node</u> to <strong>managed node</strong> (host). The control node is where Ansible is installed and run.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>An idempotent playbook produces a different end state each time it is run.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">a different</u> to <strong>the same</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Ansible uses HTTP to connect from the control node to managed nodes.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">HTTP</u> to <strong>SSH</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In Ansible, "inventory", "hosts" and "managed nodes" refer to the same thing.</summary><div class="ans"><span class="T">True.</span> The machines Ansible manages, listed in the hosts file.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A declarative program defines HOW tasks should be accomplished.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">HOW</u> to <strong>WHAT</strong> (or change declarative to imperative).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The <code>shell</code> module is guaranteed to be idempotent.</summary><div class="ans"><span class="F">False.</span> It runs an arbitrary command every time. You must add a guard such as <code>creates:</code> or <code>when:</code>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>To let Ansible log in without a password, you copy your private key to the managed node.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">private</u> to <strong>public</strong>. The public key goes into <code>~/.ssh/authorized_keys</code>; the private key never leaves the control node.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Of the HTTP methods, POST is idempotent and GET is not.</summary><div class="ans"><span class="F">False.</span> Swap them: <strong>GET</strong> is idempotent (and safe); <strong>POST</strong> is not.</div></details>
+<details class="q"><summary><span class="chip">Read the code</span>A playbook has <code>apt: name=nginx state=latest</code>. Give one advantage and one risk compared with pinning a version.</summary><div class="ans">Advantage: you always get the newest packaged version, including fixes, without editing the playbook. Risk: a future version may introduce breaking changes, and two runs on different days can produce different machines. Pinning is repeatable but the pinned version grows old.</div></details>
+<details class="q"><summary><span class="chip">Read the code</span>On the second run of your playbook, "Install nginx" reports <code>ok</code> but "Expose port 80 with iptables" reports <code>changed</code>. Explain.</summary><div class="ans"><code>apt</code> is a module that checks state and found nginx already installed, so it did nothing. <code>shell</code> simply ran the <code>iptables -I</code> command again, inserting a duplicate rule. The shell task is not idempotent.</div></details>
+<details class="q"><summary><span class="chip">Short answer</span>Why does Ansible need password-less SSH, and what would happen without it?</summary><div class="ans">Ansible connects to each managed node over SSH automatically, with no human present. Without key-based login it would stop at a password prompt (or fail), so automation across many hosts would be impossible.</div></details>
+<details class="q"><summary><span class="chip">Short answer</span>Give two benefits of an agentless design.</summary><div class="ans">Nothing to install, update or secure on each managed machine; a newly provisioned server is manageable immediately with only SSH and Python; fewer running components and a smaller attack surface.</div></details>
+<details class="q"><summary><span class="chip">Short answer</span>Define configuration management in one sentence and name the adage that goes with it.</summary><div class="ans">A process in which an inventory of software and production assets is provisioned and controlled through package managers and tools such as Ansible. Adage: "Configuration is Code".</div></details>
+<details class="q"><summary><span class="chip">Matching</span>Which column does each belong in (Actions only / both / playbooks only)? (a) tied to Git events (b) YAML (c) executed from a control node (d) runs on a runner.</summary><div class="ans">(a) Actions only. (b) Both. (c) Playbooks only. (d) Actions only.</div></details>
+</div>
+</section>
+
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws3.html" rel="prev"><small>← Previous</small>DevOps WS3 GitHub Actions</a><a class="next" href="ws5.html" rel="next"><small>Next →</small>DevOps WS5 Ansible Deployment</a></nav>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>
