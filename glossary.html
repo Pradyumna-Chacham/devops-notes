@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,11 +125,11 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><span class="cur" aria-current="page">Glossary<small>Definitions</small></span></nav>
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><span class="cur" aria-current="page">Glossary<small>Definitions</small></span></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Notes and definitions</div>
 <h1>DevOps midterm glossary</h1>
-<p class="lede">Every term from the study guide and the lecture slides that could be asked as "what is…?", each answered in one or two sentences you could write on the exam. Entries tagged <span class="src" style="margin-left:0">slide wording</span> follow the slides or the two course glossaries closely, so learn those near verbatim. The rest are short explanations in plain words.</p>
+<p class="lede">Every term from the study guide and the lecture slides that could be asked as "what is…?", each answered in one or two sentences. The exam has no open-ended "define the term" questions, so use these to recognise a swapped word in a true / false statement and to draw the right line in a matching question. Entries tagged <span class="src" style="margin-left:0">slide wording</span> follow the slides or the two course glossaries closely, so learn those near verbatim. The rest are short explanations in plain words.</p>
 <ul class="toc"><li><a href="#git">Git Flow and review</a></li><li><a href="#devops">DevOps and pipelines</a></li><li><a href="#cicd">CI / CD</a></li><li><a href="#roles">Roles and teams</a></li><li><a href="#env">Computing environments</a></li><li><a href="#containers">Containers</a></li><li><a href="#secrets">Env vars and secrets</a></li><li><a href="#rest">REST</a></li><li><a href="#actions">GitHub Actions</a></li><li><a href="#ansible">Ansible</a></li><li><a href="#release">Releasing</a></li><li><a href="#rings">Rings and testing</a></li><li><a href="#learn">Retrospectives</a></li><li><a href="#adages">Adages</a></li><li><a href="#pairs">Confused pairs</a></li><li><a href="#names">Names and quotes</a></li></ul>
 </header>
 <div class="filter"><input id="term-filter" type="search" placeholder="Filter terms: try canary, idempotent, branch…" aria-label="Filter terms"><output id="term-count" for="term-filter"></output></div>
@@ -474,7 +477,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </section>
 
 <nav class="pager" aria-label="Previous and next page"><a class="prev" href="notes.html" rel="prev"><small>← Previous</small>DevOps Lecture Deck Notes</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

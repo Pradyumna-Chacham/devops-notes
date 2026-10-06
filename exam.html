@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Midterm Exam Drill</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><span class="cur" aria-current="page">Exam<small>3 question types</small></span><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<header class="top">
+<div class="eyebrow">CSC 519 · Midterm prep · Exam drill</div>
+<h1>The three question types, drilled</h1>
+<p class="lede">The midterm review deck confirmed what is and is not on the paper. There are three question types: naming the tool behind a code snippet, true / false with corrections, and matching concepts. This page explains how each one works and gives you practice in exactly that shape.</p>
+<ul class="tags"><li>24 snippets to name</li><li>58 true / false to correct</li><li>7 matching sets</li></ul>
+<ul class="toc"><li><a href="#rules">What is on the exam</a></li><li><a href="#kinds">Distinguishing code kinds</a></li><li><a href="#kpractice">Snippet practice</a></li><li><a href="#tf">True / false with corrections</a></li><li><a href="#match">Matching concepts</a></li><li><a href="#day">On the day</a></li></ul>
+</header>
+
+<section id="rules">
+<h2>What is and is not on the exam</h2>
+<div class="scroll"><table>
+<tr><th>Yes, on the exam</th><th>Not on the exam</th></tr>
+<tr><td style="font-weight:400"><strong>Matching concepts</strong></td><td style="font-weight:400">No coding / scripting</td></tr>
+<tr><td style="font-weight:400"><strong>Distinguishing code kinds</strong></td><td style="font-weight:400">No "define the term…" open-ended definitions</td></tr>
+<tr><td style="font-weight:400"><strong>True / false with corrections</strong></td><td style="font-weight:400">No fill-in-the-blank</td></tr>
+</table></div>
+<p>What this means for studying: you never have to produce a definition or a line of code from memory. You have to <strong>recognise</strong>. Recognise which tool a snippet belongs to, recognise the one wrong word in a statement and know its replacement, and recognise which two ideas belong together. The definitions on the other pages still matter, because every true / false statement is a definition with a word swapped.</p>
+<p>The topic list is unchanged from the one-page study guide; the review deck simply showed it again.</p>
+</section>
+
+<section id="kinds">
+<h2>Distinguishing code kinds</h2>
+<p>The question, as shown on the slide: <strong>"What kind of code is represented in this figure? (Looking for the name of the tool from class.)"</strong> You should recognise four kinds: <strong>GitHub Actions, Dockerfiles, Ansible files, Bash shell commands</strong>.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 780 300" role="img" aria-label="A decision path for naming a snippet: YAML with on, jobs and runs-on is GitHub Actions; YAML with hosts and tasks is Ansible; capitalised instructions is a Dockerfile; anything else is Bash shell commands" style="max-width:780px;min-width:600px"><rect class="d-box" x="15" y="125" width="100" height="50" rx="5"/><text x="65" y="154" text-anchor="middle" class="b">Snippet</text>
+<line class="d-ln" x1="115" y1="150" x2="160" y2="150" marker-end="url(#ah)"/>
+<rect class="d-box warn" x="160" y="112" width="190" height="76" rx="5"/><text x="255" y="139" text-anchor="middle" class="b">Is it YAML?</text><text x="255" y="154" text-anchor="middle" class="m">indented key: value lines,</text><text x="255" y="169" text-anchor="middle" class="m">list items starting with &quot;- &quot;</text>
+<line class="d-ln" x1="350" y1="135" x2="420" y2="75" marker-end="url(#ah)"/><text x="376" y="96" text-anchor="middle" class="m">yes</text>
+<line class="d-ln" x1="350" y1="165" x2="420" y2="225" marker-end="url(#ah)"/><text x="376" y="214" text-anchor="middle" class="m">no</text>
+<rect class="d-box warn" x="420" y="30" width="195" height="76" rx="5"/><text x="517.5" y="64.5" text-anchor="middle" class="b">Does it have</text><text x="517.5" y="79.5" text-anchor="middle" class="m">on: / jobs: / runs-on: / steps: ?</text>
+<rect class="d-box warn" x="420" y="194" width="195" height="76" rx="5"/><text x="517.5" y="221" text-anchor="middle" class="b">Do lines start with</text><text x="517.5" y="236" text-anchor="middle" class="m">CAPITAL instructions?</text><text x="517.5" y="251" text-anchor="middle" class="m">FROM, RUN, COPY, CMD</text>
+<line class="d-ln" x1="615" y1="55" x2="655" y2="38" marker-end="url(#ah)"/><text x="630" y="36" text-anchor="middle" class="m">yes</text>
+<line class="d-ln" x1="615" y1="82" x2="655" y2="100" marker-end="url(#ah)"/><text x="630" y="106" text-anchor="middle" class="m">no</text>
+<line class="d-ln" x1="615" y1="219" x2="655" y2="202" marker-end="url(#ah)"/><text x="630" y="200" text-anchor="middle" class="m">yes</text>
+<line class="d-ln" x1="615" y1="246" x2="655" y2="264" marker-end="url(#ah)"/><text x="630" y="270" text-anchor="middle" class="m">no</text>
+<rect class="d-box acc" x="655" y="14" width="115" height="46" rx="5"/><text x="712.5" y="41" text-anchor="middle" class="b">GitHub Actions</text>
+<rect class="d-box acc" x="655" y="78" width="115" height="46" rx="5"/><text x="712.5" y="97.5" text-anchor="middle" class="b">Ansible</text><text x="712.5" y="112.5" text-anchor="middle" class="m">hosts: tasks: apt:</text>
+<rect class="d-box acc" x="655" y="178" width="115" height="46" rx="5"/><text x="712.5" y="205" text-anchor="middle" class="b">Dockerfile</text>
+<rect class="d-box acc" x="655" y="242" width="115" height="46" rx="5"/><text x="712.5" y="261.5" text-anchor="middle" class="b">Bash shell</text><text x="712.5" y="276.5" text-anchor="middle" class="m">flags, pipes, $VAR</text></svg></div><figcaption>Two questions settle almost every snippet. The only pair that looks alike is GitHub Actions and Ansible, because both are YAML.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th></th><th>GitHub Actions</th><th>Ansible file</th><th>Dockerfile</th><th>Bash shell commands</th></tr>
+<tr><td>Shape</td><td style="font-weight:400">YAML, nested by indentation</td><td style="font-weight:400">YAML, a list (starts with <code>- </code>). Inventory files are INI-style with <code>[groups]</code></td><td style="font-weight:400">Flat lines: <code>INSTRUCTION arguments</code></td><td style="font-weight:400">Flat lines: <code>command -flags arguments</code></td></tr>
+<tr><td>Giveaway keywords</td><td style="font-weight:400"><code>on:</code> <code>jobs:</code> <code>runs-on:</code> <code>steps:</code> <code>- run:</code> <code>- uses:</code> <code>run-name:</code></td><td style="font-weight:400"><code>hosts:</code> <code>tasks:</code> <code>become:</code> <code>vars:</code> <code>handlers:</code> <code>notify:</code> <code>register:</code> <code>when:</code> <code>with_items:</code></td><td style="font-weight:400"><code>FROM</code> <code>RUN</code> <code>COPY</code> <code>WORKDIR</code> <code>ENV</code> <code>USER</code> <code>CMD</code> <code>ENTRYPOINT</code></td><td style="font-weight:400"><code>ls</code> <code>cd</code> <code>echo</code> <code>cat</code> <code>export</code> <code>sudo</code> <code>ssh</code> <code>scp</code> <code>curl</code> <code>apk</code> <code>git</code> <code>docker</code> <code>exit</code></td></tr>
+<tr><td>Variables look like</td><td style="font-weight:400"><code>${{ secrets.TOKEN }}</code>, <code>${{ github.actor }}</code></td><td style="font-weight:400"><code>{{ item }}</code>, <code>{{ db_name }}</code> (no dollar sign)</td><td style="font-weight:400"><code>$ROS_DISTRO</code> after an <code>ENV</code> line</td><td style="font-weight:400"><code>$HOME</code>, <code>$(pwd)</code>, <code>$TOKEN</code></td></tr>
+<tr><td>Typical words</td><td style="font-weight:400"><code>self-hosted</code>, <code>ubuntu-latest</code>, <code>pull_request</code>, <code>push</code></td><td style="font-weight:400">Module names: <code>apt:</code> <code>yum:</code> <code>service:</code> <code>copy:</code> <code>template:</code> <code>shell:</code> <code>uri:</code>; <code>state: present</code></td><td style="font-weight:400"><code>alpine:latest</code>, a base image after <code>FROM</code></td><td style="font-weight:400">Pipes <code>|</code>, redirects <code>></code> <code>>></code>, <code>&amp;&amp;</code></td></tr>
+<tr><td>Lives in</td><td style="font-weight:400"><code>.github/workflows/*.yaml</code></td><td style="font-weight:400">A playbook <code>.yaml</code>, or a hosts file</td><td style="font-weight:400">A file named <code>Dockerfile</code></td><td style="font-weight:400">Typed at a prompt, or a <code>.sh</code> script</td></tr>
+</table></div>
+<h3>The traps</h3>
+<div class="scroll"><table>
+<tr><th>Looks like…</th><th>…but it is</th><th>Because</th></tr>
+<tr><td><code>RUN apt-get install nano</code></td><td>Dockerfile</td><td style="font-weight:400">Capital <code>RUN</code>, no colon</td></tr>
+<tr><td><code>- run: npm test</code></td><td>GitHub Actions</td><td style="font-weight:400">Lower-case <code>run:</code> with a colon, as a list item under <code>steps:</code></td></tr>
+<tr><td><code>docker run -it workshop-1</code></td><td>Bash shell command</td><td style="font-weight:400">A command typed in a terminal. It uses Docker but is not a Dockerfile</td></tr>
+<tr><td><code>ansible-playbook -i hosts.yaml site.yaml</code></td><td>Bash shell command</td><td style="font-weight:400">A command that launches Ansible; the playbook itself is the Ansible file</td></tr>
+<tr><td><code>apt: name=nginx state=present</code></td><td>Ansible</td><td style="font-weight:400"><code>apt:</code> as a YAML key with a desired state. <code>apt-get install nginx</code> on its own would be Bash</td></tr>
+<tr><td><code>shell: "sudo iptables -I INPUT …"</code></td><td>Ansible</td><td style="font-weight:400">A shell command wrapped in an Ansible task (<code>- name:</code> + <code>shell:</code>)</td></tr>
+<tr><td><code>curl … ${{ secrets.TOKEN }}</code> under <code>- run: |</code></td><td>GitHub Actions</td><td style="font-weight:400">The curl is Bash, but <code>- run:</code> and <code>${{ }}</code> make the file a workflow</td></tr>
+<tr><td><code>- name: …</code></td><td>Could be either YAML kind</td><td style="font-weight:400">Both use <code>name:</code>. Look for <code>runs-on:</code> / <code>steps:</code> (Actions) or <code>hosts:</code> / a module (Ansible)</td></tr>
+<tr><td><code>[webservers]</code> then host names</td><td>Ansible (inventory)</td><td style="font-weight:400">The hosts file</td></tr>
+</table></div>
+<h3>The two examples from the review slides</h3>
+<div class="two"><div class="snip">
+<pre class="code">- hosts: all
+  vars:
+    packages:
+      - python
+      - python-pip
+      - vim
+
+  tasks:
+  - name: Install packages
+    apt: name={{item}} state=present
+    with_items: packages</pre>
+<p><strong>Ansible.</strong> <code>hosts:</code>, <code>tasks:</code>, the <code>apt:</code> module, <code>state=present</code>, <code>{{item}}</code>, <code>with_items</code>.</p>
+</div><div class="snip">
+<pre class="code"><span class="c"># Build runtime image</span>
+FROM microsoft/dotnet:aspnetcore-runtime
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT [&quot;dotnet&quot;, &quot;aspnetapp.dll&quot;]</pre>
+<p><strong>Dockerfile.</strong> Capitalised instructions <code>FROM</code>, <code>WORKDIR</code>, <code>COPY</code>, <code>ENTRYPOINT</code>. Notice the example is not from a workshop: you are expected to recognise the <em>kind</em>, not the specific file.</p>
+</div></div>
+</section>
+
+<section id="kpractice">
+<h2>Snippet practice: which tool?</h2>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<div class="two">
+<div class="snip">
+<pre class="code">name: hello-world
+on: push
+jobs:
+  this-is-a-job-name:
+    runs-on: self-hosted
+    steps:
+      - run: exit 0</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>GitHub Actions.</strong> <code>on:</code>, <code>jobs:</code>, <code>runs-on:</code>, <code>steps:</code>, <code>- run:</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">docker run -v $(pwd)/scratch:/scratch -it workshop-1</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell command.</strong> A command with flags and <code>$(pwd)</code> substitution. It starts a container, but a Dockerfile would have <code>FROM</code>, <code>RUN</code>, <code>CMD</code> lines.</div></details>
+</div>
+<div class="snip">
+<pre class="code">FROM alpine:latest
+COPY my-program.py /home
+USER root
+WORKDIR /home
+RUN apk --update-cache add python3
+CMD python /home/my-program.py</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Dockerfile.</strong> Every line begins with a capitalised instruction, starting with <code>FROM</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">- name: Start nginx service
+  service:
+    name: nginx
+    enabled: true
+    state: started</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Ansible.</strong> A task: <code>- name:</code> plus the <code>service:</code> module and a desired <code>state:</code>. No <code>hosts:</code> line is shown, but the module and state give it away.</div></details>
+</div>
+<div class="snip">
+<pre class="code">[webservers]
+www1.domain.com
+www2.domain.com
+
+[routers]
+CSR-1 ansible_host=192.168.1.199</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Ansible</strong> (an inventory / hosts file). Group names in brackets, host names, <code>ansible_host=</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">echo &#x27;hello again!&#x27; &gt; scratch/hi.txt
+cat scratch/hi.txt
+ls -l
+exit</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell commands.</strong> Plain commands and a <code>&gt;</code> redirect.</div></details>
+</div>
+<div class="snip">
+<pre class="code">on:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  list-branches:
+    runs-on: self-hosted</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>GitHub Actions.</strong> An event trigger under <code>on:</code> and a job with <code>runs-on:</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">- hosts: webservers
+  become: yes
+  become_user: root
+  tasks:
+    - name: ensure apache is at the latest version
+      yum:
+        name: httpd
+        state: latest</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Ansible.</strong> <code>hosts:</code>, <code>become:</code>, <code>tasks:</code>, the <code>yum:</code> module with <code>state: latest</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">ENV ROS_DISTRO foxy
+RUN apt-get update
+RUN apt-get install nano
+COPY ./ros_entrypoint.sh /
+ENTRYPOINT [&quot;/ros_entrypoint.sh&quot;]
+CMD [&quot;bash&quot;]</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Dockerfile.</strong> <code>ENV</code>, <code>RUN</code>, <code>COPY</code>, <code>ENTRYPOINT</code>, <code>CMD</code> in capitals. The <code>apt-get</code> commands are inside <code>RUN</code> instructions.</div></details>
+</div>
+<div class="snip">
+<pre class="code">ssh-keygen
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@152.7.0.1
+ssh user@152.7.0.1</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell commands.</strong> These prepare the machine for Ansible, but they are terminal commands.</div></details>
+</div>
+<div class="snip">
+<pre class="code">    steps:
+      - uses: actions/checkout@v4
+      - run: npm test</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>GitHub Actions.</strong> <code>steps:</code> with <code>- uses:</code> and <code>- run:</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">- name: Expose port 80 with iptables
+  shell: &quot;sudo iptables -I INPUT -p tcp --dport 80 -j ACCEPT&quot;</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Ansible.</strong> The <code>iptables</code> text is a shell command, but it is wrapped in a task with <code>- name:</code> and the <code>shell:</code> module.</div></details>
+</div>
+<div class="snip">
+<pre class="code">curl --request GET \
+  --url &quot;https://api.github.com&quot; \
+  --header &quot;Authorization: Bearer $NCSU_GITHUB_TOKEN&quot;</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell command.</strong> <code>curl</code> with flags, line continuations with <code>\</code>, and a <code>$VARIABLE</code> with a single dollar sign.</div></details>
+</div>
+<div class="snip">
+<pre class="code">      - run: |
+          curl --url &quot;https://api.github.com/repos/${{ github.repository }}/branches&quot; \
+            --header &quot;Authorization: Bearer ${{ secrets.NCSU_GITHUB_TOKEN }}&quot;</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>GitHub Actions.</strong> Same curl, but now it sits under <code>- run: |</code> and uses <code>${{ github.… }}</code> and <code>${{ secrets.… }}</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">export NCSU_GITHUB_TOKEN=YOUR_PAT
+env</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell commands.</strong> <code>export</code> sets an environment variable; <code>env</code> lists them.</div></details>
+</div>
+<div class="snip">
+<pre class="code">    - name: Deploy application server.js
+      copy:
+        src: app/server.js
+        dest: &quot;{{ app_dir }}/server.js&quot;
+      notify: restart nearest-app
+
+  handlers:
+    - name: restart nearest-app
+      systemd:
+        name: nearest-app
+        state: restarted</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Ansible.</strong> <code>copy:</code> module, <code>{{ app_dir }}</code>, <code>notify:</code> and <code>handlers:</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">ansible-playbook -i hosts.yaml deploy-webserver.yaml</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell command.</strong> It runs Ansible, but what is shown is a command line, not a playbook.</div></details>
+</div>
+<div class="snip">
+<pre class="code">name: nightly-scan
+on:
+  schedule:
+    - cron: &quot;0 6 * * *&quot;
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo &quot;scanning&quot;</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>GitHub Actions.</strong> <code>on: schedule</code>, <code>jobs:</code>, <code>runs-on:</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">apk update
+apk add cloc git
+git clone --depth=1 https://github.com/git/git.git
+cloc git</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell commands.</strong> Typed at the container's prompt in Workshop 1. In a Dockerfile these would each be prefixed with <code>RUN</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">- name: Wait for app to come up
+  uri:
+    url: http://localhost:80
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 2</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Ansible.</strong> <code>uri:</code> module with <code>register:</code>, <code>until:</code>, <code>retries:</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">FROM python:3-alpine
+RUN apk add --update --no-cache ansible bash openssh
+WORKDIR /ws4
+CMD [&quot;/bin/bash&quot;]</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Dockerfile.</strong> It installs Ansible and Bash, and mentions both by name, but the file itself is a Dockerfile: <code>FROM</code>, <code>RUN</code>, <code>WORKDIR</code>, <code>CMD</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">run-name: ${{ github.actor }} is learning</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>GitHub Actions.</strong> <code>run-name:</code> and the <code>${{ github.actor }}</code> context expression.</div></details>
+</div>
+<div class="snip">
+<pre class="code">- name: Apply system security updates
+  hosts: all
+  become: true
+  tasks:
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Ansible.</strong> A play: <code>hosts: all</code>, <code>become:</code>, <code>tasks:</code>, <code>apt:</code>.</div></details>
+</div>
+<div class="snip">
+<pre class="code">sudo ./svc.sh install
+sudo ./svc.sh start</pre>
+<details class="q"><summary><span class="chip">Name the tool</span>Which tool?</summary><div class="ans"><strong>Bash shell commands.</strong> They install the GitHub Actions runner as a service, but they are shell commands run on the VM.</div></details>
+</div>
+</div>
+</section>
+
+<section id="tf">
+<h2>True / false with corrections</h2>
+<p>Instruction from the slides: "True or False (T or F). If a statement is false, identify how to make it true by <strong>underlining the word(s) you want to change and writing a new word(s) below</strong> the statement." <strong>No simple negation:</strong> "Lake Michigan is <em>not</em> made of salt water" does not earn points; underline "salt" and write "fresh".</p>
+<aside class="exam"><b>How to answer</b>Find the single term that makes the statement wrong and replace it with its partner term. Most false statements are built by swapping one member of a pair: develop / main, image / container, declarative / imperative, deploy / release, control node / managed node, left / right. If you find yourself wanting to write "not", look for the word to swap instead. A true statement just gets a T.</aside>
+<h3>The samples shown in class</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>In DevOps, PR stands for pull requirement.</summary><div class="ans"><span class="F">False.</span> Underline <u class="fix">requirement</u> → <strong>request</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A PR contains at most a single commit.</summary><div class="ans"><span class="F">False.</span> Underline <u class="fix">at most a single commit</u> → <strong>one or more commits</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The "two large pizzas" rule states that a DevOps pipeline should take less time to deploy than it takes for the team to eat two large pizzas.</summary><div class="ans"><span class="F">False.</span> The rule is about <strong>team size</strong>: a team should be no larger than two large pizzas can feed.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In a git flow paradigm, a feature branch is branched from main.</summary><div class="ans"><span class="F">False.</span> Underline <u class="fix">main</u> → <strong>develop</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Ansible is mostly an imperative language.</summary><div class="ans"><span class="F">False.</span> Underline <u class="fix">imperative</u> → <strong>declarative</strong>.</div></details>
+</div>
+<h3>Git Flow, pull requests, diff time</h3>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>In Git Flow, release tags are placed on the develop branch.</summary><div class="ans"><span class="F">False.</span> <u class="fix">develop</u> → <strong>main</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In Git Flow, a hotfix branch is branched from develop.</summary><div class="ans"><span class="F">False.</span> <u class="fix">develop</u> → <strong>main</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Quality gates protect the feature branch.</summary><div class="ans"><span class="F">False.</span> <u class="fix">feature</u> → <strong>main</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Diff time is when code peer review happens.</summary><div class="ans"><span class="T">True.</span> And, increasingly, static analysis.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Modern Code Review happens at deploy time.</summary><div class="ans"><span class="F">False.</span> <u class="fix">deploy</u> → <strong>diff</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In Git Flow, the develop branch might at times be broken.</summary><div class="ans"><span class="T">True.</span> "Dev might at times be broken." Main stays clean.</div></details>
+</div>
+<h3>Containers and computing environments</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>The docker <code>-v</code> option creates a temporary connection between a folder on the host and a folder in the container.</summary><div class="ans"><span class="T">True.</span> That is the bind mount.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A bind mount copies a host folder into the image at build time.</summary><div class="ans"><span class="F">False.</span> It <strong>connects</strong> a host folder to a <strong>running container</strong>; nothing is copied into the image.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Software installed by hand in a running container is saved in the image.</summary><div class="ans"><span class="F">False.</span> <u class="fix">is saved in the image</u> → <strong>is lost when the container ends</strong>. To keep it, add it to the Dockerfile.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A container runs its own guest operating system kernel.</summary><div class="ans"><span class="F">False.</span> <u class="fix">container</u> → <strong>virtual machine</strong> (a container shares the host kernel).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Docker is open source, while Podman is a closed-source commercial project.</summary><div class="ans"><span class="F">False.</span> Swap them: <strong>Podman</strong> is open source; <strong>Docker</strong> is closed source and commercial.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Bit rot occurs because the code changes while its environment stays the same.</summary><div class="ans"><span class="F">False.</span> Swap: the <strong>environment</strong> (dependencies) changes while the <strong>code</strong> stays the same.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The host is the operating system running inside the virtual machine.</summary><div class="ans"><span class="F">False.</span> <u class="fix">host</u> → <strong>guest</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Hardware-assisted virtualization works by patching the guest OS.</summary><div class="ans"><span class="F">False.</span> <u class="fix">Hardware-assisted virtualization</u> → <strong>Paravirtualization</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>An environment variable lets you pass configuration to a program without changing its code.</summary><div class="ans"><span class="T">True.</span> Workshop 2 passed the token this way.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Access tokens should be committed to the repository so the pipeline can read them.</summary><div class="ans"><span class="F">False.</span> They should <strong>never</strong> be committed; pass them at run time or store them in a <strong>secrets manager</strong>.</div></details>
+</div>
+<h3>Lifecycle, pipelines, roles, GitHub Actions</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>DevOps pipelines are event-driven.</summary><div class="ans"><span class="T">True.</span> Commit, pull request, tests passing.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The Release Engineer is responsible for care and feeding of the tools in the DevOps toolchain.</summary><div class="ans"><span class="F">False.</span> <u class="fix">Release Engineer</u> → <strong>DevOps Engineer</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The Service Owner is responsible for outside coordination and the vision of the service.</summary><div class="ans"><span class="T">True.</span> Slide wording.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In a DevOps pipeline, the Test stage transports the change into production.</summary><div class="ans"><span class="F">False.</span> <u class="fix">Test</u> → <strong>Deploy</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In the pipes-and-filters style, a filter is a message queue.</summary><div class="ans"><span class="F">False.</span> <u class="fix">filter</u> → <strong>pipe</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Staging tests a new version in a development-like environment.</summary><div class="ans"><span class="F">False.</span> <u class="fix">development-like</u> → <strong>production-like</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>GitHub Actions workflows are triggered by events such as a push or a pull request.</summary><div class="ans"><span class="T">True.</span> The <code>on:</code> key.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In a workflow, <code>steps:</code> specifies the compute that runs the job.</summary><div class="ans"><span class="F">False.</span> <u class="fix">steps:</u> → <strong>runs-on:</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A workflow that needs a token should hard-code it in the YAML file.</summary><div class="ans"><span class="F">False.</span> It should read it from <strong>repository secrets</strong> (<code>${{ secrets.NAME }}</code>).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Continuous Deployment automatically tests, vets and deploys incremental changes to production.</summary><div class="ans"><span class="T">True.</span> Glossary 1.</div></details>
+</div>
+<h3>Ansible and configuration management</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>Ansible is agentless.</summary><div class="ans"><span class="T">True.</span> Nothing is installed on managed nodes.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Ansible must be installed on every managed node.</summary><div class="ans"><span class="F">False.</span> <u class="fix">every managed node</u> → <strong>the control node</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Ansible connects to managed hosts using SSH.</summary><div class="ans"><span class="T">True.</span> SSH is its transport.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The inventory lists the tasks Ansible should run.</summary><div class="ans"><span class="F">False.</span> <u class="fix">inventory</u> → <strong>playbook</strong> (or: the inventory lists the <strong>hosts</strong>).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>An idempotent operation gives the same result when it is performed again.</summary><div class="ans"><span class="T">True.</span> Slide definition.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>GitHub Actions are always idempotent, while Ansible playbooks are not.</summary><div class="ans"><span class="F">False.</span> Swap them: <strong>playbooks</strong> are always idempotent; <strong>Actions</strong> are not always.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Configuration management provisions and controls an inventory of assets through tools such as Docker Hub.</summary><div class="ans"><span class="F">False.</span> <u class="fix">Docker Hub</u> → <strong>Ansible</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A declarative language defines what should be accomplished.</summary><div class="ans"><span class="T">True.</span> Imperative defines how.</div></details>
+</div>
+<h3>Releases, rings, testing</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>Feature flags enable features dynamically during production.</summary><div class="ans"><span class="T">True.</span> Glossary 1.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Dark launching makes deployed code immediately visible to all users.</summary><div class="ans"><span class="F">False.</span> <u class="fix">immediately visible to all users</u> → <strong>invisible to users</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A canary release exposes the new version to all users at once.</summary><div class="ans"><span class="F">False.</span> <u class="fix">all users at once</u> → <strong>a small percentage of users first</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A/B testing compares variants using a metric such as conversion rate.</summary><div class="ans"><span class="T">True.</span> 23% vs 11% on the slide.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>One rollback option is to use the load balancer to shift traffic toward the canary.</summary><div class="ans"><span class="F">False.</span> <u class="fix">toward</u> → <strong>away from</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Deflighting is a method for rolling back a defective change.</summary><div class="ans"><span class="T">True.</span> Deflighting or rollback, Glossary 1.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Stale feature flags reduce technical debt.</summary><div class="ans"><span class="F">False.</span> <u class="fix">reduce</u> → <strong>create</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In deployment rings, early adopters receive a change before canaries.</summary><div class="ans"><span class="F">False.</span> <u class="fix">before</u> → <strong>after</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Blast radius is largest in the canary ring.</summary><div class="ans"><span class="F">False.</span> <u class="fix">largest</u> → <strong>smallest</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Shift-left reduces the cost of defects.</summary><div class="ans"><span class="T">True.</span> The slide's title.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Testing in production is an example of shift-left.</summary><div class="ans"><span class="F">False.</span> <u class="fix">shift-left</u> → <strong>shift-right</strong>.</div></details>
+</div>
+<h3>People, ownership, adages</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>The wall of confusion separates development from operations.</summary><div class="ans"><span class="T">True.</span> Software goes over the wall.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In the pre-DevOps era, the interface between development and operations was usually a pull request.</summary><div class="ans"><span class="F">False.</span> <u class="fix">pull request</u> → <strong>ticket system</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Change ownership means developers are responsible for changes only during the development phase.</summary><div class="ans"><span class="F">False.</span> <u class="fix">only during the development phase</u> → <strong>for all phases</strong> (development, testing, deployment, fixing problems).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A hotwash is another name for a retrospective.</summary><div class="ans"><span class="T">True.</span> Also postmortem.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The adage "Configuration is Code" is most closely tied to retrospectives.</summary><div class="ans"><span class="F">False.</span> <u class="fix">retrospectives</u> → <strong>Ansible / configuration management</strong>. (Retrospectives go with "Looking back to move forward".)</div></details>
+<details class="q"><summary><span class="chip">True / False</span>"Be fast to release but slow to deploy" is one of the top ten adages.</summary><div class="ans"><span class="F">False.</span> Swap: be fast to <strong>deploy</strong> but slow to <strong>release</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Telemetry instruments code to compute metrics about feature use, performance and stability.</summary><div class="ans"><span class="T">True.</span> Glossary 2.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The three goals of a retrospective are what worked, what didn't work, and who is to blame.</summary><div class="ans"><span class="F">False.</span> <u class="fix">who is to blame</u> → <strong>what can we do better</strong>.</div></details>
+</div>
+</section>
+
+<section id="match">
+<h2>Matching concepts</h2>
+<p>Instruction from the slides: "Connect the concept on the left to the most related concept on the right by drawing a line between them. <strong>Items on the left might not connect to anything on the right.</strong>"</p>
+<h3>How the slide's example works</h3>
+<div class="cols"><ul><li>Red-Blue Trees</li><li>Gaussian Distribution</li><li>All-Pairs Shortest Path</li><li>Context-Free Grammars</li><li>Dijkstra's Algorithm</li><li>The GitHub Algorithm</li><li>Variance</li></ul><ul><li>Graph Algorithms</li><li>Theory of Computing</li><li>Data Structures</li><li>Statistics</li><li>Transformers</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for the slide's example, and what it teaches</summary><div class="ans">Red-Blue Trees ↔ Data Structures. Gaussian Distribution ↔ Statistics. All-Pairs Shortest Path ↔ Graph Algorithms. Context-Free Grammars ↔ Theory of Computing. Dijkstra's Algorithm ↔ Graph Algorithms. Variance ↔ Statistics. "The GitHub Algorithm" connects to <strong>nothing</strong>: it is a made-up distractor. "Transformers" on the right is never used. Lessons: a right-hand item can take several lines, a right-hand item can take none, and a left-hand item can be a decoy. Do not force a line.</div></details>
+</div>
+<aside class="exam"><b>How to answer</b>Go down the left column. For each item ask "which category on the right does this belong to?" and draw one line to the <em>most</em> related item. If an item is invented or belongs to none of the right-hand items, leave it unconnected. Expect the right side to be the big buckets from the study guide: Git Flow, containers, GitHub Actions, Ansible, releases, retrospectives, adages.</aside>
+<h3>Practice sets</h3>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<p><strong>Set A · concept to tool</strong></p>
+<div class="cols"><ul><li>Continuous integration</li><li>Infrastructure as code</li><li>Containerization</li><li>Version control</li><li>Configuration management</li><li>Workflow triggered by a push</li><li>The Ansible Algorithm</li></ul><ul><li>Ansible</li><li>Git</li><li>GitHub Actions</li><li>Docker / Podman</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for set A</summary><div class="ans">Continuous integration ↔ GitHub Actions. Infrastructure as code ↔ Ansible. Containerization ↔ Docker / Podman. Version control ↔ Git. Configuration management ↔ Ansible. Workflow triggered by a push ↔ GitHub Actions. "The Ansible Algorithm" ↔ nothing (decoy).</div></details>
+</div>
+<p><strong>Set B · concept to adage</strong></p>
+<div class="cols"><ul><li>Playbook in a git repo</li><li>A/B testing</li><li>Hotwash</li><li>Change ownership</li><li>Dark launching</li><li>Telemetry on feature use</li><li>Canary release</li><li>Bind mount</li></ul><ul><li>Configuration is code</li><li>Every feature is an experiment</li><li>Looking back to move forward</li><li>You are the support person</li><li>Be fast to deploy but slow(er) to release</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for set B</summary><div class="ans">Playbook in a git repo ↔ Configuration is code. A/B testing ↔ Every feature is an experiment. Hotwash ↔ Looking back to move forward. Change ownership ↔ You are the support person. Dark launching ↔ Be fast to deploy but slow(er) to release. Telemetry on feature use ↔ Every feature is an experiment. Canary release ↔ Be fast to deploy but slow(er) to release. Bind mount ↔ nothing.</div></details>
+</div>
+<p><strong>Set C · keyword to kind of code</strong></p>
+<div class="cols"><ul><li><code>runs-on:</code></li><li><code>FROM</code></li><li><code>hosts:</code></li><li><code>${{ secrets.TOKEN }}</code></li><li><code>become: yes</code></li><li><code>ENTRYPOINT</code></li><li><code>[webservers]</code></li><li><code>ls -l | grep txt</code></li><li><code>state: present</code></li></ul><ul><li>GitHub Actions</li><li>Dockerfile</li><li>Ansible</li><li>Bash shell</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for set C</summary><div class="ans"><code>runs-on:</code> ↔ GitHub Actions. <code>FROM</code> ↔ Dockerfile. <code>hosts:</code> ↔ Ansible. <code>${{ secrets.TOKEN }}</code> ↔ GitHub Actions. <code>become: yes</code> ↔ Ansible. <code>ENTRYPOINT</code> ↔ Dockerfile. <code>[webservers]</code> ↔ Ansible (inventory). <code>ls -l | grep txt</code> ↔ Bash shell. <code>state: present</code> ↔ Ansible.</div></details>
+</div>
+<p><strong>Set D · term to study-guide topic</strong></p>
+<div class="cols"><ul><li>Hotfix</li><li>Bind mount</li><li>Idempotent</li><li>Self-hosted runner</li><li>Canary</li><li>Hotwash</li><li>Blast radius</li><li>Managed node</li><li>Diff time</li><li>Deflighting</li></ul><ul><li>Git Flow</li><li>Containers</li><li>Ansible</li><li>GitHub Actions</li><li>Releases</li><li>Retrospectives</li><li>Pull requests / code review</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for set D</summary><div class="ans">Hotfix ↔ Git Flow. Bind mount ↔ Containers. Idempotent ↔ Ansible. Self-hosted runner ↔ GitHub Actions. Canary ↔ Releases. Hotwash ↔ Retrospectives. Blast radius ↔ Releases (deployment rings). Managed node ↔ Ansible. Diff time ↔ Pull requests / code review. Deflighting ↔ Releases.</div></details>
+</div>
+<p><strong>Set E · release technique to description</strong></p>
+<div class="cols"><ul><li>Canary release</li><li>Dark launching</li><li>A/B testing</li><li>Rollback</li><li>Baking</li><li>Feature flag</li><li>Load balancing</li></ul><ul><li>Deployed but invisible to users</li><li>A small share of real users first</li><li>Compare a metric between variants</li><li>Test in a production-like environment before deployment</li><li>Remove a defective change</li><li>Dynamically enable a feature in production</li><li>Distribute traffic across instances</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for set E</summary><div class="ans">Canary release ↔ a small share of real users first. Dark launching ↔ deployed but invisible to users. A/B testing ↔ compare a metric between variants. Rollback ↔ remove a defective change. Baking ↔ test in a production-like environment before deployment. Feature flag ↔ dynamically enable a feature in production. Load balancing ↔ distribute traffic across instances.</div></details>
+</div>
+<p><strong>Set F · role to responsibility</strong></p>
+<div class="cols"><ul><li>Service Owner</li><li>Gatekeeper</li><li>Release Engineer</li><li>DevOps Engineer</li><li>Reliability Engineer</li><li>Pizza Engineer</li></ul><ul><li>The period immediately after deployment</li><li>Care and feeding of the toolchain</li><li>Moving to the next pipeline stage</li><li>Outside coordination and vision</li><li>The entire release process, including back-out</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for set F</summary><div class="ans">Service Owner ↔ outside coordination and vision. Gatekeeper ↔ moving to the next pipeline stage. Release Engineer ↔ the entire release process, including back-out. DevOps Engineer ↔ care and feeding of the toolchain. Reliability Engineer ↔ the period immediately after deployment. "Pizza Engineer" ↔ nothing.</div></details>
+</div>
+<p><strong>Set G · environments, Ansible and virtualization terms</strong></p>
+<div class="cols"><ul><li>Guest</li><li>Hypervisor / host</li><li>Control node</li><li>Inventory</li><li>Agentless</li><li>Shift-right</li><li>Shift-left</li><li>Bit rot</li></ul><ul><li>OS inside the virtual machine</li><li>OS on the physical machine</li><li>Where Ansible is installed</li><li>The list of managed hosts</li><li>Uses SSH; nothing installed on hosts</li><li>Testing in production</li><li>Testing earlier in the lifecycle</li><li>Environment changes break unchanged code</li></ul></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Matching</span>Lines for set G</summary><div class="ans">Guest ↔ OS inside the virtual machine. Hypervisor / host ↔ OS on the physical machine. Control node ↔ where Ansible is installed. Inventory ↔ the list of managed hosts. Agentless ↔ uses SSH; nothing installed on hosts. Shift-right ↔ testing in production. Shift-left ↔ testing earlier in the lifecycle. Bit rot ↔ environment changes break unchanged code.</div></details>
+</div>
+</section>
+
+<section id="day">
+<h2>On the day</h2>
+<ul>
+<li>Arrive on time or early. Seats are assigned.</li>
+<li>Paper exam. Pen or pencil, pen preferred. <strong>No notes.</strong></li>
+<li>Phones and devices stay in a bag for the whole test. No smart watches on your person.</li>
+<li>Cover your answers as you go with the piece of paper provided.</li>
+<li>For every false statement, write the replacement word. For every snippet, write the tool's name. For matching, leave decoys unconnected.</li>
+</ul>
+</section>
+
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws7.html" rel="prev"><small>← Previous</small>DevOps WS7 Retrospectives</a><a class="next" href="notes.html" rel="next"><small>Next →</small>DevOps Lecture Deck Notes</a></nav>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>

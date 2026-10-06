@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,7 +125,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><span class="cur" aria-current="page">WS1<small>Containers &amp; CLI</small></span><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><span class="cur" aria-current="page">WS1<small>Containers &amp; CLI</small></span><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Workshop 1</div>
 <h1>Command line tools and containers</h1>
@@ -159,7 +162,8 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 
 <section id="dockerfile">
 <h2>Reading a Dockerfile</h2>
-<p>The study guide says exact docker syntax is not tested, but "answering questions about code or scripts" is. Be able to say what each line does and <em>when</em> it happens (build time or run time).</p>
+<p>Exact docker syntax is not tested and you will not write code. What the review deck does promise is a "distinguishing code kinds" question: you are shown a snippet and name the tool. So know what a Dockerfile looks like, what each line does, and <em>when</em> it happens (build time or run time).</p>
+<aside class="exam"><b>Exam angle</b><strong>How to recognise a Dockerfile:</strong> every line starts with an instruction in CAPITALS followed by a space, with no colon: <code>FROM</code>, <code>RUN</code>, <code>COPY</code>, <code>WORKDIR</code>, <code>ENV</code>, <code>USER</code>, <code>CMD</code>, <code>ENTRYPOINT</code>. No indentation structure. The first real line is almost always <code>FROM</code>. Do not confuse <code>RUN apk add …</code> (Dockerfile) with <code>- run: …</code> (GitHub Actions) or with a bare <code>docker run …</code> typed in a terminal (a Bash shell command).</aside>
 <div class="two"><div>
 <div class="cap">Workshop 1 Dockerfile</div>
 <pre class="code"><span class="c"># 2026 DEVOPS - CSC 519</span>
@@ -242,6 +246,7 @@ exit<span class="c">                                         # leave the shell; 
 
 <section id="shell">
 <h2>Shell cheat sheet</h2>
+<aside class="exam"><b>Exam angle</b><strong>How to recognise Bash shell commands:</strong> one command per line, a program name followed by flags and arguments (<code>ls -l</code>, <code>docker run -it …</code>, <code>ssh user@host</code>, <code>curl -H …</code>, <code>apk add git</code>). Look for pipes <code>|</code>, redirects <code>&gt;</code> and <code>&gt;&gt;</code>, variables with a single dollar sign (<code>$HOME</code>, <code>$(pwd)</code>), <code>export</code>, <code>sudo</code>, <code>cd</code>, <code>echo</code>. No <code>key: value</code> structure and no capitalised instructions. <code>ansible-playbook -i hosts.yaml site.yaml</code> and <code>docker build . -t ws4</code> are shell commands, even though they <em>run</em> other tools.</aside>
 <p>A <strong>shell</strong> (<code>sh</code>, <code>bash</code>, PowerShell) is a program that reads commands and runs them. Lecture gave two reasons to prefer the command line: <strong>flexibility / remote access</strong> (cloud machines and devices have no screen) and <strong>understanding the computational context</strong> (you see the variables, files and processes a program really runs in).</p>
 <div class="scroll"><table class="anno">
 <tr><th>Command</th><th>What it does</th></tr>
@@ -336,7 +341,7 @@ exit<span class="c">                                         # leave the shell; 
 
 <section id="quiz">
 <h2>Practice</h2>
-<div class="quizbar"><button class="reveal" type="button" id="reveal-all">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On the real T/F questions you underline the wrong word and write the fix. A plain "not" earns nothing.</span></div>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
 <div class="quiz">
 <details class="q"><summary><span class="chip">True / False</span>The command <code>docker build</code> creates a container from a Dockerfile.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">container</u> to <strong>image</strong>. <code>docker run</code> is what creates a container.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>A file created inside a running container is automatically saved back into the image.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">automatically saved back into the image</u> to <strong>lost when the container is removed</strong> (unless it was written to a bind-mounted folder).</div></details>
@@ -346,15 +351,15 @@ exit<span class="c">                                         # leave the shell; 
 <details class="q"><summary><span class="chip">True / False</span>Bit rot means that source code files become corrupted on disk over time.</summary><div class="ans"><span class="F">False.</span> Bit rot is code failing because its <strong>environment and dependencies change</strong> around it. The code itself is unchanged.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>The guest is the operating system running inside the virtual machine.</summary><div class="ans"><span class="T">True.</span> And the host (hypervisor) is the OS on the physical machine.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>Downloading a repo as a ZIP sets up the same connection to the git server as <code>git clone</code>.</summary><div class="ans"><span class="F">False.</span> A ZIP is only a copy of the files. <code>git clone</code> creates the link to the remote plus the history.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>You ran <code>apk add cloc</code> in a container yesterday. Today <code>cloc</code> is "not found". Why, and what is the lasting fix?</summary><div class="ans">Today's <code>docker run</code> started a new container from the unchanged image; yesterday's install lived only in yesterday's container. Fix: add <code>RUN apk add cloc</code> to the Dockerfile and rebuild, so the software is part of the image.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Give two reasons a team would run a build tool inside a container instead of directly on each developer's laptop.</summary><div class="ans">Reproducibility (everyone gets the same OS, tools and versions, which fights bit rot and "works on my machine") and isolation / disposability (nothing is installed on the host; throw the container away and start clean). Lightweight compared with a VM.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Name one advantage of a VM over a container and one advantage of a container over a VM.</summary><div class="ans">VM: stronger isolation and it can run a different operating system or kernel than the host. Container: much lighter and faster to start because it shares the host kernel, so you can run many more per machine.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>You ran <code>apk add cloc</code> in a container yesterday. Today <code>cloc</code> is "not found". Why, and what is the lasting fix?</summary><div class="ans">Today's <code>docker run</code> started a new container from the unchanged image; yesterday's install lived only in yesterday's container. Fix: add <code>RUN apk add cloc</code> to the Dockerfile and rebuild, so the software is part of the image.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Give two reasons a team would run a build tool inside a container instead of directly on each developer's laptop.</summary><div class="ans">Reproducibility (everyone gets the same OS, tools and versions, which fights bit rot and "works on my machine") and isolation / disposability (nothing is installed on the host; throw the container away and start clean). Lightweight compared with a VM.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name one advantage of a VM over a container and one advantage of a container over a VM.</summary><div class="ans">VM: stronger isolation and it can run a different operating system or kernel than the host. Container: much lighter and faster to start because it shares the host kernel, so you can run many more per machine.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span><code>docker run -v ~/.ssh:/root/.ssh -v $(pwd):/ws4 -it ws4</code> What do the two <code>-v</code> flags achieve, and why not <code>COPY</code> the keys in the Dockerfile?</summary><div class="ans">They bind-mount the host's SSH key folder at <code>/root/.ssh</code> and the current project folder at <code>/ws4</code>, so the container can use the keys and playbooks while they stay on the host. Copying keys into the image would bake a secret into a shareable artifact; anyone with the image could extract it.</div></details>
 </div>
 </section>
 
 <nav class="pager" aria-label="Previous and next page"><a class="prev" href="index.html" rel="prev"><small>← Previous</small>DevOps Midterm Study Pages</a><a class="next" href="ws2.html" rel="next"><small>Next →</small>DevOps WS2 Secrets &amp; GitHub API</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

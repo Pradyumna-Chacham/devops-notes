@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,12 +125,12 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><span class="cur" aria-current="page">Notes<small>By slide deck</small></span><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><span class="cur" aria-current="page">Notes<small>By slide deck</small></span><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Lecture notes</div>
 <h1>Notes for each slide deck</h1>
-<p class="lede">The ten lecture decks in the order they were taught. For each one: what the lecture was for, notes in slide order (including the picture-only slides), the definitions that deck introduced, the in-class activity prompts with a model answer, and a few questions to check yourself. Slide numbers are the ones printed on the slides where the deck has them.</p>
-<ul class="toc"><li><a href="#d0">0 · Intro, what is DevOps</a></li><li><a href="#d1a">1 · CLI workshop</a></li><li><a href="#d1b">1 · Continuous delivery</a></li><li><a href="#d2">2 · Computing environments</a></li><li><a href="#d25">2.5 · GitHub Actions lab</a></li><li><a href="#d3">3 · Configuration management</a></li><li><a href="#d5">5 · Feature flags</a></li><li><a href="#d6">6 · Change ownership</a></li><li><a href="#d65">6.5 · Rings, shift left</a></li><li><a href="#d8">8 · Pipelines</a></li></ul>
+<p class="lede">The ten lecture decks in the order they were taught, plus the midterm review deck. For each one: what the lecture was for, notes in slide order (including the picture-only slides), the definitions that deck introduced, the in-class activity prompts with a model answer, and a few questions to check yourself. Slide numbers are the ones printed on the slides where the deck has them.</p>
+<ul class="toc"><li><a href="#d0">0 · Intro, what is DevOps</a></li><li><a href="#d1a">1 · CLI workshop</a></li><li><a href="#d1b">1 · Continuous delivery</a></li><li><a href="#d2">2 · Computing environments</a></li><li><a href="#d25">2.5 · GitHub Actions lab</a></li><li><a href="#d3">3 · Configuration management</a></li><li><a href="#d5">5 · Feature flags</a></li><li><a href="#d6">6 · Change ownership</a></li><li><a href="#d65">6.5 · Rings, shift left</a></li><li><a href="#d8">8 · Pipelines</a></li><li><a href="#d9">Midterm review 2</a></li></ul>
 <aside class="note">Entries tagged <span class="src" style="margin-left:0">slide wording</span> follow the slide text closely. Rows marked <em>not on the midterm</em> are topics the study guide excludes.</aside>
 </header>
 
@@ -164,9 +167,9 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>Which branches may merge into main in Git Flow, and why not feature branches?</summary><div class="ans">Release and hotfix only. Main must stay clean and buildable because releases are built and tagged from it; features are integrated on develop first.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>List the four event-driven steps from slide 28.</summary><div class="ans">Code commit; pull request to a special branch; automated testing; passing tests automatically triggering the CI/CD pipeline.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Which phases sit on the Dev side and which on the Ops side of the loop?</summary><div class="ans">Dev: plan, code (develop), build, test. Ops: release, deploy, operate, monitor.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which branches may merge into main in Git Flow, and why not feature branches?</summary><div class="ans">Release and hotfix only. Main must stay clean and buildable because releases are built and tagged from it; features are integrated on develop first.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>List the four event-driven steps from slide 28.</summary><div class="ans">Code commit; pull request to a special branch; automated testing; passing tests automatically triggering the CI/CD pipeline.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which phases sit on the Dev side and which on the Ops side of the loop?</summary><div class="ans">Dev: plan, code (develop), build, test. Ops: release, deploy, operate, monitor.</div></details>
 </div>
 </section>
 
@@ -197,8 +200,8 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>Give the three reasons from lecture to learn the command line.</summary><div class="ans">Flexibility (devices without screens), remote access (cloud machines), and understanding the computational context.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>In the Docker architecture slide, what are the three boxes and what does each hold?</summary><div class="ans">Client (the build, pull, run commands), Docker host (the daemon with its images and containers), and registry (stored images).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Give the three reasons from lecture to learn the command line.</summary><div class="ans">Flexibility (devices without screens), remote access (cloud machines), and understanding the computational context.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>In the Docker architecture slide, what are the three boxes and what does each hold?</summary><div class="ans">Client (the build, pull, run commands), Docker host (the daemon with its images and containers), and registry (stored images).</div></details>
 </div>
 </section>
 
@@ -251,13 +254,13 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Activity prompt and a model answer</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>What could go wrong in a DevOps pipeline?</summary><div class="ans">Tests that are missing, weak or flaky let a bad change through, or block good ones. A broken build stops the whole team. Staging differs from production, so something passes there and fails live. Secrets leak into the repo, logs or images. The pipeline is slow, so people bypass it. A bad deploy has no rollback plan. The pipeline's own configuration is wrong. And an automated path to production is itself a target, so its credentials need least privilege.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What could go wrong in a DevOps pipeline?</summary><div class="ans">Tests that are missing, weak or flaky let a bad change through, or block good ones. A broken build stops the whole team. Staging differs from production, so something passes there and fails live. Secrets leak into the repo, logs or images. The pipeline is slow, so people bypass it. A bad deploy has no rollback plan. The pipeline's own configuration is wrong. And an automated path to production is itself a target, so its credentials need least privilege.</div></details>
 </div>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>Why does lecture call "continuous" imprecise for both CI and CD?</summary><div class="ans">Code changes arrive at discrete moments (diff time), and updates to production happen at intervals. Neither is literally continuous.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Name the stages of the example pipeline on slide 16 in order.</summary><div class="ans">Code → Testing → Build Release → User Acceptance Testing → Staged code ("pre-deploy") → Production.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Which role decides whether to back out a release, and which role watches the system right after deployment?</summary><div class="ans">The Release Engineer / Coordinator makes the back-out decision. The Reliability Engineer is responsible for the period immediately after deployment.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why does lecture call "continuous" imprecise for both CI and CD?</summary><div class="ans">Code changes arrive at discrete moments (diff time), and updates to production happen at intervals. Neither is literally continuous.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name the stages of the example pipeline on slide 16 in order.</summary><div class="ans">Code → Testing → Build Release → User Acceptance Testing → Staged code ("pre-deploy") → Production.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which role decides whether to back out a release, and which role watches the system right after deployment?</summary><div class="ans">The Release Engineer / Coordinator makes the back-out decision. The Reliability Engineer is responsible for the period immediately after deployment.</div></details>
 </div>
 </section>
 
@@ -304,13 +307,13 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Activity prompt and a model answer</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>Have you ever had issues with running code? What was the cause?</summary><div class="ans">A typical answer: a project that ran last semester now fails because a library released a breaking version, the interpreter was upgraded, or a package is not installed on this machine. The cause is the environment, not the code. The fix is to write the environment down (Dockerfile, pinned versions, a playbook) so it can be rebuilt.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Have you ever had issues with running code? What was the cause?</summary><div class="ans">A typical answer: a project that ran last semester now fails because a library released a breaking version, the interpreter was upgraded, or a package is not installed on this machine. The cause is the environment, not the code. The fix is to write the environment down (Dockerfile, pinned versions, a playbook) so it can be rebuilt.</div></details>
 </div>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>If code does not wear out, why does it "rot"?</summary><div class="ans">Because software depends on an ecosystem (libraries, OS, services, hardware) that keeps changing. The code is the same but its assumptions stop being true.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Why is full emulation slow, and what do the optimizations do about it?</summary><div class="ans">Every guest instruction is interpreted in software. Trap-and-emulate and binary translation let safe instructions run directly on the CPU and handle only privileged ones specially; hardware-assisted virtualization moves that support into the CPU.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Give the use case for bare metal, headless VMs, containers and micro VMs.</summary><div class="ans">Bare metal: desktop, mobile, embedded, efficiency, CI harness. Headless VMs: general-purpose computing services. Containers (OS-level): self-contained processes. Micro VMs: embedded appliances such as Docker for Mac and WSL.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>If code does not wear out, why does it "rot"?</summary><div class="ans">Because software depends on an ecosystem (libraries, OS, services, hardware) that keeps changing. The code is the same but its assumptions stop being true.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why is full emulation slow, and what do the optimizations do about it?</summary><div class="ans">Every guest instruction is interpreted in software. Trap-and-emulate and binary translation let safe instructions run directly on the CPU and handle only privileged ones specially; hardware-assisted virtualization moves that support into the CPU.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Give the use case for bare metal, headless VMs, containers and micro VMs.</summary><div class="ans">Bare metal: desktop, mobile, embedded, efficiency, CI harness. Headless VMs: general-purpose computing services. Containers (OS-level): self-contained processes. Micro VMs: embedded appliances such as Docker for Mac and WSL.</div></details>
 </div>
 </section>
 
@@ -341,8 +344,8 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>What two pieces of information do you need to SSH into a machine?</summary><div class="ans">The remote hostname or IP address, and a username.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>What does it mean that GitHub Actions add "new edges" to the Git Flow diagram?</summary><div class="ans">Each arrow in Git Flow is a Git event (a push, a pull request, a merge). Actions let you hang automation such as tests on those events.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What two pieces of information do you need to SSH into a machine?</summary><div class="ans">The remote hostname or IP address, and a username.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What does it mean that GitHub Actions add "new edges" to the Git Flow diagram?</summary><div class="ans">Each arrow in Git Flow is a Git event (a push, a pull request, a merge). Actions let you hang automation such as tests on those events.</div></details>
 </div>
 </section>
 
@@ -389,13 +392,13 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Activity prompt and a model answer</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>AI prompts and Ansible: how can I get better results for configuration management tasks?</summary><div class="ans">Give the model the context a human would need: target OS and version, the inventory groups, which packages and versions, and where files should go. Ask for real modules instead of <code>shell</code>, ask for idempotent tasks, and ask it to explain each task. Then verify: run it against a freshly provisioned VM, run it twice and expect zero changes the second time, and never paste secrets into the prompt.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>AI prompts and Ansible: how can I get better results for configuration management tasks?</summary><div class="ans">Give the model the context a human would need: target OS and version, the inventory groups, which packages and versions, and where files should go. Ask for real modules instead of <code>shell</code>, ask for idempotent tasks, and ask it to explain each task. Then verify: run it against a freshly provisioned VM, run it twice and expect zero changes the second time, and never paste secrets into the prompt.</div></details>
 </div>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>State the three properties of Ansible from the objectives slide.</summary><div class="ans">Agentless, declarative, idempotent.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Fill in the comparison: Actions only / both / playbooks only for "YAML", "tied to Git events", "always idempotent", "executed from a control node".</summary><div class="ans">YAML: both. Tied to Git events: Actions only. Always idempotent: playbooks only. Executed from a control node: playbooks only.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Why is PUT idempotent but POST not?</summary><div class="ans">PUT sets a resource to a given state, so repeating it leaves the same state. POST creates a new resource each time, so repeating it creates duplicates.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>State the three properties of Ansible from the objectives slide.</summary><div class="ans">Agentless, declarative, idempotent.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Fill in the comparison: Actions only / both / playbooks only for "YAML", "tied to Git events", "always idempotent", "executed from a control node".</summary><div class="ans">YAML: both. Tied to Git events: Actions only. Always idempotent: playbooks only. Executed from a control node: playbooks only.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why is PUT idempotent but POST not?</summary><div class="ans">PUT sets a resource to a given state, so repeating it leaves the same state. POST creates a new resource each time, so repeating it creates duplicates.</div></details>
 </div>
 </section>
 
@@ -442,13 +445,13 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Activity prompt and a model answer</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>What's the difference between deploying and releasing, and what could go wrong from a user's perspective?</summary><div class="ans">Deploying installs the code in production; releasing switches the feature on for users. From the user's side: features appear and disappear without warning; two people see different versions of the same app; a half-finished feature leaks out; support cannot reproduce "my screen looks different"; the user is part of an experiment they did not choose.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What's the difference between deploying and releasing, and what could go wrong from a user's perspective?</summary><div class="ans">Deploying installs the code in production; releasing switches the feature on for users. From the user's side: features appear and disappear without warning; two people see different versions of the same app; a half-finished feature leaks out; support cannot reproduce "my screen looks different"; the user is part of an experiment they did not choose.</div></details>
 </div>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>Give two of the four dark-launch use scenarios.</summary><div class="ans">Release an experimental one-click checkout to see if it increases sales; test new application infrastructure without switching all traffic; roll out to VIP users first; release a feature for beta testing.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>In the feature-flags-vs-canary table, which rows differ?</summary><div class="ans">Placement (application vs infrastructure networking layer), orchestrated by (developers, PMs, QA vs DevOps, SREs), rule-based and group-based targeting (flags yes, canary no), and rollback (specific feature vs entire deployment).</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>What does the asterisk on "The cost of change is dead*" mean?</summary><div class="ans">It holds in continuously deployed systems. For many real-world systems such as airplanes and power plants, Boehm's rising cost still applies.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Give two of the four dark-launch use scenarios.</summary><div class="ans">Release an experimental one-click checkout to see if it increases sales; test new application infrastructure without switching all traffic; roll out to VIP users first; release a feature for beta testing.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>In the feature-flags-vs-canary table, which rows differ?</summary><div class="ans">Placement (application vs infrastructure networking layer), orchestrated by (developers, PMs, QA vs DevOps, SREs), rule-based and group-based targeting (flags yes, canary no), and rollback (specific feature vs entire deployment).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What does the asterisk on "The cost of change is dead*" mean?</summary><div class="ans">It holds in continuously deployed systems. For many real-world systems such as airplanes and power plants, Boehm's rising cost still applies.</div></details>
 </div>
 </section>
 
@@ -495,13 +498,13 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Activity prompt and a model answer</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>You are promoted to manage a team that just had a major outage. Give a theme and your top goals for the retrospective.</summary><div class="ans">Theme: for example "the storm at sea": what was the storm (what happened), what kept the ship afloat (what worked), where did we take on water (what failed), and what do we repair before the next voyage (what to do better). Top goals: establish a shared, blame-free timeline; identify the process gaps that let the outage happen and slowed recovery; and leave with a short list of action items with owners. An extra goal for a new manager: build trust.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>You are promoted to manage a team that just had a major outage. Give a theme and your top goals for the retrospective.</summary><div class="ans">Theme: for example "the storm at sea": what was the storm (what happened), what kept the ship afloat (what worked), where did we take on water (what failed), and what do we repair before the next voyage (what to do better). Top goals: establish a shared, blame-free timeline; identify the process gaps that let the outage happen and slowed recovery; and leave with a short list of action items with owners. An extra goal for a new manager: build trust.</div></details>
 </div>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>What did the ticket system promise in theory, and what happened in practice?</summary><div class="ans">In theory, higher stability for software in production. In practice, long delays between code updates and deployment, and ineffective problem solving in which silos blame each other.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Name the four parts of the "outdoor trip" retrospective theme.</summary><div class="ans">Weather (how we felt about the work), boulders (what blocked us), missing stuff (what could have made it better), equipment (what helped us reach the goal).</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Which adage goes with each: change ownership, retrospectives, releases as UX?</summary><div class="ans">You are the support person; Looking back to move forward; Comfort the customer with discomfort.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What did the ticket system promise in theory, and what happened in practice?</summary><div class="ans">In theory, higher stability for software in production. In practice, long delays between code updates and deployment, and ineffective problem solving in which silos blame each other.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name the four parts of the "outdoor trip" retrospective theme.</summary><div class="ans">Weather (how we felt about the work), boulders (what blocked us), missing stuff (what could have made it better), equipment (what helped us reach the goal).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which adage goes with each: change ownership, retrospectives, releases as UX?</summary><div class="ans">You are the support person; Looking back to move forward; Comfort the customer with discomfort.</div></details>
 </div>
 </section>
 
@@ -530,8 +533,8 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>Why does the pipeline on slide 5 trigger automatically into the first ring but require approval for the others?</summary><div class="ans">The first ring has the smallest blast radius, so automatic deployment is low risk. Each later ring exposes more users, so a person (or an automated gate) confirms the change looked healthy before widening.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>How do feature flags relate to the "exposed feature set" slide?</summary><div class="ans">Flags are the ON/OFF switches in the picture. They let early-adopter rings see more features than production users and let specific user sets have custom exposure.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why does the pipeline on slide 5 trigger automatically into the first ring but require approval for the others?</summary><div class="ans">The first ring has the smallest blast radius, so automatic deployment is low risk. Each later ring exposes more users, so a person (or an automated gate) confirms the change looked healthy before widening.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>How do feature flags relate to the "exposed feature set" slide?</summary><div class="ans">Flags are the ON/OFF switches in the picture. They let early-adopter rings see more features than production users and let specific user sets have custom exposure.</div></details>
 </div>
 </section>
 
@@ -581,15 +584,46 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </dl>
 <h3>Check yourself</h3>
 <div class="quiz">
-<details class="q"><summary><span class="chip">Short answer</span>Explain "pipe" and "filter" using a DevOps pipeline.</summary><div class="ans">Each stage (build, test, analysis…) is a filter: it takes the unit of change in, does one job, and passes the result on. The hand-off between stages is the pipe.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>What does it mean that "pipelines are just integrative technology"?</summary><div class="ans">The pipeline does not compile, test or analyze anything itself. It connects and sequences other tools (make, maven, npm, linters, test runners) and decides whether the change moves on.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Name the two biggest CI pain points and one benefit.</summary><div class="ans">Pain: troubleshooting why a build failed, and long build times. Benefit: catching errors earlier (detecting and fixing defects faster).</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Which three stages make up continuous integration on the stages slide?</summary><div class="ans">Build, Test and Analysis.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Explain "pipe" and "filter" using a DevOps pipeline.</summary><div class="ans">Each stage (build, test, analysis…) is a filter: it takes the unit of change in, does one job, and passes the result on. The hand-off between stages is the pipe.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What does it mean that "pipelines are just integrative technology"?</summary><div class="ans">The pipeline does not compile, test or analyze anything itself. It connects and sequences other tools (make, maven, npm, linters, test runners) and decides whether the change moves on.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name the two biggest CI pain points and one benefit.</summary><div class="ans">Pain: troubleshooting why a build failed, and long build times. Benefit: catching errors earlier (detecting and fixing defects faster).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which three stages make up continuous integration on the stages slide?</summary><div class="ans">Build, Test and Analysis.</div></details>
 </div>
 </section>
 
-<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws7.html" rel="prev"><small>← Previous</small>DevOps WS7 Retrospectives</a><a class="next" href="glossary.html" rel="next"><small>Next →</small>DevOps Midterm Glossary</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<section id="d9">
+<h2>Midterm review 2</h2>
+<p class="deckmeta">Midterm_review_2.pdf · 17 slides · goes with the Exam page</p>
+<p>The last deck before the exam. It adds no new course content; it fixes the <strong>format</strong>. Read it as the rules of the game.</p>
+<div class="scroll"><table>
+<tr><th>Slides</th><th>What they say and what to know</th></tr>
+<tr><td>3–4 · About the midterm</td><td style="font-weight:400">Arrive on time or early. Assigned seats. Phones and devices in a bag. No smart watches. Paper; pen or pencil (pen preferred). <strong>No notes.</strong> Cover your answers as you go with the provided piece of paper.</td></tr>
+<tr><td>5 · Question types</td><td style="font-weight:400"><strong>Not on the exam:</strong> no coding / scripting; no "define the term…" open-ended definitions; no fill-in-the-blank. <strong>Yes on the exam:</strong> matching concepts; distinguishing code kinds; true / false with corrections.</td></tr>
+<tr><td>6 · True / false with corrections</td><td style="font-weight:400">If false, underline the word(s) to change and write the new word(s) below. Example: "Lake Michigan is made of <u class="fix">salt</u> water." No simple negation: "is not made of salt water" does not earn points.</td></tr>
+<tr><td>7–9 · Three sample statements</td><td style="font-weight:400">"In DevOps, PR stands for pull <u class="fix">requirement</u>." → request. "A PR contains <u class="fix">at most a single</u> commit." → one or more. The two-large-pizzas statement about deployment time → the rule is about team size.</td></tr>
+<tr><td>10 · Matching concepts</td><td style="font-weight:400">"Connect the concept on the left to the most related concept on the right… Items on the left might not connect to anything on the right." The example has seven left items and five right items; one left item ("The GitHub Algorithm") is a decoy and one right item ("Transformers") is unused; two right items receive two lines each.</td></tr>
+<tr><td>11 · Distinguishing code kinds, example 1</td><td style="font-weight:400">"What kind of code is represented in this figure? (Looking for the name of the tool.)" The figure is a playbook: <code>- hosts: all</code>, <code>vars:</code>, <code>tasks:</code>, <code>apt: name={{item}} state=present</code>, <code>with_items: packages</code>. Answer: Ansible.</td></tr>
+<tr><td>12 · Distinguishing code kinds, example 2</td><td style="font-weight:400">The figure: <code>FROM microsoft/dotnet:aspnetcore-runtime</code>, <code>WORKDIR /app</code>, <code>COPY --from=build-env /app/out .</code>, <code>ENTRYPOINT ["dotnet", "aspnetapp.dll"]</code>. Answer: Dockerfile. "Should recognize: GitHub Actions, Dockerfiles, Ansible files, Bash shell commands from class."</td></tr>
+<tr><td>13–14 · Activities</td><td style="font-weight:400">Which concepts are you most concerned about? Which study methods help you most?</td></tr>
+<tr><td>15–17 · From the 1-page study guide</td><td style="font-weight:400">The study-guide bullets shown again, unchanged, across three slides.</td></tr>
+</table></div>
+<h3>What changes because of this deck</h3>
+<ul>
+<li>You will not write definitions, code, or short answers. Every question is recognition: a swapped word, a line between two ideas, or the name of a tool.</li>
+<li>"Distinguishing code kinds" is a new skill to practise. The examples were not workshop files, so learn the look of each kind, not specific files.</li>
+<li>The second sample statement confirms a fact worth holding on to: a pull request can contain one or more commits.</li>
+</ul>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>PR<span class="src">slide wording</span></dt><dd>Pull request (not "pull requirement"). It can contain one or more commits.</dd></div>
+<div class="term"><dt>True / false with corrections<span class="src">slide wording</span></dt><dd>Mark T or F; if false, underline the word(s) to change and write the new word(s) below. Simple negation earns nothing.</dd></div>
+<div class="term"><dt>Matching concepts<span class="src">slide wording</span></dt><dd>Draw a line from each left item to the most related right item. Left items might connect to nothing.</dd></div>
+<div class="term"><dt>Distinguishing code kinds<span class="src">slide wording</span></dt><dd>Given a snippet, name the tool: GitHub Actions, Dockerfile, Ansible file, or Bash shell commands.</dd></div>
+</dl>
+</section>
+
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="exam.html" rel="prev"><small>← Previous</small>DevOps Midterm Exam Drill</a><a class="next" href="glossary.html" rel="next"><small>Next →</small>DevOps Midterm Glossary</a></nav>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

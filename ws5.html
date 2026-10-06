@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,7 +125,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><span class="cur" aria-current="page">WS5<small>Deploy &amp; feature flags</small></span><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><span class="cur" aria-current="page">WS5<small>Deploy &amp; feature flags</small></span><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Workshop 5</div>
 <h1>Ansible for security patching and a single-host deployment</h1>
@@ -450,7 +453,7 @@ const pool = mysql.createPool({
 
 <section id="quiz">
 <h2>Practice</h2>
-<div class="quizbar"><button class="reveal" type="button" id="reveal-all">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On the real T/F questions you underline the wrong word and write the fix. A plain "not" earns nothing.</span></div>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
 <div class="quiz">
 <details class="q"><summary><span class="chip">True / False</span>Dark launching is a practice in which code is deployed into production and is immediately visible to all users.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">is immediately visible to all users</u> to <strong>remains invisible to users</strong>.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>Feature flags allow a feature to be released without being deployed.</summary><div class="ans"><span class="F">False.</span> Swap the words: flags allow a feature to be <strong>deployed</strong> without being <strong>released</strong>.</div></details>
@@ -463,15 +466,15 @@ const pool = mysql.createPool({
 <details class="q"><summary><span class="chip">True / False</span>A/B testing sends about 5% of users to the new version to check that it is safe before widening the rollout.</summary><div class="ans"><span class="F">False.</span> That describes a <strong>canary release</strong>. A/B testing splits users between variants to compare a metric such as conversion.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span><code>when: points_count.stdout | int == 0</code> sits on the CSV import task. What problem does it prevent?</summary><div class="ans">Importing the 10,000 rows again on every run. The earlier task counted the rows and registered the result; the import runs only when the table is empty, which makes the playbook idempotent.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span>Why is <code>no_log: true</code> on the task that templates the systemd unit, and why is the password asked with <code>vars_prompt</code>?</summary><div class="ans">The rendered unit contains <code>DB_PASSWORD</code>, so its content must not be printed in Ansible's output or logs. <code>vars_prompt</code> with <code>private: true</code> gets the password from the operator at run time, so it is never written in the playbook or committed to the repo.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>What is the difference between deploying and releasing, and which adage does it support?</summary><div class="ans">Deploying puts code into the production environment; releasing makes the feature available to users. Feature flags separate the two. Adage: "Be fast to deploy but slow (or slower) to release."</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Give the two rollback options from lecture and one difference between them.</summary><div class="ans">(1) Use the load balancer to shift traffic away from the canary; (2) disable the feature flag. The load balancer acts at the infrastructure level on the whole version; the flag acts at the application level on one feature and needs a push update or equivalent.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Why does the instructor recommend re-provisioning a fresh VM before submitting an Ansible workshop?</summary><div class="ans">A VM that has been modified by many trial runs holds hidden state, so a passing run proves nothing about the playbook alone. Running on a fresh instance shows the playbook reproduces the full configuration from scratch.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What is the difference between deploying and releasing, and which adage does it support?</summary><div class="ans">Deploying puts code into the production environment; releasing makes the feature available to users. Feature flags separate the two. Adage: "Be fast to deploy but slow (or slower) to release."</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Give the two rollback options from lecture and one difference between them.</summary><div class="ans">(1) Use the load balancer to shift traffic away from the canary; (2) disable the feature flag. The load balancer acts at the infrastructure level on the whole version; the flag acts at the application level on one feature and needs a push update or equivalent.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why does the instructor recommend re-provisioning a fresh VM before submitting an Ansible workshop?</summary><div class="ans">A VM that has been modified by many trial runs holds hidden state, so a passing run proves nothing about the playbook alone. Running on a fresh instance shows the playbook reproduces the full configuration from scratch.</div></details>
 <details class="q"><summary><span class="chip">Matching</span>Match each to an adage: (a) feature flags and canaries (b) A/B testing (c) Ansible playbooks in git (d) Boehm's cost curve.</summary><div class="ans">(a) Be fast to deploy but slow(er) to release. (b) Every feature is an experiment. (c) Configuration is code. (d) The cost of change is dead.</div></details>
 </div>
 </section>
 
 <nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws4.html" rel="prev"><small>← Previous</small>DevOps WS4 Ansible Fundamentals</a><a class="next" href="ws6.html" rel="next"><small>Next →</small>DevOps WS6 Multi-Host Orchestration</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

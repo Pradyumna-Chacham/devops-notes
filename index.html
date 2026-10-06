@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,12 +125,12 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><span class="cur" aria-current="page">Home</span><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="Study pages"><span class="cur" aria-current="page">Home</span><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · DevOps · Midterm prep</div>
 <h1>DevOps midterm study pages</h1>
 <p class="lede">Seven pages, one per workshop, plus lecture-deck notes and a glossary, built from the course slides, the workshop READMEs, the midterm study guide and your own workshop repos. Each page explains the workshop's concepts with diagrams, annotated code and pseudocode, and ends with practice questions in the announced exam formats.</p>
-<ul class="tags"><li>7 workshops</li><li>202 definitions</li><li>29 diagrams</li><li>102 practice questions</li><li>works offline</li></ul>
+<ul class="tags"><li>7 workshops</li><li>202 definitions</li><li>29 diagrams</li><li>102 practice questions</li><li>exam drill</li><li>works offline</li></ul>
 </header>
 
 <section id="pages">
@@ -141,6 +144,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <tr><td><a href="ws5.html">WS5</a></td><td><a href="ws5.html">Ansible for security patching and a single-host deployment</a></td><td style="font-weight:400">Playbook keywords, handlers, Continuous Deployment, Glossary 1, feature flags, dark launching, canary, A/B testing, rollback, cost of change</td></tr>
 <tr><td><a href="ws6.html">WS6</a></td><td><a href="ws6.html">Multi-host orchestration and performance profiling</a></td><td style="font-weight:400">Multi-play playbooks, benchmarking and telemetry, deployment rings, blast radius, shift left / shift right, load balancing</td></tr>
 <tr><td><a href="ws7.html">WS7</a></td><td><a href="ws7.html">Retrospectives, ownership, and the ten adages</a></td><td style="font-weight:400">Retrospectives / hotwashes, silos, wall of confusion, change ownership, change management, Glossary 2, all the adages, exam format</td></tr>
+<tr><td><a href="exam.html">Exam</a></td><td><a href="exam.html">Midterm exam drill</a></td><td style="font-weight:400">The three confirmed question types: how to tell GitHub Actions, Dockerfiles, Ansible files and Bash apart with 24 practice snippets, 58 true / false statements to correct, and 7 matching sets</td></tr>
 <tr><td><a href="notes.html">Notes</a></td><td><a href="notes.html">Notes for each slide deck</a></td><td style="font-weight:400">The ten lecture decks in order: slide-by-slide notes including the picture-only slides, the definitions each deck introduced, the in-class activity prompts with model answers, and check-yourself questions</td></tr>
 <tr><td><a href="glossary.html">Glossary</a></td><td><a href="glossary.html">DevOps midterm glossary</a></td><td style="font-weight:400">About 200 one- or two-sentence definitions for every study-guide and slide term, a filter box, the pairs that get swapped in true / false questions, and names and quotes to recognise</td></tr>
 </table></div>
@@ -151,8 +155,9 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <h2>How to use them</h2>
 <ul>
 <li><strong>Yellow "Exam angle" boxes</strong> mark the points most likely to be tested, including the sample questions shown on the lecture slides.</li>
-<li><strong>Code blocks</strong> highlight the lines that matter in amber. The study guide says exact docker / ansible / shell syntax is not graded, but "questions about code or scripts" are, so read each block for what every line <em>does</em>.</li>
+<li><strong>Code blocks</strong> highlight the lines that matter in amber. You will not write code, but you will be asked to name the tool behind a snippet, so notice what each kind of file <em>looks like</em> as you read.</li>
 <li><strong>Practice sections</strong> hide their answers. Answer first, then open. For true / false, practice writing the corrected word, because a plain "not" earns nothing.</li>
+<li><strong>The exam drill page</strong> is the closest thing to the real paper: <a href="exam.html#kinds">name the tool from a snippet</a>, <a href="exam.html#tf">true / false with corrections</a>, <a href="exam.html#match">matching</a>.</li>
 <li><strong>Need a definition fast?</strong> The <a href="glossary.html">glossary</a> answers "what is Git Flow / diff time / blast radius…?" in a sentence or two, and marks which wordings come straight from the slides.</li>
 <li><strong>Short on time?</strong> Start with the <a href="ws7.html#map">study-guide map on the WS7 page</a>: every study-guide bullet, the page it lives on, and a one-line answer. Then do the <a href="ws7.html#quiz">mixed practice</a>.</li>
 </ul>
@@ -179,11 +184,12 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <section id="format">
 <h2>Exam format in brief</h2>
 <ul>
-<li>Paper, in class, pen preferred, assigned seats, no devices or smart watches.</li>
-<li>True / false with corrections, short answers, questions about code or scripts, and matching concepts (items may match zero, one or several).</li>
+<li><strong>Three question types only</strong> (midterm review deck): matching concepts, distinguishing code kinds (name the tool from a snippet), and true / false with corrections.</li>
+<li><strong>Not on the exam:</strong> coding or scripting, open-ended "define the term" questions, fill-in-the-blank.</li>
+<li>Paper, in class, pen preferred, no notes, assigned seats, no devices or smart watches. Cover your answers with the paper provided.</li>
 <li>Excluded even though on slides: DevOps job postings, semantically rich identifiers, unikernels, reverse proxy, docker command syntax.</li>
 </ul>
-<p>Details and worked examples are on the <a href="ws7.html#format">WS7 page</a>.</p>
+<p>Practise all three on the <a href="exam.html">exam drill page</a>. On the workshop pages, items labelled "Self-check" and "Read the code" are there to build understanding; they are not exam formats.</p>
 </section>
 
 <section id="caveats">
@@ -196,7 +202,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 </section>
 
 <nav class="pager" aria-label="Previous and next page"><a class="next" href="ws1.html" rel="next"><small>Next →</small>DevOps WS1 Containers &amp; CLI</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

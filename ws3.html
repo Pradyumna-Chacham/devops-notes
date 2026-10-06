@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,7 +125,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><span class="cur" aria-current="page">WS3<small>Actions &amp; pipelines</small></span><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><span class="cur" aria-current="page">WS3<small>Actions &amp; pipelines</small></span><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Workshop 3</div>
 <h1>GitHub Actions and the DevOps pipeline</h1>
@@ -154,6 +157,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 
 <section id="hello">
 <h2>hello-world, line by line</h2>
+<aside class="exam"><b>Exam angle</b><strong>How to recognise a GitHub Actions workflow:</strong> YAML with the top-level keys <code>name:</code>, <code>on:</code> and <code>jobs:</code>; inside a job, <code>runs-on:</code> and <code>steps:</code>; steps written as <code>- run:</code> or <code>- uses:</code>; expressions in <code>${{ … }}</code> such as <code>${{ secrets.X }}</code> or <code>${{ github.actor }}</code>. It is the only one of the four kinds with <code>on:</code>, <code>jobs:</code> and <code>runs-on:</code>. Ansible is also YAML, but it has <code>hosts:</code> and <code>tasks:</code> instead.</aside>
 <div class="scroll"><table class="anno">
 <tr><th>Line</th><th>What it means</th></tr>
 <tr><td><code>name: hello-world</code></td><td>Label shown in the Actions tab. Optional, but good names matter</td></tr>
@@ -365,7 +369,7 @@ jobs:
 
 <section id="quiz">
 <h2>Practice</h2>
-<div class="quizbar"><button class="reveal" type="button" id="reveal-all">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On the real T/F questions you underline the wrong word and write the fix. A plain "not" earns nothing.</span></div>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
 <div class="quiz">
 <details class="q"><summary><span class="chip">True / False</span>The "two large pizzas" rule states that a DevOps pipeline should take less time to deploy than it takes for the team to eat two large pizzas.</summary><div class="ans"><span class="F">False.</span> Sample question from the slides. The rule is about <strong>team size</strong>: a team should be no larger than two large pizzas can feed.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>In a GitHub Actions workflow, the <code>runs-on:</code> keyword specifies which events trigger the workflow.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">runs-on:</u> to <strong>on:</strong>. <code>runs-on:</code> picks the runner.</div></details>
@@ -378,14 +382,14 @@ jobs:
 <details class="q"><summary><span class="chip">True / False</span>Staging is the pipeline stage in which unit tests are run against the developer's laptop.</summary><div class="ans"><span class="F">False.</span> Staging (baking) runs <strong>system tests in a production-like environment</strong>. Unit tests belong to the Test stage.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span><code>--header &quot;Authorization: Bearer ${{ secrets.NCSU_GITHUB_TOKEN }}&quot;</code> Who replaces the <code>${{ … }}</code> part, when, and why is this safer than typing the token?</summary><div class="ans">GitHub's workflow engine evaluates the expression when the run starts, substituting the decrypted repository secret before the shell command executes. The token never appears in the workflow file or repo, is stored encrypted, and is masked in logs.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span>A workflow has <code>on: push</code> and you want it to run only when a pull request is opened or reopened. What changes?</summary><div class="ans">Replace the trigger with <code>on:</code> → <code>pull_request:</code> → <code>types: [opened, reopened]</code>. Nothing else has to change; the event is the only thing that decides when it runs.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Why is DevOps described as "event-driven"? Give the chain of events from the slides.</summary><div class="ans">Automation runs in response to events instead of on someone's manual schedule: a code commit, a pull request to a special branch, automated testing, and passing tests (a quality gate) automatically triggering the next CI/CD phase such as staging.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>State the goal of a DevOps pipeline.</summary><div class="ans">To apply a series of checks, tests and transformations to a unit of change so that the production environment is changed safely, reliably and in a timely manner.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why is DevOps described as "event-driven"? Give the chain of events from the slides.</summary><div class="ans">Automation runs in response to events instead of on someone's manual schedule: a code commit, a pull request to a special branch, automated testing, and passing tests (a quality gate) automatically triggering the next CI/CD phase such as staging.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>State the goal of a DevOps pipeline.</summary><div class="ans">To apply a series of checks, tests and transformations to a unit of change so that the production environment is changed safely, reliably and in a timely manner.</div></details>
 <details class="q"><summary><span class="chip">Matching</span>Match each to its closest tool: Continuous Integration, Infrastructure as Code, Containerization, Version Control. (Tools: Ansible, Git, GitHub Actions, Docker / Podman.)</summary><div class="ans">Continuous Integration ↔ GitHub Actions. Infrastructure as Code ↔ Ansible. Containerization ↔ Docker / Podman. Version Control ↔ Git. On the slide, Microservices was also in the left column; items "might connect to zero, one, or multiple" on the right, so the closest link for Microservices is Docker / Podman (services packaged as containers), and it is fine to argue for none.</div></details>
 </div>
 </section>
 
 <nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws2.html" rel="prev"><small>← Previous</small>DevOps WS2 Secrets &amp; GitHub API</a><a class="next" href="ws4.html" rel="next"><small>Next →</small>DevOps WS4 Ansible Fundamentals</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

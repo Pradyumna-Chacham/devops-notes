@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,7 +125,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><span class="cur" aria-current="page">WS4<small>Ansible basics</small></span><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><span class="cur" aria-current="page">WS4<small>Ansible basics</small></span><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Workshop 4</div>
 <h1>Intro to Ansible and configuration management</h1>
@@ -224,6 +227,7 @@ www2.domain.com</pre>
 
 <section id="playbook">
 <h2>Playbook anatomy</h2>
+<aside class="exam"><b>Exam angle</b><strong>How to recognise an Ansible file:</strong> YAML that starts with a list item <code>- hosts:</code> or <code>- name:</code>, then <code>tasks:</code>; often <code>become:</code>; each task is a <code>name:</code> plus a module such as <code>apt:</code>, <code>yum:</code>, <code>service:</code>, <code>copy:</code>, <code>template:</code>, <code>shell:</code>, <code>uri:</code>; desired-state words like <code>state: present</code>, <code>state: started</code>; variables in plain double braces <code>{{ item }}</code> with no dollar sign; <code>with_items:</code>, <code>notify:</code>, <code>handlers:</code>, <code>register:</code>, <code>when:</code>. An inventory file with <code>[group]</code> headings and host names is also an Ansible file. The review deck's own example began <code>- hosts: all</code>, <code>vars:</code>, <code>tasks:</code>, <code>apt: name={{item}} state=present</code>, <code>with_items: packages</code>.</aside>
 <pre class="code">---<span class="c">                                  # YAML document start</span>
 - name: Demo playbook<span class="c">                # a PLAY: maps a group of hosts to tasks</span>
   hosts: myserver<span class="c">                    # which inventory group</span>
@@ -401,7 +405,7 @@ ansible-playbook -i hosts.yaml deploy-webserver.yaml<span class="c">          # 
 
 <section id="quiz">
 <h2>Practice</h2>
-<div class="quizbar"><button class="reveal" type="button" id="reveal-all">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On the real T/F questions you underline the wrong word and write the fix. A plain "not" earns nothing.</span></div>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
 <div class="quiz">
 <details class="q"><summary><span class="chip">True / False</span>Ansible is mostly an imperative language.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">imperative</u> to <strong>declarative</strong>. (Sample question from the slides.)</div></details>
 <details class="q"><summary><span class="chip">True / False</span>Ansible requires an agent program to be installed on every managed node.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">requires an agent program</u> to <strong>requires no agent</strong>: it is agentless and connects over SSH.</div></details>
@@ -415,15 +419,15 @@ ansible-playbook -i hosts.yaml deploy-webserver.yaml<span class="c">          # 
 <details class="q"><summary><span class="chip">True / False</span>Of the HTTP methods, POST is idempotent and GET is not.</summary><div class="ans"><span class="F">False.</span> Swap them: <strong>GET</strong> is idempotent (and safe); <strong>POST</strong> is not.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span>A playbook has <code>apt: name=nginx state=latest</code>. Give one advantage and one risk compared with pinning a version.</summary><div class="ans">Advantage: you always get the newest packaged version, including fixes, without editing the playbook. Risk: a future version may introduce breaking changes, and two runs on different days can produce different machines. Pinning is repeatable but the pinned version grows old.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span>On the second run of your playbook, "Install nginx" reports <code>ok</code> but "Expose port 80 with iptables" reports <code>changed</code>. Explain.</summary><div class="ans"><code>apt</code> is a module that checks state and found nginx already installed, so it did nothing. <code>shell</code> simply ran the <code>iptables -I</code> command again, inserting a duplicate rule. The shell task is not idempotent.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Why does Ansible need password-less SSH, and what would happen without it?</summary><div class="ans">Ansible connects to each managed node over SSH automatically, with no human present. Without key-based login it would stop at a password prompt (or fail), so automation across many hosts would be impossible.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Give two benefits of an agentless design.</summary><div class="ans">Nothing to install, update or secure on each managed machine; a newly provisioned server is manageable immediately with only SSH and Python; fewer running components and a smaller attack surface.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Define configuration management in one sentence and name the adage that goes with it.</summary><div class="ans">A process in which an inventory of software and production assets is provisioned and controlled through package managers and tools such as Ansible. Adage: "Configuration is Code".</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why does Ansible need password-less SSH, and what would happen without it?</summary><div class="ans">Ansible connects to each managed node over SSH automatically, with no human present. Without key-based login it would stop at a password prompt (or fail), so automation across many hosts would be impossible.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Give two benefits of an agentless design.</summary><div class="ans">Nothing to install, update or secure on each managed machine; a newly provisioned server is manageable immediately with only SSH and Python; fewer running components and a smaller attack surface.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Define configuration management in one sentence and name the adage that goes with it.</summary><div class="ans">A process in which an inventory of software and production assets is provisioned and controlled through package managers and tools such as Ansible. Adage: "Configuration is Code".</div></details>
 <details class="q"><summary><span class="chip">Matching</span>Which column does each belong in (Actions only / both / playbooks only)? (a) tied to Git events (b) YAML (c) executed from a control node (d) runs on a runner.</summary><div class="ans">(a) Actions only. (b) Both. (c) Playbooks only. (d) Actions only.</div></details>
 </div>
 </section>
 
 <nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws3.html" rel="prev"><small>← Previous</small>DevOps WS3 GitHub Actions</a><a class="next" href="ws5.html" rel="next"><small>Next →</small>DevOps WS5 Ansible Deployment</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

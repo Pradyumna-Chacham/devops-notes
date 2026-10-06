@@ -98,6 +98,9 @@ details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-siz
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
 section[id^="d"] table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
 .deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
 dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -122,7 +125,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><span class="cur" aria-current="page">WS7<small>Retros &amp; adages</small></span><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><span class="cur" aria-current="page">WS7<small>Retros &amp; adages</small></span><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Workshop 7</div>
 <h1>Retrospectives, ownership, and the ten adages</h1>
@@ -274,14 +277,20 @@ Action items     concrete change, owner, due date  (e.g. add a pipeline stage, a
 </section>
 
 <section id="format">
-<h2>Exam format, as announced</h2>
+<h2>Exam format, as confirmed in the midterm review deck</h2>
+<div class="scroll"><table>
+<tr><th>Yes, on the exam</th><th>Not on the exam</th></tr>
+<tr><td style="font-weight:400"><strong>Matching concepts.</strong> Draw lines from items on the left to the most related item on the right. Left items might connect to nothing.</td><td style="font-weight:400">No coding or scripting</td></tr>
+<tr><td style="font-weight:400"><strong>Distinguishing code kinds.</strong> "What kind of code is represented in this figure?" Name the tool: GitHub Actions, Dockerfile, Ansible file, or Bash shell commands from class.</td><td style="font-weight:400">No "define the term…" open-ended definitions</td></tr>
+<tr><td style="font-weight:400"><strong>True / false with corrections.</strong> If false, underline the word(s) to change and write the new word(s) below.</td><td style="font-weight:400">No fill-in-the-blank</td></tr>
+</table></div>
 <ul>
-<li>Paper exam, in class, pen preferred. Assigned seats. Phones in a bag; no smart watches; no calculator needed.</li>
-<li>Concepts, not exact docker / ansible / shell syntax. Question types: true / false with corrections, short answer, questions about code or scripts, and matching concepts.</li>
-<li><strong>True / false with corrections:</strong> if false, underline the word(s) you want to change and write the new word(s) below. <strong>No simple negation</strong>: turning "is made of fresh water" into "is <em>not</em> made of fresh water" earns no points. Replace the wrong word with the right one ("fresh" → "salt").</li>
-<li><strong>Matching concepts:</strong> draw lines from items on the left to the most related item on the right. Left items may connect to zero, one or several items, so do not force every item to match.</li>
+<li><strong>No simple negation.</strong> Turning "is made of salt water" into "is <em>not</em> made of salt water" earns no points. Replace the wrong word with the right one.</li>
+<li>Sample statements shown in the review: "In DevOps, PR stands for pull <u class="fix">requirement</u>" (request). "A PR contains <u class="fix">at most a single</u> commit" (one or more). The two-large-pizzas statement (it is about team size).</li>
+<li>Logistics: paper, pen preferred, <strong>no notes</strong>, assigned seats, arrive early, phones and devices in a bag, no smart watches. Cover your answers as you go with the sheet of paper provided.</li>
 <li>Not on the midterm even though on slides: DevOps job postings, semantically rich identifiers, unikernels, reverse proxy, docker command syntax.</li>
 </ul>
+<aside class="note">Since there are no open-ended definition or short-answer questions, definitions are tested by <em>recognition</em>: a true / false statement with one word swapped, or a matching line. The Exam page drills all three question types.</aside>
 </section>
 
 <section id="map">
@@ -314,7 +323,7 @@ Action items     concrete change, owner, due date  (e.g. add a pipeline stage, a
 
 <section id="quiz">
 <h2>Mixed practice across all seven workshops</h2>
-<div class="quizbar"><button class="reveal" type="button" id="reveal-all">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On the real T/F questions you underline the wrong word and write the fix. A plain "not" earns nothing.</span></div>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
 <div class="quiz">
 <details class="q"><summary><span class="chip">True / False</span>The three main goals of a retrospective are who caused it, how to punish it, and how to hide it.</summary><div class="ans"><span class="F">False.</span> The goals are <strong>what worked, what didn't work, and what can we do better</strong>. Blame destroys the psychological safety a retrospective depends on.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>"Change ownership" means the operations team is responsible for the consequences of software changes.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">operations team</u> to <strong>software developer</strong>.</div></details>
@@ -329,15 +338,15 @@ Action items     concrete change, owner, due date  (e.g. add a pipeline stage, a
 <details class="q"><summary><span class="chip">Matching</span>Connect each concept to the most related adage. Concepts: Ansible playbook · A/B testing · postmortem · on-call developer · dark launch · Boehm's curve · early security review · reverse proxy.</summary><div class="ans">Ansible playbook ↔ Configuration is code. A/B testing ↔ Every feature is an experiment. Postmortem ↔ Looking back to move forward. On-call developer ↔ You are the support person. Dark launch ↔ Be fast to deploy but slow(er) to release. Boehm's curve ↔ The cost of change is dead. Early security review ↔ Invite privacy and security in. Reverse proxy ↔ nothing (and it is excluded from the midterm). Leaving an item unmatched is allowed.</div></details>
 <details class="q"><summary><span class="chip">Matching</span>Connect each term to its tool. Terms: version control · continuous integration · infrastructure as code · containerization · secrets manager · package manager. Tools: Git · GitHub Actions · Ansible · Docker / Podman · GitHub repository secrets · apk / apt.</summary><div class="ans">In the same order: Git, GitHub Actions, Ansible, Docker / Podman, GitHub repository secrets, apk / apt.</div></details>
 <details class="q"><summary><span class="chip">Matching</span>Connect each role to its responsibility: Service Owner · Gatekeeper · Release Engineer · DevOps Engineer · Reliability Engineer.</summary><div class="ans">Service Owner: outside coordination and the vision of the service. Gatekeeper: decisions to move to the next pipeline stage. Release Engineer: the entire release process, including back-out decisions. DevOps Engineer: care and feeding of the toolchain. Reliability Engineer: the period immediately after deployment.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Explain how DevOps addresses the wall of confusion. Mention at least three practices.</summary><div class="ans">It removes the hand-off. One small team owns a service from code to production (change ownership, two-pizza teams); automation replaces tickets (CI/CD pipelines, configuration as code); shared telemetry and blameless retrospectives replace blame; gradual releases with fast rollback make frequent change safe enough that ops no longer needs to resist it.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>A deployment caused a 40-minute outage. Outline the retrospective you would run.</summary><div class="ans">Gather the timeline and data first. Set a blameless tone (psychological safety). Ask what worked (e.g. alert fired, rollback was fast), what didn't (e.g. no canary, missing test), and what to do better. End with specific action items with owners, such as adding a staging test, a ring-0 canary, or an alert, and track them. Keep the write-up so trends across incidents can be analyzed.</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Trace one code change from a developer's laptop to all users, naming a concept from each workshop.</summary><div class="ans">The developer works in a container (WS1) on a feature branch and opens a pull request, the diff-time review point (WS2). The PR event triggers a GitHub Actions workflow that tests it (WS3). After merge, an idempotent Ansible playbook configures the servers (WS4) and deploys the app with the new feature behind a flag, dark (WS5). It is enabled ring by ring, canaries first, while telemetry is watched and the blast radius stays small (WS6). If anything goes wrong it is rolled back and the team holds a retrospective (WS7).</div></details>
-<details class="q"><summary><span class="chip">Short answer</span>Why is "no simple negation" a rule on the true / false questions, and how do you correct "Ansible requires agents on managed nodes"?</summary><div class="ans">Adding "not" shows you know the statement is false but not what is true. Replace the wrong term: underline "requires agents" and write "requires no agents (is agentless), connecting over SSH".</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Explain how DevOps addresses the wall of confusion. Mention at least three practices.</summary><div class="ans">It removes the hand-off. One small team owns a service from code to production (change ownership, two-pizza teams); automation replaces tickets (CI/CD pipelines, configuration as code); shared telemetry and blameless retrospectives replace blame; gradual releases with fast rollback make frequent change safe enough that ops no longer needs to resist it.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>A deployment caused a 40-minute outage. Outline the retrospective you would run.</summary><div class="ans">Gather the timeline and data first. Set a blameless tone (psychological safety). Ask what worked (e.g. alert fired, rollback was fast), what didn't (e.g. no canary, missing test), and what to do better. End with specific action items with owners, such as adding a staging test, a ring-0 canary, or an alert, and track them. Keep the write-up so trends across incidents can be analyzed.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Trace one code change from a developer's laptop to all users, naming a concept from each workshop.</summary><div class="ans">The developer works in a container (WS1) on a feature branch and opens a pull request, the diff-time review point (WS2). The PR event triggers a GitHub Actions workflow that tests it (WS3). After merge, an idempotent Ansible playbook configures the servers (WS4) and deploys the app with the new feature behind a flag, dark (WS5). It is enabled ring by ring, canaries first, while telemetry is watched and the blast radius stays small (WS6). If anything goes wrong it is rolled back and the team holds a retrospective (WS7).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why is "no simple negation" a rule on the true / false questions, and how do you correct "Ansible requires agents on managed nodes"?</summary><div class="ans">Adding "not" shows you know the statement is false but not what is true. Replace the wrong term: underline "requires agents" and write "requires no agents (is agentless), connecting over SSH".</div></details>
 </div>
 </section>
 
-<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws6.html" rel="prev"><small>← Previous</small>DevOps WS6 Multi-Host Orchestration</a><a class="next" href="notes.html" rel="next"><small>Next →</small>DevOps Lecture Deck Notes</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. The study guide says the exam tests concepts, not exact docker / ansible / shell syntax, so read the code here for what each line <em>does</em>.</footer>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws6.html" rel="prev"><small>← Previous</small>DevOps WS6 Multi-Host Orchestration</a><a class="next" href="exam.html" rel="next"><small>Next →</small>DevOps Midterm Exam Drill</a></nav>
+<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){
