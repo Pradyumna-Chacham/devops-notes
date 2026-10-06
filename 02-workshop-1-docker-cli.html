@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DevOps WS1 Containers &amp; CLI</title>
+<title>DevOps Workshop 1 Docker and CLI</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
 /* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
@@ -36,12 +36,23 @@ body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-in
 .wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
 a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
 nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
 nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
 
 header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
 .eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
 .lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
@@ -97,7 +108,7 @@ details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transfor
 details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
-section[id^="d"] table td:first-child{min-width:10.5rem}
+section#slides table td:first-child{min-width:10.5rem}
 .snip{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
 .cols ul{margin:0}
@@ -115,7 +126,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 @media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 </style>
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -125,15 +136,16 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><span class="cur" aria-current="page">WS1<small>Containers &amp; CLI</small></span><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><span class="cur" aria-current="page">W1<small>Docker, CLI</small></span><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
 <header class="top">
-<div class="eyebrow">CSC 519 · Midterm prep · Workshop 1</div>
-<h1>Command line tools and containers</h1>
-<p class="lede">Workshop 1 had you build an Alpine image, run it, lose a file, and then keep a file with a bind mount. Those four moves carry most of what the midterm can ask about containers, plus the lecture on computing environments that sits behind them.</p>
-<ul class="tags"><li>containers</li><li>bind mount (-v)</li><li>shells</li><li>VMs / virtualization</li><li>bit rot</li><li>computing environments</li></ul>
-<ul class="toc"><li><a href="#model">Image vs container</a></li><li><a href="#dockerfile">Dockerfile</a></li><li><a href="#ephemeral">Why hi.txt vanished</a></li><li><a href="#mount">Bind mount</a></li><li><a href="#install">Installing software</a></li><li><a href="#shell">Shell cheat sheet</a></li><li><a href="#env">Computing environments</a></li><li><a href="#virt">Virtualization</a></li><li><a href="#quiz">Practice</a></li></ul>
+<div class="eyebrow"><span class="kind w">Workshop 1 · hands-on</span> Wednesday Aug 19</div>
+<h1>Command line tools and Docker</h1>
+<p class="lede">You built an Alpine image, ran it, lost a file, kept a file with a bind mount, installed software in a running container, and then baked it into the Dockerfile.</p>
+<p class="pair">Concepts behind it: <a href="05-lecture-3-computing-environments.html">Lecture 3</a> (why environments are hard, VMs vs containers). That lecture came two weeks after this workshop.</p>
+<p class="deckmeta">Source: 1_CLI_workshop.pdf + README</p>
+<ul class="tags"><li>containers</li><li>bind mount (-v)</li><li>shells</li><li>Dockerfile</li></ul>
+<ul class="toc"><li><a href="#model">Image vs container</a></li><li><a href="#dockerfile">Reading a Dockerfile</a></li><li><a href="#ephemeral">Why hi.txt disappeared</a></li><li><a href="#mount">The bind mount</a></li><li><a href="#install">Installing software</a></li><li><a href="#shell">Shell cheat sheet</a></li><li><a href="#slides">Slides shown before the workshop</a></li><li><a href="#quiz">Practice</a></li></ul>
 </header>
-
 <section id="model">
 <h2>Image vs container: the one distinction everything hangs on</h2>
 <p>A <strong>Dockerfile</strong> is a text recipe. <code>docker build</code> turns it into an <strong>image</strong>, a read-only, layered snapshot of a filesystem (a "binary artifact"). <code>docker run</code> starts a <strong>container</strong>, a running instance of that image with its own thin writable layer on top. One image can start any number of containers, and none of them change the image.</p>
@@ -263,80 +275,36 @@ exit<span class="c">                                         # leave the shell; 
 </table></div>
 </section>
 
-<section id="env">
-<h2>Computing environments and bit rot</h2>
-<p><strong>Bit rot</strong> ("does code rot?"): the code's bytes do not change, but the world around it does. Dependencies release breaking versions, OS packages move, interpreters are upgraded, services are retired. So code that ran last year fails today, and "often, the default experience is failure". Lecture's conclusions:</p>
-<ul>
-<li>Managing environments is hard. Programmers must act as "end-user system admins", and most "it won't run" replies are about <em>dependencies</em>.</li>
-<li>"Software on your machine has no real value." A billion-dollar idea that only runs on your laptop is worth $0 until it runs somewhere users can reach it.</li>
-<li>Think of a <strong>computing environment = configuration + code</strong>: the code plus its dependencies, environment, ecosystem, stakeholders and users.</li>
-</ul>
-<p>A Dockerfile is a direct answer to bit rot: it writes the environment down so it can be rebuilt. Note the trade-off the workshops raise: <code>alpine:latest</code> always gets the newest base (and may break later); a pinned version is stable but ages.</p>
-<h3>Properties of an ideal computing environment</h3>
-<ul class="tags"><li>Reproducible</li><li>Resilient</li><li>Secure</li><li>Scalable</li><li>Flexible</li><li>Maintains quality of service</li><li>Good resource utilization</li></ul>
-</section>
-
-<section id="virt">
-<h2>Virtualization: VMs vs containers</h2>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 720 300" role="img" aria-label="Virtual machines each carry a full guest operating system on a hypervisor, while containers share the host kernel" style="max-width:720px;min-width:600px"><text x="180" y="22" text-anchor="middle" class="l">Virtual machines</text>
-<text x="180" y="38" text-anchor="middle" class="m">virtualize the hardware</text>
-<rect class="d-box" x="20" y="50" width="155" height="34" rx="5"/><text x="97.5" y="71" text-anchor="middle" class="b">App A</text>
-<rect class="d-box" x="185" y="50" width="155" height="34" rx="5"/><text x="262.5" y="71" text-anchor="middle" class="b">App B</text>
-<rect class="d-box" x="20" y="90" width="155" height="34" rx="5"/><text x="97.5" y="111" text-anchor="middle" class="b">Bins / libs</text>
-<rect class="d-box" x="185" y="90" width="155" height="34" rx="5"/><text x="262.5" y="111" text-anchor="middle" class="b">Bins / libs</text>
-<rect class="d-box warn" x="20" y="130" width="155" height="34" rx="5"/><text x="97.5" y="151" text-anchor="middle" class="b">Guest OS (own kernel)</text>
-<rect class="d-box warn" x="185" y="130" width="155" height="34" rx="5"/><text x="262.5" y="151" text-anchor="middle" class="b">Guest OS (own kernel)</text>
-<rect class="d-box acc" x="20" y="170" width="320" height="34" rx="5"/><text x="180" y="191" text-anchor="middle" class="b">Hypervisor / VMM</text>
-<rect class="d-box" x="20" y="210" width="320" height="34" rx="5"/><text x="180" y="231" text-anchor="middle" class="b">Host OS</text>
-<rect class="d-box" x="20" y="250" width="320" height="34" rx="5"/><text x="180" y="271" text-anchor="middle" class="b">Hardware</text>
-<text x="540" y="22" text-anchor="middle" class="l">Containers</text>
-<text x="540" y="38" text-anchor="middle" class="m">virtualize the operating system</text>
-<rect class="d-box" x="380" y="90" width="100" height="34" rx="5"/><text x="430" y="111" text-anchor="middle" class="b">App A</text>
-<rect class="d-box" x="490" y="90" width="100" height="34" rx="5"/><text x="540" y="111" text-anchor="middle" class="b">App B</text>
-<rect class="d-box" x="600" y="90" width="100" height="34" rx="5"/><text x="650" y="111" text-anchor="middle" class="b">App C</text>
-<rect class="d-box" x="380" y="130" width="100" height="34" rx="5"/><text x="430" y="151" text-anchor="middle" class="b">Bins / libs</text>
-<rect class="d-box" x="490" y="130" width="100" height="34" rx="5"/><text x="540" y="151" text-anchor="middle" class="b">Bins / libs</text>
-<rect class="d-box" x="600" y="130" width="100" height="34" rx="5"/><text x="650" y="151" text-anchor="middle" class="b">Bins / libs</text>
-<rect class="d-box" x="380" y="170" width="320" height="34" rx="5"/><text x="540" y="191" text-anchor="middle" class="b">Container engine (Docker / Podman)</text>
-<rect class="d-box acc" x="380" y="210" width="320" height="34" rx="5"/><text x="540" y="231" text-anchor="middle" class="b">Host OS: one shared kernel</text>
-<rect class="d-box" x="380" y="250" width="320" height="34" rx="5"/><text x="540" y="271" text-anchor="middle" class="b">Hardware</text></svg></div><figcaption>The yellow row is the difference. A VM boots a whole guest OS; a container is an isolated process on the host's kernel, which is why it starts in a second and weighs megabytes.</figcaption></figure>
+<section id="slides">
+<h2>Slides shown before the workshop</h2>
+<p class="deckmeta">1_CLI_workshop.pdf · 9 slides, mostly pictures</p>
+<p>A short deck that introduces Workshop 1: why git, why the command line, and how Docker's pieces fit.</p>
 <div class="scroll"><table>
-<tr><th></th><th>Virtual machine</th><th>Container</th></tr>
-<tr><td>Isolates by</td><td>Emulating a machine; guest runs its own kernel</td><td>OS-level virtualization; shares the host kernel</td></tr>
-<tr><td>Weight</td><td>Heavy: GBs, boots in tens of seconds</td><td>Light: MBs, starts almost instantly</td></tr>
-<tr><td>Isolation strength</td><td>Stronger</td><td>Weaker (shared kernel)</td></tr>
-<tr><td>Can run a different OS than the host?</td><td>Yes</td><td>No, must match the host kernel type</td></tr>
-<tr><td>Course example</td><td>Your persistent VM and VCL instances (WS3–6)</td><td>The Alpine containers (WS1, 2) and the Ansible container</td></tr>
+<tr><th>Slides</th><th>What they say and what to know</th></tr>
+<tr><td>1–2 · Why Git?</td><td style="font-weight:400">Two research papers shown as evidence: "How, and Why, Process Metrics Are Better" and "Quality and Productivity Outcomes Relating to Continuous Integration in GitHub". Message: version-control history and CI data are what let us measure and improve software process.</td></tr>
+<tr><td>3–4 · Why command line?</td><td style="font-weight:400">Flexibility (devices without screens). Remote access (cloud). Understanding the computational context.</td></tr>
+<tr><td>5 · Docker 1</td><td style="font-weight:400">Architecture picture. The <strong>client</strong> issues <code>docker build</code>, <code>docker pull</code>, <code>docker run</code>. The <strong>Docker host</strong> runs the daemon, which holds <strong>images</strong> and runs <strong>containers</strong>. A <strong>registry</strong> stores images to pull.</td></tr>
+<tr><td>6 · Docker 2: Dockerfiles</td><td style="font-weight:400">The workshop file: <code>FROM alpine:latest</code>, <code>USER root</code>, <code>CMD ["/bin/sh"]</code>.</td></tr>
+<tr><td>7 · Docker 3: Dockerfile example</td><td style="font-weight:400">A longer file: <code>FROM ros:foxy</code>, <code>ENV ROS_DISTRO foxy</code>, several <code>RUN apt-get …</code> lines to install an editor, <code>COPY ./ros_entrypoint.sh /</code>, <code>ENTRYPOINT [...]</code>, <code>CMD ["bash"]</code>. Read it as: start from a base, set a variable, install things at build time, copy a script in, say what runs at start.</td></tr>
+<tr><td>8 · Git in 1 slide</td><td style="font-weight:400">Organisation repo ⇄ personal repo by <em>fork</em> and <em>pull request</em>. On the local machine: local files, a master branch and a feature branch joined by <em>merge</em>, with <em>upstream</em> pointing back to the organisation repo.</td></tr>
 </table></div>
-<h3>Vocabulary from the slides</h3>
-<dl>
-<dt><strong>Virtual machine</strong> (Popek and Goldberg, 1974)</dt><dd>"An efficient, isolated duplicate of the real machine."</dd>
-<dt><strong>Host / hypervisor</strong></dt><dd>The operating system running on the physical machine.</dd>
-<dt><strong>Guest</strong></dt><dd>The operating system running inside the virtual machine.</dd>
-<dt><strong>Virtual machine monitor (VMM)</strong></dt><dd>Helps run the guest on the host; implements the virtualization interface and enforces the illusion of isolated machines.</dd>
-<dt><strong>Privileged instructions</strong></dt><dd>I/O, memory address mapping, loading system registers, switching kernel/user mode. These are what a VMM must intercept.</dd>
-<dt><strong>Headless</strong></dt><dd>No graphical interface. Headless VMs, micro VMs and containers are infrastructure you "build, use, and throw away". Classic VMs are fully loaded, graphical and heavyweight.</dd>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>Command line / shell</dt><dd>A text interface where a program reads and runs your commands. Preferred for flexibility, remote access, and seeing the computational context.</dd></div>
+<div class="term"><dt>Docker client</dt><dd>The <code>docker</code> command you type. It sends requests to the daemon.</dd></div>
+<div class="term"><dt>Docker daemon / host</dt><dd>The background service that builds images and runs containers.</dd></div>
+<div class="term"><dt>Image</dt><dd>Read-only template built from a Dockerfile.</dd></div>
+<div class="term"><dt>Container</dt><dd>A running instance of an image.</dd></div>
+<div class="term"><dt>Registry</dt><dd>Server that stores and serves images.</dd></div>
+<div class="term"><dt>Dockerfile instructions</dt><dd><code>FROM</code> base image, <code>ENV</code> variable, <code>RUN</code> build-time command, <code>COPY</code> file into image, <code>USER</code> user, <code>ENTRYPOINT</code> / <code>CMD</code> what runs when the container starts.</dd></div>
+<div class="term"><dt>Fork</dt><dd>Your own copy of someone else's repository on GitHub, from which you send pull requests back.</dd></div>
+<div class="term"><dt>Upstream</dt><dd>The original repository your copy tracks.</dd></div>
 </dl>
-<h3>How a VMM runs guest code</h3>
-<div class="scroll"><table>
-<tr><th>Technique</th><th>Idea</th><th>Examples</th></tr>
-<tr><td>Full emulation</td><td>Interpret every guest instruction in software (fetch, decode, switch). Emulates CPU, memory, disks, network. Simple but slow</td><td>Bochs, video-game emulators</td></tr>
-<tr><td>Trap-and-emulate</td><td>Run safe instructions directly on the CPU; privileged ones trap to the VMM, which emulates them</td><td>System/370</td></tr>
-<tr><td>Binary translation</td><td>Rewrite unsafe instructions into safe calls before running them</td><td>QEMU, VMware, VirtualBox</td></tr>
-<tr><td>Hardware-assisted</td><td>CPU adds a guest mode and new instructions (VT-x), so the VMM is faster and simpler</td><td>KVM, ESXi, Hyper-V</td></tr>
-<tr><td>Paravirtualization</td><td>Patch the guest OS so it cooperates with the VMM</td><td>Xen</td></tr>
-<tr><td>OS-level virtualization</td><td>The OS itself virtualizes resources per process group. Not full virtualization of a system</td><td>Containers</td></tr>
-</table></div>
-<p>Trend from the slides: AWS moved from Xen (paravirtualization) to KVM (hardware-assisted). Firecracker micro VMs are still a foundation of AWS.</p>
-<h3>No single best environment</h3>
-<div class="scroll"><table>
-<tr><th>Environment</th><th>Use case</th></tr>
-<tr><td>Bare metal</td><td>Desktop, mobile, embedded computing; efficiency; CI harness</td></tr>
-<tr><td>Headless virtualization (VMs)</td><td>General-purpose computing services</td></tr>
-<tr><td>Micro VMs</td><td>Embedded appliances such as Docker for Mac and WSL</td></tr>
-<tr><td>OS-level virtualization (containers)</td><td>Self-contained processes</td></tr>
-</table></div>
-<p>Unikernels were on the slides but the study guide excludes them.</p>
+<h3>Check yourself</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>Give the three reasons from lecture to learn the command line.</summary><div class="ans">Flexibility (devices without screens), remote access (cloud machines), and understanding the computational context.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>In the Docker architecture slide, what are the three boxes and what does each hold?</summary><div class="ans">Client (the build, pull, run commands), Docker host (the daemon with its images and containers), and registry (stored images).</div></details>
+</div>
 </section>
 
 <section id="quiz">
@@ -346,20 +314,15 @@ exit<span class="c">                                         # leave the shell; 
 <details class="q"><summary><span class="chip">True / False</span>The command <code>docker build</code> creates a container from a Dockerfile.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">container</u> to <strong>image</strong>. <code>docker run</code> is what creates a container.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>A file created inside a running container is automatically saved back into the image.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">automatically saved back into the image</u> to <strong>lost when the container is removed</strong> (unless it was written to a bind-mounted folder).</div></details>
 <details class="q"><summary><span class="chip">True / False</span>In <code>-v $(pwd)/scratch:/scratch</code>, the path on the left of the colon is the path inside the container.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">inside the container</u> to <strong>on the host</strong>. Host is left, container is right.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>Containers virtualize the hardware, so each container runs its own kernel.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">Containers</u> to <strong>Virtual machines</strong> (or: containers virtualize the <strong>operating system</strong> and <strong>share the host</strong> kernel).</div></details>
 <details class="q"><summary><span class="chip">True / False</span>In a Dockerfile, the <code>RUN</code> instruction specifies the program that starts when the container launches.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">RUN</u> to <strong>CMD</strong>. <code>RUN</code> executes at build time and creates a layer.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>Bit rot means that source code files become corrupted on disk over time.</summary><div class="ans"><span class="F">False.</span> Bit rot is code failing because its <strong>environment and dependencies change</strong> around it. The code itself is unchanged.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>The guest is the operating system running inside the virtual machine.</summary><div class="ans"><span class="T">True.</span> And the host (hypervisor) is the OS on the physical machine.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>Downloading a repo as a ZIP sets up the same connection to the git server as <code>git clone</code>.</summary><div class="ans"><span class="F">False.</span> A ZIP is only a copy of the files. <code>git clone</code> creates the link to the remote plus the history.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>You ran <code>apk add cloc</code> in a container yesterday. Today <code>cloc</code> is "not found". Why, and what is the lasting fix?</summary><div class="ans">Today's <code>docker run</code> started a new container from the unchanged image; yesterday's install lived only in yesterday's container. Fix: add <code>RUN apk add cloc</code> to the Dockerfile and rebuild, so the software is part of the image.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>Give two reasons a team would run a build tool inside a container instead of directly on each developer's laptop.</summary><div class="ans">Reproducibility (everyone gets the same OS, tools and versions, which fights bit rot and "works on my machine") and isolation / disposability (nothing is installed on the host; throw the container away and start clean). Lightweight compared with a VM.</div></details>
-<details class="q"><summary><span class="chip">Self-check</span>Name one advantage of a VM over a container and one advantage of a container over a VM.</summary><div class="ans">VM: stronger isolation and it can run a different operating system or kernel than the host. Container: much lighter and faster to start because it shares the host kernel, so you can run many more per machine.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span><code>docker run -v ~/.ssh:/root/.ssh -v $(pwd):/ws4 -it ws4</code> What do the two <code>-v</code> flags achieve, and why not <code>COPY</code> the keys in the Dockerfile?</summary><div class="ans">They bind-mount the host's SSH key folder at <code>/root/.ssh</code> and the current project folder at <code>/ws4</code>, so the container can use the keys and playbooks while they stay on the host. Copying keys into the image would bake a secret into a shareable artifact; anyone with the image could extract it.</div></details>
 </div>
 </section>
-
-<nav class="pager" aria-label="Previous and next page"><a class="prev" href="index.html" rel="prev"><small>← Previous</small>DevOps Midterm Study Pages</a><a class="next" href="ws2.html" rel="next"><small>Next →</small>DevOps WS2 Secrets &amp; GitHub API</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="01-lecture-1-devops-git-flow.html" rel="prev"><small>← Previous</small>Lecture 1: What is DevOps, and Git Flow</a><a class="next" href="03-lecture-2-pipelines-roles.html" rel="next"><small>Next →</small>Lecture 2: DevOps pipelines, diff time and team roles</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

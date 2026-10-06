@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Lecture 3 Computing Environments</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section#slides table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><span class="cur" aria-current="page">L3<small>Environments, VMs</small></span><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
+<header class="top">
+<div class="eyebrow"><span class="kind l">Lecture 3 · concept</span> Monday Aug 31</div>
+<h1>Computing environments and virtualization</h1>
+<p class="lede">Why code that has not changed stops running (bit rot), why an environment is configuration plus code, and how virtual machines and containers isolate software.</p>
+<p class="pair">Workshop that followed: <a href="06-workshop-3-github-actions.html">Workshop 3</a> (Wed Sep 2), which uses a VM as a GitHub Actions runner. The hands-on side of this lecture is really <a href="02-workshop-1-docker-cli.html">Workshop 1</a> (containers).</p>
+<p class="deckmeta">Source: 2_Computing_Environments.pdf</p>
+<ul class="tags"><li>bit rot</li><li>computing environments</li><li>shells / VMs / containers</li><li>virtualization</li></ul>
+<ul class="toc"><li><a href="#env">Computing environments and bit rot</a></li><li><a href="#virt">Virtualization</a></li><li><a href="#slides">The slides, in order</a></li><li><a href="#quiz">Practice</a></li></ul>
+</header>
+<section id="env">
+<h2>Computing environments and bit rot</h2>
+<p><strong>Bit rot</strong> ("does code rot?"): the code's bytes do not change, but the world around it does. Dependencies release breaking versions, OS packages move, interpreters are upgraded, services are retired. So code that ran last year fails today, and "often, the default experience is failure". Lecture's conclusions:</p>
+<ul>
+<li>Managing environments is hard. Programmers must act as "end-user system admins", and most "it won't run" replies are about <em>dependencies</em>.</li>
+<li>"Software on your machine has no real value." A billion-dollar idea that only runs on your laptop is worth $0 until it runs somewhere users can reach it.</li>
+<li>Think of a <strong>computing environment = configuration + code</strong>: the code plus its dependencies, environment, ecosystem, stakeholders and users.</li>
+</ul>
+<p>A Dockerfile is a direct answer to bit rot: it writes the environment down so it can be rebuilt. Note the trade-off the workshops raise: <code>alpine:latest</code> always gets the newest base (and may break later); a pinned version is stable but ages.</p>
+<h3>Properties of an ideal computing environment</h3>
+<ul class="tags"><li>Reproducible</li><li>Resilient</li><li>Secure</li><li>Scalable</li><li>Flexible</li><li>Maintains quality of service</li><li>Good resource utilization</li></ul>
+</section>
+
+<section id="virt">
+<h2>Virtualization: VMs vs containers</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 720 300" role="img" aria-label="Virtual machines each carry a full guest operating system on a hypervisor, while containers share the host kernel" style="max-width:720px;min-width:600px"><text x="180" y="22" text-anchor="middle" class="l">Virtual machines</text>
+<text x="180" y="38" text-anchor="middle" class="m">virtualize the hardware</text>
+<rect class="d-box" x="20" y="50" width="155" height="34" rx="5"/><text x="97.5" y="71" text-anchor="middle" class="b">App A</text>
+<rect class="d-box" x="185" y="50" width="155" height="34" rx="5"/><text x="262.5" y="71" text-anchor="middle" class="b">App B</text>
+<rect class="d-box" x="20" y="90" width="155" height="34" rx="5"/><text x="97.5" y="111" text-anchor="middle" class="b">Bins / libs</text>
+<rect class="d-box" x="185" y="90" width="155" height="34" rx="5"/><text x="262.5" y="111" text-anchor="middle" class="b">Bins / libs</text>
+<rect class="d-box warn" x="20" y="130" width="155" height="34" rx="5"/><text x="97.5" y="151" text-anchor="middle" class="b">Guest OS (own kernel)</text>
+<rect class="d-box warn" x="185" y="130" width="155" height="34" rx="5"/><text x="262.5" y="151" text-anchor="middle" class="b">Guest OS (own kernel)</text>
+<rect class="d-box acc" x="20" y="170" width="320" height="34" rx="5"/><text x="180" y="191" text-anchor="middle" class="b">Hypervisor / VMM</text>
+<rect class="d-box" x="20" y="210" width="320" height="34" rx="5"/><text x="180" y="231" text-anchor="middle" class="b">Host OS</text>
+<rect class="d-box" x="20" y="250" width="320" height="34" rx="5"/><text x="180" y="271" text-anchor="middle" class="b">Hardware</text>
+<text x="540" y="22" text-anchor="middle" class="l">Containers</text>
+<text x="540" y="38" text-anchor="middle" class="m">virtualize the operating system</text>
+<rect class="d-box" x="380" y="90" width="100" height="34" rx="5"/><text x="430" y="111" text-anchor="middle" class="b">App A</text>
+<rect class="d-box" x="490" y="90" width="100" height="34" rx="5"/><text x="540" y="111" text-anchor="middle" class="b">App B</text>
+<rect class="d-box" x="600" y="90" width="100" height="34" rx="5"/><text x="650" y="111" text-anchor="middle" class="b">App C</text>
+<rect class="d-box" x="380" y="130" width="100" height="34" rx="5"/><text x="430" y="151" text-anchor="middle" class="b">Bins / libs</text>
+<rect class="d-box" x="490" y="130" width="100" height="34" rx="5"/><text x="540" y="151" text-anchor="middle" class="b">Bins / libs</text>
+<rect class="d-box" x="600" y="130" width="100" height="34" rx="5"/><text x="650" y="151" text-anchor="middle" class="b">Bins / libs</text>
+<rect class="d-box" x="380" y="170" width="320" height="34" rx="5"/><text x="540" y="191" text-anchor="middle" class="b">Container engine (Docker / Podman)</text>
+<rect class="d-box acc" x="380" y="210" width="320" height="34" rx="5"/><text x="540" y="231" text-anchor="middle" class="b">Host OS: one shared kernel</text>
+<rect class="d-box" x="380" y="250" width="320" height="34" rx="5"/><text x="540" y="271" text-anchor="middle" class="b">Hardware</text></svg></div><figcaption>The yellow row is the difference. A VM boots a whole guest OS; a container is an isolated process on the host's kernel, which is why it starts in a second and weighs megabytes.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th></th><th>Virtual machine</th><th>Container</th></tr>
+<tr><td>Isolates by</td><td>Emulating a machine; guest runs its own kernel</td><td>OS-level virtualization; shares the host kernel</td></tr>
+<tr><td>Weight</td><td>Heavy: GBs, boots in tens of seconds</td><td>Light: MBs, starts almost instantly</td></tr>
+<tr><td>Isolation strength</td><td>Stronger</td><td>Weaker (shared kernel)</td></tr>
+<tr><td>Can run a different OS than the host?</td><td>Yes</td><td>No, must match the host kernel type</td></tr>
+<tr><td>Course example</td><td>Your persistent VM and VCL instances (WS3–6)</td><td>The Alpine containers (WS1, 2) and the Ansible container</td></tr>
+</table></div>
+<h3>Vocabulary from the slides</h3>
+<dl>
+<dt><strong>Virtual machine</strong> (Popek and Goldberg, 1974)</dt><dd>"An efficient, isolated duplicate of the real machine."</dd>
+<dt><strong>Host / hypervisor</strong></dt><dd>The operating system running on the physical machine.</dd>
+<dt><strong>Guest</strong></dt><dd>The operating system running inside the virtual machine.</dd>
+<dt><strong>Virtual machine monitor (VMM)</strong></dt><dd>Helps run the guest on the host; implements the virtualization interface and enforces the illusion of isolated machines.</dd>
+<dt><strong>Privileged instructions</strong></dt><dd>I/O, memory address mapping, loading system registers, switching kernel/user mode. These are what a VMM must intercept.</dd>
+<dt><strong>Headless</strong></dt><dd>No graphical interface. Headless VMs, micro VMs and containers are infrastructure you "build, use, and throw away". Classic VMs are fully loaded, graphical and heavyweight.</dd>
+</dl>
+<h3>How a VMM runs guest code</h3>
+<div class="scroll"><table>
+<tr><th>Technique</th><th>Idea</th><th>Examples</th></tr>
+<tr><td>Full emulation</td><td>Interpret every guest instruction in software (fetch, decode, switch). Emulates CPU, memory, disks, network. Simple but slow</td><td>Bochs, video-game emulators</td></tr>
+<tr><td>Trap-and-emulate</td><td>Run safe instructions directly on the CPU; privileged ones trap to the VMM, which emulates them</td><td>System/370</td></tr>
+<tr><td>Binary translation</td><td>Rewrite unsafe instructions into safe calls before running them</td><td>QEMU, VMware, VirtualBox</td></tr>
+<tr><td>Hardware-assisted</td><td>CPU adds a guest mode and new instructions (VT-x), so the VMM is faster and simpler</td><td>KVM, ESXi, Hyper-V</td></tr>
+<tr><td>Paravirtualization</td><td>Patch the guest OS so it cooperates with the VMM</td><td>Xen</td></tr>
+<tr><td>OS-level virtualization</td><td>The OS itself virtualizes resources per process group. Not full virtualization of a system</td><td>Containers</td></tr>
+</table></div>
+<p>Trend from the slides: AWS moved from Xen (paravirtualization) to KVM (hardware-assisted). Firecracker micro VMs are still a foundation of AWS.</p>
+<h3>No single best environment</h3>
+<div class="scroll"><table>
+<tr><th>Environment</th><th>Use case</th></tr>
+<tr><td>Bare metal</td><td>Desktop, mobile, embedded computing; efficiency; CI harness</td></tr>
+<tr><td>Headless virtualization (VMs)</td><td>General-purpose computing services</td></tr>
+<tr><td>Micro VMs</td><td>Embedded appliances such as Docker for Mac and WSL</td></tr>
+<tr><td>OS-level virtualization (containers)</td><td>Self-contained processes</td></tr>
+</table></div>
+<p>Unikernels were on the slides but the study guide excludes them.</p>
+</section>
+
+<section id="slides">
+<h2>The slides, in order</h2>
+<p class="deckmeta">2_Computing_Environments.pdf · 30 slides, from Dr. Chris Parnin</p>
+<p>Objectives: what is "bit rot"? What is hard about managing computing environments? The different types of environment. A basic intuition for how VMs work.</p>
+<div class="scroll"><table>
+<tr><th>Slides (in order)</th><th>What they say and what to know</th></tr>
+<tr><td>Does code rot?</td><td style="font-weight:400">Two quotes argue that code itself does not wear out (Dijkstra on "software maintenance"; Spolsky: old code "doesn't acquire bugs just by sitting around on your hard drive"). The next slide answers: the world changes <em>around</em> the software. It lives in an ecosystem of dependencies and environments that are not static. Examples shown: Y2K-style date fixes expiring, Facebook's outage, a Roblox outage.</td></tr>
+<tr><td>Even simple code snippets can be difficult to run / the default experience is failure</td><td style="font-weight:400">A three-line plotting notebook fails with <code>ModuleNotFoundError: No module named 'seaborn'</code>. "It works on my machine."</td></tr>
+<tr><td>Managing environments is hard</td><td style="font-weight:400">The tangled Python-install cartoon. "Programmers must be 'end-user' system admins." Many replies say "dependencies". Activity: have you ever had issues with running code?</td></tr>
+<tr><td>Your billion dollar idea is worth $0</td><td style="font-weight:400">"Software on your machine has no real value." (A recruiter asks for links to projects; the answer is "localhost:3000".)</td></tr>
+<tr><td>Where does your code live and run?</td><td style="font-weight:400">Consider not only code but its dependencies, environment, software ecosystem, stakeholders and users, and value. Think of building <strong>computing environments</strong>: configuration + code. "Resilient and scalable software co-exists with infrastructure."</td></tr>
+<tr><td>Properties of an ideal environment</td><td style="font-weight:400">Reproducible, resilient, secure, scalable, flexibility, maintain quality of service, resource utilization. (Presented as fill-in-the-blank.)</td></tr>
+<tr><td>Classic VMs vs headless infrastructure</td><td style="font-weight:400">Classic: fully loaded OS, graphical interface, optimized, heavy-weight. Headless (headless VMs, micro VMs, containers): "you can build, use, and throw away".</td></tr>
+<tr><td>Terms</td><td style="font-weight:400">Popek and Goldberg's VM definition; host/hypervisor; guest; VMM; privileged instructions.</td></tr>
+<tr><td>Full emulation</td><td style="font-weight:400">The fetch–decode–switch loop: run the VM as a user application and emulate CPU, memory, disks, network. "Problems?" → it is slow.</td></tr>
+<tr><td>Optimizations</td><td style="font-weight:400">Trap-and-emulate: ADD/SUB run directly; a syscall traps to the VMM. Binary translation: the unsafe syscall is rewritten into a safe "virtcall".</td></tr>
+<tr><td>Hardware-assisted / paravirtualization</td><td style="font-weight:400">VT-x adds a guest mode and instructions such as VMREAD; the VMM is easier to implement. Paravirtualization patches the guest OS.</td></tr>
+<tr><td>Examples and trends</td><td style="font-weight:400">Full emulation: Bochs, PDP-10, video games. Trap-and-emulate: System/370. Binary translation: QEMU, VMware, VirtualBox. Hardware-assisted: KVM, ESXi, Hyper-V. Paravirtualization: Xen, Hyper-V, Hyperkit. AWS moved from Xen to KVM.</td></tr>
+<tr><td>OS-level virtualization</td><td style="font-weight:400">The OS provides mechanisms for virtualizing resources; not full virtualization. The cartoons show the building blocks: <code>chroot</code> (a different root directory) and <code>cgroups</code> (limits on memory and CPU).</td></tr>
+<tr><td>VMs vs containers (vs unikernels)</td><td style="font-weight:400">VM: app + guest OS/kernel on a hypervisor on hardware. Container: container on a shared OS + kernel on hardware. <em>Unikernels are not on the midterm.</em></td></tr>
+<tr><td>No one best computing environment</td><td style="font-weight:400">Bare metal: desktop/mobile/embedded, efficiency, CI harness. Headless virtualization: general-purpose services. OS-level virtualization: self-contained processes. Micro VMs: embedded appliances such as Docker for Mac and WSL. Firecracker is still a foundation of AWS.</td></tr>
+</table></div>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>Bit rot<span class="src">slide wording</span></dt><dd>Code stops working over time even though it has not changed, because the dependencies and environment around it change.</dd></div>
+<div class="term"><dt>Computing environment<span class="src">slide wording</span></dt><dd>A unified view of code and the configuration needed to operate it and maintain its value: configuration + code.</dd></div>
+<div class="term"><dt>Ideal environment properties<span class="src">slide wording</span></dt><dd>Reproducible, resilient, secure, scalable, flexible, maintains quality of service, good resource utilization.</dd></div>
+<div class="term"><dt>Virtual machine<span class="src">slide wording</span></dt><dd>"An efficient, isolated duplicate of the real machine." (Popek and Goldberg, 1974)</dd></div>
+<div class="term"><dt>Host / hypervisor<span class="src">slide wording</span></dt><dd>Operating system running on the physical machine.</dd></div>
+<div class="term"><dt>Guest<span class="src">slide wording</span></dt><dd>Operating system running in the virtual machine.</dd></div>
+<div class="term"><dt>VMM<span class="src">slide wording</span></dt><dd>Virtual machine monitor: helps run the guest on the host, implements the virtualization interface, enforces the illusion of isolated machines.</dd></div>
+<div class="term"><dt>Privileged instructions<span class="src">slide wording</span></dt><dd>I/O operations, memory address mapping, loading and reading system registers, changing processor mode from kernel to user.</dd></div>
+<div class="term"><dt>Full emulation<span class="src">slide wording</span></dt><dd>Run the VM as a user application and interpret every instruction, emulating all hardware.</dd></div>
+<div class="term"><dt>Trap-and-emulate</dt><dd>Run safe instructions directly; privileged ones trap to the VMM.</dd></div>
+<div class="term"><dt>Binary translation</dt><dd>Rewrite unsafe instructions into safe ones before running.</dd></div>
+<div class="term"><dt>Hardware-assisted virtualization<span class="src">slide wording</span></dt><dd>CPU support (VT-x, guest mode) that makes VM operations efficient and the VMM simpler.</dd></div>
+<div class="term"><dt>Paravirtualization<span class="src">slide wording</span></dt><dd>Patch the guest OS to enable virtualization via the VMM.</dd></div>
+<div class="term"><dt>OS-level virtualization<span class="src">slide wording</span></dt><dd>The operating system virtualizes resources; not full system virtualization. The basis of containers.</dd></div>
+<div class="term"><dt>chroot / cgroups</dt><dd>Linux mechanisms behind containers: a private root directory, and limits on a process group's memory and CPU.</dd></div>
+<div class="term"><dt>Headless</dt><dd>No graphical interface; infrastructure you build, use and throw away.</dd></div>
+</dl>
+<h3>Activity prompt and a model answer</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>Have you ever had issues with running code? What was the cause?</summary><div class="ans">A typical answer: a project that ran last semester now fails because a library released a breaking version, the interpreter was upgraded, or a package is not installed on this machine. The cause is the environment, not the code. The fix is to write the environment down (Dockerfile, pinned versions, a playbook) so it can be rebuilt.</div></details>
+</div>
+<h3>Check yourself</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>If code does not wear out, why does it "rot"?</summary><div class="ans">Because software depends on an ecosystem (libraries, OS, services, hardware) that keeps changing. The code is the same but its assumptions stop being true.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why is full emulation slow, and what do the optimizations do about it?</summary><div class="ans">Every guest instruction is interpreted in software. Trap-and-emulate and binary translation let safe instructions run directly on the CPU and handle only privileged ones specially; hardware-assisted virtualization moves that support into the CPU.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Give the use case for bare metal, headless VMs, containers and micro VMs.</summary><div class="ans">Bare metal: desktop, mobile, embedded, efficiency, CI harness. Headless VMs: general-purpose computing services. Containers (OS-level): self-contained processes. Micro VMs: embedded appliances such as Docker for Mac and WSL.</div></details>
+</div>
+</section>
+
+<section id="quiz">
+<h2>Practice</h2>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>Containers virtualize the hardware, so each container runs its own kernel.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">Containers</u> to <strong>Virtual machines</strong> (or: containers virtualize the <strong>operating system</strong> and <strong>share the host</strong> kernel).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Bit rot means that source code files become corrupted on disk over time.</summary><div class="ans"><span class="F">False.</span> Bit rot is code failing because its <strong>environment and dependencies change</strong> around it. The code itself is unchanged.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The guest is the operating system running inside the virtual machine.</summary><div class="ans"><span class="T">True.</span> And the host (hypervisor) is the OS on the physical machine.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name one advantage of a VM over a container and one advantage of a container over a VM.</summary><div class="ans">VM: stronger isolation and it can run a different operating system or kernel than the host. Container: much lighter and faster to start because it shares the host kernel, so you can run many more per machine.</div></details>
+</div>
+</section>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="04-workshop-2-secrets-github-api.html" rel="prev"><small>← Previous</small>Workshop 2: Automating GitHub from inside a container</a><a class="next" href="06-workshop-3-github-actions.html" rel="next"><small>Next →</small>Workshop 3: Intro to GitHub Actions</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>

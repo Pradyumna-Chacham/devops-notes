@@ -36,12 +36,23 @@ body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-in
 .wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
 a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
 nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
 nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
 
 header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
 .eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
 .lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
@@ -97,7 +108,7 @@ details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transfor
 details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
-section[id^="d"] table td:first-child{min-width:10.5rem}
+section#slides table td:first-child{min-width:10.5rem}
 .snip{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
 .cols ul{margin:0}
@@ -115,7 +126,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 @media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 </style>
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -125,7 +136,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><span class="cur" aria-current="page">Exam<small>3 question types</small></span><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><span class="cur" aria-current="page">Exam drill</span><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · Midterm prep · Exam drill</div>
 <h1>The three question types, drilled</h1>
@@ -534,6 +545,37 @@ sudo ./svc.sh start</pre>
 </div>
 </section>
 
+<section id="slides">
+<h2>The midterm review deck, slide by slide</h2>
+<p class="deckmeta">Midterm_review_2.pdf · 17 slides</p>
+<p>The last deck before the exam. It adds no new course content; it fixes the <strong>format</strong>. Read it as the rules of the game.</p>
+<div class="scroll"><table>
+<tr><th>Slides</th><th>What they say and what to know</th></tr>
+<tr><td>3–4 · About the midterm</td><td style="font-weight:400">Arrive on time or early. Assigned seats. Phones and devices in a bag. No smart watches. Paper; pen or pencil (pen preferred). <strong>No notes.</strong> Cover your answers as you go with the provided piece of paper.</td></tr>
+<tr><td>5 · Question types</td><td style="font-weight:400"><strong>Not on the exam:</strong> no coding / scripting; no "define the term…" open-ended definitions; no fill-in-the-blank. <strong>Yes on the exam:</strong> matching concepts; distinguishing code kinds; true / false with corrections.</td></tr>
+<tr><td>6 · True / false with corrections</td><td style="font-weight:400">If false, underline the word(s) to change and write the new word(s) below. Example: "Lake Michigan is made of <u class="fix">salt</u> water." No simple negation: "is not made of salt water" does not earn points.</td></tr>
+<tr><td>7–9 · Three sample statements</td><td style="font-weight:400">"In DevOps, PR stands for pull <u class="fix">requirement</u>." → request. "A PR contains <u class="fix">at most a single</u> commit." → one or more. The two-large-pizzas statement about deployment time → the rule is about team size.</td></tr>
+<tr><td>10 · Matching concepts</td><td style="font-weight:400">"Connect the concept on the left to the most related concept on the right… Items on the left might not connect to anything on the right." The example has seven left items and five right items; one left item ("The GitHub Algorithm") is a decoy and one right item ("Transformers") is unused; two right items receive two lines each.</td></tr>
+<tr><td>11 · Distinguishing code kinds, example 1</td><td style="font-weight:400">"What kind of code is represented in this figure? (Looking for the name of the tool.)" The figure is a playbook: <code>- hosts: all</code>, <code>vars:</code>, <code>tasks:</code>, <code>apt: name={{item}} state=present</code>, <code>with_items: packages</code>. Answer: Ansible.</td></tr>
+<tr><td>12 · Distinguishing code kinds, example 2</td><td style="font-weight:400">The figure: <code>FROM microsoft/dotnet:aspnetcore-runtime</code>, <code>WORKDIR /app</code>, <code>COPY --from=build-env /app/out .</code>, <code>ENTRYPOINT ["dotnet", "aspnetapp.dll"]</code>. Answer: Dockerfile. "Should recognize: GitHub Actions, Dockerfiles, Ansible files, Bash shell commands from class."</td></tr>
+<tr><td>13–14 · Activities</td><td style="font-weight:400">Which concepts are you most concerned about? Which study methods help you most?</td></tr>
+<tr><td>15–17 · From the 1-page study guide</td><td style="font-weight:400">The study-guide bullets shown again, unchanged, across three slides.</td></tr>
+</table></div>
+<h3>What changes because of this deck</h3>
+<ul>
+<li>You will not write definitions, code, or short answers. Every question is recognition: a swapped word, a line between two ideas, or the name of a tool.</li>
+<li>"Distinguishing code kinds" is a new skill to practise. The examples were not workshop files, so learn the look of each kind, not specific files.</li>
+<li>The second sample statement confirms a fact worth holding on to: a pull request can contain one or more commits.</li>
+</ul>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>PR<span class="src">slide wording</span></dt><dd>Pull request (not "pull requirement"). It can contain one or more commits.</dd></div>
+<div class="term"><dt>True / false with corrections<span class="src">slide wording</span></dt><dd>Mark T or F; if false, underline the word(s) to change and write the new word(s) below. Simple negation earns nothing.</dd></div>
+<div class="term"><dt>Matching concepts<span class="src">slide wording</span></dt><dd>Draw a line from each left item to the most related right item. Left items might connect to nothing.</dd></div>
+<div class="term"><dt>Distinguishing code kinds<span class="src">slide wording</span></dt><dd>Given a snippet, name the tool: GitHub Actions, Dockerfile, Ansible file, or Bash shell commands.</dd></div>
+</dl>
+</section>
+
 <section id="day">
 <h2>On the day</h2>
 <ul>
@@ -545,8 +587,8 @@ sudo ./svc.sh start</pre>
 </ul>
 </section>
 
-<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws7.html" rel="prev"><small>← Previous</small>DevOps WS7 Retrospectives</a><a class="next" href="notes.html" rel="next"><small>Next →</small>DevOps Lecture Deck Notes</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="15-lecture-8-pipelines.html" rel="prev"><small>← Previous</small>Lecture 8: Pipelines in depth</a><a class="next" href="17-glossary.html" rel="next"><small>Next →</small>Glossary: Glossary</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

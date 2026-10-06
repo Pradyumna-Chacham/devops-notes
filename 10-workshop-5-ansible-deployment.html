@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Workshop 5 Ansible Deployment</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section#slides table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><span class="cur" aria-current="page">W5<small>Ansible 2</small></span><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
+<header class="top">
+<div class="eyebrow"><span class="kind w">Workshop 5 · hands-on</span> Wednesday Sep 16</div>
+<h1>Ansible 2: security patching and a single-host deployment</h1>
+<p class="lede">Two playbooks: one applies security updates to every host, the other turns a bare VM into a working Node.js + MySQL application that answers nearest-neighbour queries.</p>
+<p class="pair">Concepts behind it: <a href="07-lecture-4-configuration-management.html">Lecture 4</a> (configuration management, idempotence). The Monday lecture that week, <a href="09-lecture-5-feature-flags.html">Lecture 5</a>, was on a different topic.</p>
+<p class="deckmeta">Source: README</p>
+<ul class="tags"><li>configuration management</li><li>idempotence in practice</li><li>handlers</li><li>environment variables</li></ul>
+<ul class="toc"><li><a href="#arch">What Workshop 5 builds</a></li><li><a href="#sec">Playbook 0</a></li><li><a href="#setup">Playbook 1</a></li><li><a href="#toolbox">Ansible keywords you should be able to read</a></li><li><a href="#idem">Idempotence patterns in a real playbook</a></li><li><a href="#app">The app</a></li><li><a href="#quiz">Practice</a></li></ul>
+</header>
+<section id="arch">
+<h2>What Workshop 5 builds</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 230" role="img" aria-label="The control node configures one VM over SSH; on that VM a systemd service runs a Node.js app on port 80 that queries a local MySQL database" style="max-width:740px;min-width:600px"><rect class="d-box soft" x="20" y="60" width="150" height="110" rx="5"/><text x="30" y="77" class="b">Control node</text><text x="30" y="93" class="m">Ansible container</text><text x="30" y="107" class="m">0-update-security.yaml</text><text x="30" y="121" class="m">1-setup-config.yaml</text>
+<line class="d-ln a" x1="170" y1="115" x2="250" y2="115" marker-end="url(#aha)"/><text x="210" y="105" text-anchor="middle" class="m a">SSH</text>
+<rect class="d-box soft" x="250" y="20" width="470" height="190" rx="5"/><text x="260" y="37" class="b">VM1: Ubuntu 24.04 (the single managed host)</text>
+<rect class="d-box" x="270" y="70" width="120" height="50" rx="5"/><text x="330" y="91.5" text-anchor="middle" class="b">systemd unit</text><text x="330" y="106.5" text-anchor="middle" class="m">keeps the app running</text>
+<line class="d-ln" x1="390" y1="95" x2="420" y2="95" marker-end="url(#ah)"/>
+<rect class="d-box acc" x="420" y="70" width="130" height="50" rx="5"/><text x="485" y="91.5" text-anchor="middle" class="b">Node.js app</text><text x="485" y="106.5" text-anchor="middle" class="m">listens on port 80</text>
+<line class="d-ln" x1="550" y1="95" x2="590" y2="95" marker-end="url(#ah)"/><text x="570" y="85" text-anchor="middle" class="m">SQL</text>
+<rect class="d-box" x="590" y="70" width="115" height="50" rx="5"/><text x="647.5" y="91.5" text-anchor="middle" class="b">MySQL</text><text x="647.5" y="106.5" text-anchor="middle" class="m">127.0.0.1:3306</text>
+<text x="647" y="138" text-anchor="middle" class="m">points table</text>
+<text x="647" y="153" text-anchor="middle" class="m">10,000 (x, y) rows</text>
+<rect class="d-box warn" x="270" y="150" width="280" height="44" rx="5"/><text x="410" y="168.5" text-anchor="middle" class="b">Environment= lines in the unit</text><text x="410" y="183.5" text-anchor="middle" class="m">DB_HOST, DB_USER… read as process.env</text>
+<line class="d-ln dash" x1="410" y1="150" x2="470" y2="120" marker-end="url(#ah)"/></svg></div><figcaption>Everything on one host. Workshop 6 moves the database to a second VM and measures what that costs.</figcaption></figure>
+</section>
+
+<section id="sec">
+<h2>Playbook 0: security updates</h2>
+<pre class="code">- name: Apply system security updates
+  <mark>hosts: all</mark><span class="c">                         # every machine in the inventory, whatever its group</span>
+  become: true
+  tasks:
+    - name: Refresh the package index
+      apt: { update_cache: true, cache_valid_time: 3600 }
+    - name: Upgrade all packages to latest security patches
+      apt: { <mark>upgrade: dist</mark> }
+    - name: Remove packages no longer required
+      apt: { autoremove: true }
+    - name: Check whether a reboot is required
+      stat: { path: /var/run/reboot-required }
+      <mark>register: reboot_required</mark><span class="c">        # save the result in a variable</span>
+    - name: Reboot host if required by updates
+      reboot: { reboot_timeout: 300 }
+      <mark>when: reboot_required.stat.exists</mark><span class="c">   # conditional task</span></pre>
+<ul>
+<li><strong>Patching as code.</strong> The same file patches one VM or the whole fleet, can run on a schedule, and its history is in git. This is "Configuration is Code" applied to security, and it speaks to the adage "Invite Privacy and Security In".</li>
+<li><strong>Idempotent by nature.</strong> A patched host reports nothing to change.</li>
+<li><strong><code>register</code> + <code>when</code></strong> is the standard "look, then decide" pair: gather a fact, then run a task only if needed.</li>
+</ul>
+</section>
+
+<section id="setup">
+<h2>Playbook 1: environment, datastore, app</h2>
+<pre class="code">- name: Configure VM1 with Node.js app and MySQL datastore
+  hosts: myserver
+  become: true
+  <mark>vars_prompt:</mark><span class="c">                          # ask at run time; the password is never in the repo</span>
+    - { name: db_password, prompt: &quot;Enter password for the MySQL application user&quot;, private: true }
+  <mark>vars:</mark>
+    db_name: pointsdb
+    db_user: appuser
+    app_dir: /opt/nearest-app
+  tasks:
+    - name: Install Node.js, npm, and MySQL server
+      apt: { name: [nodejs, npm, mysql-server], state: present }
+    - name: Ensure MySQL service is started and enabled
+      service: { name: mysql, state: started, enabled: true }
+    - name: Create application database
+      command: mysql -u root -e &quot;CREATE DATABASE <mark>IF NOT EXISTS</mark> {{ db_name }};&quot;
+      changed_when: false
+    - name: Check whether points table already has data
+      command: mysql -u root {{ db_name }} -N -B -e &quot;SELECT COUNT(*) FROM points;&quot;
+      register: points_count
+      changed_when: false
+    - name: Import CSV data into points table
+      command: mysql -u root {{ db_name }} -e &quot;LOAD DATA INFILE … INTO TABLE points …&quot;
+      <mark>when: points_count.stdout | int == 0</mark><span class="c">      # import only into an empty table</span>
+    - name: Deploy application server.js
+      copy: { src: app/server.js, dest: &quot;{{ app_dir }}/server.js&quot; }
+      <mark>notify: restart nearest-app</mark><span class="c">             # queue the handler if this task changed</span>
+    - name: Deploy systemd unit for the application
+      template: { src: app/nearest-app.service.j2, dest: /etc/systemd/system/nearest-app.service }
+      no_log: true<span class="c">                            # the rendered file contains the password</span>
+      notify: restart nearest-app
+    - name: Apply pending restarts before verifying the app
+      meta: flush_handlers
+    - name: Verify the app responds on port 80
+      uri: { url: &quot;http://127.0.0.1/&quot;, return_content: true }
+      register: app_response
+      until: app_response.status == 200
+      retries: 10
+      delay: 3
+  <mark>handlers:</mark>
+    - name: restart nearest-app
+      systemd: { name: nearest-app, state: restarted, daemon_reload: true }</pre>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 190" role="img" aria-label="Tasks that report changed notify a handler, and the handler runs once after the tasks instead of once per notification" style="max-width:740px;min-width:600px"><rect class="d-box ok" x="20" y="20" width="230" height="36" rx="5"/><text x="135" y="42" text-anchor="middle" class="b">copy package.json: changed</text>
+<rect class="d-box" x="20" y="64" width="230" height="36" rx="5"/><text x="135" y="86" text-anchor="middle" class="b">copy server.js: ok (no change)</text>
+<rect class="d-box ok" x="20" y="108" width="230" height="36" rx="5"/><text x="135" y="130" text-anchor="middle" class="b">template service unit: changed</text>
+<line class="d-ln" x1="250" y1="38" x2="370" y2="76" marker-end="url(#ah)"/><text x="318" y="46" text-anchor="middle" class="m">notify</text>
+<line class="d-ln" x1="250" y1="126" x2="370" y2="96" marker-end="url(#ah)"/><text x="318" y="128" text-anchor="middle" class="m">notify</text>
+<rect class="d-box warn" x="370" y="62" width="150" height="48" rx="5"/><text x="445" y="82.5" text-anchor="middle" class="b">Handler queue</text><text x="445" y="97.5" text-anchor="middle" class="m">&quot;restart nearest-app&quot; ×1</text>
+<line class="d-ln" x1="520" y1="86" x2="590" y2="86" marker-end="url(#ah)"/>
+<rect class="d-box acc" x="590" y="62" width="130" height="48" rx="5"/><text x="655" y="82.5" text-anchor="middle" class="b">Restart runs once</text><text x="655" y="97.5" text-anchor="middle" class="m">at end of play or flush</text>
+<text x="135" y="170" text-anchor="middle" class="m">an unchanged task notifies nothing</text></svg></div><figcaption>Handlers are how a playbook restarts a service only when its configuration really changed. On a second run with no changes the app is not restarted at all.</figcaption></figure>
+</section>
+
+<section id="toolbox">
+<h2>Ansible keywords you should be able to read</h2>
+<div class="scroll"><table class="anno">
+<tr><th>Keyword</th><th>What it does</th></tr>
+<tr><td><code>vars:</code> / <code>{{ name }}</code></td><td>Define variables; substitute them with Jinja2 double braces</td></tr>
+<tr><td><code>vars_prompt:</code> + <code>private: true</code></td><td>Ask the operator for a value at run time without echoing it. Keeps secrets out of the repo</td></tr>
+<tr><td><code>register: x</code></td><td>Store a task's result (stdout, return code, status…) in variable <code>x</code></td></tr>
+<tr><td><code>when:</code></td><td>Run the task only if the condition is true</td></tr>
+<tr><td><code>changed_when:</code> / <code>failed_when:</code></td><td>Override Ansible's idea of whether a command changed something or failed</td></tr>
+<tr><td><code>notify:</code> / <code>handlers:</code></td><td>Run a handler (usually a restart) once, later, only if the notifying task changed</td></tr>
+<tr><td><code>meta: flush_handlers</code></td><td>Run queued handlers now instead of at the end of the play</td></tr>
+<tr><td><code>until:</code> / <code>retries:</code> / <code>delay:</code></td><td>Retry a task until a condition holds</td></tr>
+<tr><td><code>no_log: true</code></td><td>Hide this task's inputs and outputs from logs (secrets)</td></tr>
+<tr><td><code>template:</code></td><td>Render a <code>.j2</code> file with variables, then copy it to the host</td></tr>
+<tr><td><code>wait_for:</code> / <code>uri:</code></td><td>Wait for a port to open / make an HTTP request and check the status</td></tr>
+<tr><td><code>hosts: all</code></td><td>Target every host in the inventory</td></tr>
+</table></div>
+<h3>Workshop antipatterns the instructor called out</h3>
+<div class="scroll"><table>
+<tr><th>Antipattern</th><th>Instead</th></tr>
+<tr><td style="font-weight:400">Remote Desktop into the VM and open a terminal</td><td>SSH directly into the VM (headless)</td></tr>
+<tr><td style="font-weight:400">Lots of Ansible development against the same VM, leaving it in a strange state</td><td>Re-provision a fresh instance ("turn it off and on again") and test from clean before submitting</td></tr>
+<tr><td style="font-weight:400">Staying stuck on one step for 3–6 hours</td><td>Ask on EdStem, email a TA, or go around the step</td></tr>
+<tr><td style="font-weight:400">Adding SSH tokens to version control</td><td>Never check in tokens (the only exception was the DB password for WS4 and WS5)</td></tr>
+</table></div>
+<aside class="exam"><b>Exam angle</b>The second row is a configuration-management idea worth a short answer: a playbook is only proven if it works on a <strong>fresh</strong> machine. A VM you have poked by hand has hidden state, so "it works on my VM" proves nothing. Reproducibility is the point.</aside>
+</section>
+
+<section id="idem">
+<h2>Idempotence patterns in a real playbook</h2>
+<div class="scroll"><table>
+<tr><th>Pattern</th><th>Where you used it</th><th>Effect on a second run</th></tr>
+<tr><td>Declarative module</td><td><code>apt: state=present</code>, <code>service: state=started</code>, <code>file: state=directory</code></td><td>Reports <code>ok</code>, does nothing</td></tr>
+<tr><td>Idempotent command</td><td><code>CREATE DATABASE IF NOT EXISTS</code>, <code>CREATE TABLE IF NOT EXISTS</code></td><td>The SQL itself is a no-op</td></tr>
+<tr><td>Check, then act</td><td><code>SELECT COUNT(*)</code> → <code>register</code> → import <code>when</code> count is 0</td><td>Import is skipped; no duplicate 10,000 rows</td></tr>
+<tr><td>Guard file</td><td><code>stat</code> node_modules → <code>npm install</code> only when missing or package.json changed</td><td>Skipped</td></tr>
+<tr><td>Honest reporting</td><td><code>changed_when: false</code> on read-only commands</td><td>"changed" count stays meaningful</td></tr>
+<tr><td>Handlers</td><td>Restart only on <code>notify</code></td><td>No needless restart, no downtime</td></tr>
+</table></div>
+<p>Without the count check, every run would load the CSV again and the "nearest point" query would return duplicates from a table of 20,000, then 30,000 rows. That is the concrete cost of a non-idempotent task.</p>
+</section>
+
+<section id="app">
+<h2>The app: let the database do the work</h2>
+<p>The app answers <code>GET /</code> by generating a random point in (0,0)–(100,100) and finding its nearest neighbour among 10,000 stored points. The README forbade loading the dataset into Node's memory, so the distance is computed in SQL and only the winning row comes back:</p>
+<pre class="code">SELECT x, y, SQRT(POW(x - ?, 2) + POW(y - ?, 2)) AS distance    -- Cartesian distance
+FROM points
+ORDER BY distance ASC
+LIMIT 1;</pre>
+<div class="two"><div>
+<div class="cap">systemd unit template (.j2)</div>
+<pre class="code">[Service]
+ExecStart=/usr/bin/node {{ app_dir }}/server.js
+Restart=always
+Environment=PORT=80
+Environment=DB_HOST=127.0.0.1
+Environment=DB_USER={{ db_user }}
+Environment=DB_PASSWORD={{ db_password }}</pre>
+</div><div>
+<div class="cap">server.js reads them</div>
+<pre class="code">const PORT = Number(process.env.PORT) || 80;
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || &quot;127.0.0.1&quot;,
+  user: process.env.DB_USER || &quot;appuser&quot;,
+  password: process.env.DB_PASSWORD || &quot;&quot;,
+  database: process.env.DB_NAME || &quot;pointsdb&quot;,
+});</pre>
+</div></div>
+<aside class="exam"><b>Exam angle</b>This is the environment-variable idea from Workshop 2 again. The code contains no host name or password; configuration is injected by the environment, so the <em>same</em> <code>server.js</code> runs unchanged in Workshop 6 when only <code>DB_HOST</code> changes to point at another machine.</aside>
+</section>
+
+<section id="quiz">
+<h2>Practice</h2>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>In an Ansible playbook, a handler runs every time the play runs.</summary><div class="ans"><span class="F">False.</span> A handler runs only when a task that <strong>notifies</strong> it reports <strong>changed</strong>, and then only once.</div></details>
+<details class="q"><summary><span class="chip">Read the code</span><code>when: points_count.stdout | int == 0</code> sits on the CSV import task. What problem does it prevent?</summary><div class="ans">Importing the 10,000 rows again on every run. The earlier task counted the rows and registered the result; the import runs only when the table is empty, which makes the playbook idempotent.</div></details>
+<details class="q"><summary><span class="chip">Read the code</span>Why is <code>no_log: true</code> on the task that templates the systemd unit, and why is the password asked with <code>vars_prompt</code>?</summary><div class="ans">The rendered unit contains <code>DB_PASSWORD</code>, so its content must not be printed in Ansible's output or logs. <code>vars_prompt</code> with <code>private: true</code> gets the password from the operator at run time, so it is never written in the playbook or committed to the repo.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why does the instructor recommend re-provisioning a fresh VM before submitting an Ansible workshop?</summary><div class="ans">A VM that has been modified by many trial runs holds hidden state, so a passing run proves nothing about the playbook alone. Running on a fresh instance shows the playbook reproduces the full configuration from scratch.</div></details>
+</div>
+</section>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="09-lecture-5-feature-flags.html" rel="prev"><small>← Previous</small>Lecture 5: Feature flags and release engineering</a><a class="next" href="11-lecture-6-ownership-retrospectives.html" rel="next"><small>Next →</small>Lecture 6: Change ownership, silos and retrospectives</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>

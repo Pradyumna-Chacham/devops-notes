@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DevOps WS7 Retrospectives</title>
+<title>DevOps Lecture 6 Ownership and Retrospectives</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
 /* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
@@ -36,12 +36,23 @@ body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-in
 .wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
 a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
 nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
 nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
 
 header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
 .eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
 .lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
@@ -97,7 +108,7 @@ details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transfor
 details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
-section[id^="d"] table td:first-child{min-width:10.5rem}
+section#slides table td:first-child{min-width:10.5rem}
 .snip{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
 .cols ul{margin:0}
@@ -115,7 +126,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 @media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 </style>
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -125,71 +136,16 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><span class="cur" aria-current="page">WS7<small>Retros &amp; adages</small></span><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><span class="cur" aria-current="page">L6<small>Ownership, retros</small></span><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
 <header class="top">
-<div class="eyebrow">CSC 519 · Midterm prep · Workshop 7</div>
-<h1>Retrospectives, ownership, and the ten adages</h1>
-<p class="lede">Workshop 7 had you record a short video retrospective of Workshop 5: show it running, then state your top two takeaways. The lecture around it covered the people side of DevOps: silos, the wall of confusion, change ownership, and why teams look back. This page also gathers all ten adages and maps every study-guide bullet to a page, so use it as the last stop before the exam.</p>
-<ul class="tags"><li>retrospectives / hotwashes</li><li>change management</li><li>DevOps silos</li><li>wall of confusion</li><li>change ownership</li><li>Glossary 2</li><li>all the adages</li><li>two large pizzas</li></ul>
-<ul class="toc"><li><a href="#retro">Retrospectives</a></li><li><a href="#ws7">Workshop 7 itself</a></li><li><a href="#silos">Silos and the wall</a></li><li><a href="#own">Change ownership</a></li><li><a href="#g2">Glossary 2</a></li><li><a href="#comfort">Releases and UX</a></li><li><a href="#adages">All ten adages</a></li><li><a href="#format">Exam format</a></li><li><a href="#map">Study-guide map</a></li><li><a href="#quiz">Mixed practice</a></li></ul>
+<div class="eyebrow"><span class="kind l">Lecture 6 · concept</span> Monday Sep 21</div>
+<h1>Change ownership, silos and retrospectives</h1>
+<p class="lede">After a recap of canary releases, the lecture turned to people: Dev and Ops silos, the wall of confusion, change ownership, Glossary 2, retrospectives, and releases as part of the user experience.</p>
+<p class="pair">Workshop it prepares: <a href="14-workshop-7-retrospectives.html">Workshop 7</a> (Mon Sep 28), the retrospective video. The recap half belongs with <a href="09-lecture-5-feature-flags.html">Lecture 5</a>.</p>
+<p class="deckmeta">Source: 6_Feature_flags_change_ownership.pdf</p>
+<ul class="tags"><li>DevOps silos</li><li>wall of confusion</li><li>change ownership</li><li>change management</li><li>retrospectives / hotwashes</li><li>Glossary 2</li><li>all the adages</li></ul>
+<ul class="toc"><li><a href="#silos">DevOps silos and the "wall of confusion"</a></li><li><a href="#own">Change ownership</a></li><li><a href="#retro">Retrospectives</a></li><li><a href="#comfort">"Comfort the customer with discomfort"</a></li><li><a href="#g2">Continuous-Deployment Glossary 2</a></li><li><a href="#adages">All ten adages</a></li><li><a href="#slides">The slides, in order</a></li><li><a href="#quiz">Practice</a></li></ul>
 </header>
-
-<section id="retro">
-<h2>Retrospectives</h2>
-<p>Glossary 2: a <strong>retrospective</strong> is "a practice in which team members discuss the causes and consequences of an unexpected operation outage or deployment failure." The README adds the synonyms: a retrospective is also called a <strong>postmortem</strong> or a <strong>hotwash</strong>, "a mechanism to reflect and communicate what happened during a DevOps process, especially when trying to learn from past mistakes".</p>
-<p>The adage is <strong>"Looking Back to Move Forward"</strong>. Beyond one incident, with a collection of retrospectives "developers can perform a meta-analysis of them to uncover trends and systematic issues with deployment processes".</p>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 216" role="img" aria-label="A retrospective turns an incident or sprint into three questions and then into action items that change the pipeline" style="max-width:740px;min-width:600px"><rect class="d-box" x="10" y="66" width="150" height="54" rx="5"/><text x="85" y="89.5" text-anchor="middle" class="b">Something happened</text><text x="85" y="104.5" text-anchor="middle" class="m">outage, failed deploy</text>
-<line class="d-ln" x1="160" y1="93" x2="190" y2="93" marker-end="url(#ah)"/>
-<rect class="d-box ok" x="190" y="20" width="220" height="40" rx="5"/><text x="300" y="44" text-anchor="middle" class="b">1. What worked / went well?</text>
-<rect class="d-box bad" x="190" y="73" width="220" height="40" rx="5"/><text x="300" y="97" text-anchor="middle" class="b">2. What didn&#x27;t work?</text>
-<rect class="d-box warn" x="190" y="126" width="220" height="40" rx="5"/><text x="300" y="150" text-anchor="middle" class="b">3. What can we do better?</text>
-<line class="d-ln" x1="410" y1="93" x2="450" y2="93" marker-end="url(#ah)"/>
-<rect class="d-box acc" x="450" y="66" width="130" height="54" rx="5"/><text x="515" y="89.5" text-anchor="middle" class="b">Action items</text><text x="515" y="104.5" text-anchor="middle" class="m">owner + due date</text>
-<line class="d-ln" x1="580" y1="93" x2="620" y2="93" marker-end="url(#ah)"/>
-<rect class="d-box" x="620" y="66" width="110" height="54" rx="5"/><text x="675" y="89.5" text-anchor="middle" class="b">Change the</text><text x="675" y="104.5" text-anchor="middle" class="m">process / pipeline</text>
-<path class="d-ln dash" d="M675 120 C675 214 85 214 85 122" marker-end="url(#ah)"/>
-<text x="380" y="208" text-anchor="middle" class="m">the next deployment runs through the improved pipeline</text></svg></div><figcaption>The summary slide's wording: the three main goals are "what worked, what didn't work, what can we do better".</figcaption></figure>
-<div class="two"><div>
-<h3>Why hold them (slide)</h3>
-<ul><li>Build trust</li><li>Try new things</li><li>Improve continuously</li><li>(Self) reflection</li><li>Collaborative learning</li><li>Shared understanding</li></ul>
-</div><div>
-<h3>How to run them well (slides)</h3>
-<ul><li>Agree on <strong>vocabulary</strong></li><li>Use <strong>ice breakers</strong></li><li>Foster team <strong>psychological safety</strong></li><li><strong>Make it fun</strong>: give it a theme (the slides' example was an outdoor trip)</li><li>Five quick tips: keep it simple, incorporate novelty, stay focused, make it action-oriented, bring in an outside perspective</li></ul>
-</div></div>
-<aside class="exam"><b>Exam angle</b>Psychological safety is the load-bearing idea. If people fear blame they hide what happened, and the team cannot learn. A retrospective asks "what in our process allowed this?", not "who did this?". Contrast this with the siloed world below, where "organizational silos blame each other for production problems".</aside>
-<h3>Terms that mean nearly the same thing</h3>
-<div class="scroll"><table>
-<tr><th>Term</th><th>Flavor</th></tr>
-<tr><td>Retrospective</td><td>The general word. In Agile, held at the end of every sprint, not only after failures</td></tr>
-<tr><td>Postmortem</td><td>Written analysis after an incident or outage: what happened, why, and what changes</td></tr>
-<tr><td>Hotwash</td><td>An immediate after-action discussion held right after the event, while it is fresh</td></tr>
-</table></div>
-</section>
-
-<section id="ws7">
-<h2>Workshop 7 itself</h2>
-<p>Deliverable: a 1 to 4 minute screen-recorded video retrospective of Workshop 5. The rubric was four equal points, which is also a fair outline of what a retrospective records:</p>
-<div class="scroll"><table>
-<tr><th>Video shows</th><th>Why it belongs in a retrospective</th></tr>
-<tr><td>Starting the Ansible container (or explaining your setup)</td><td>Establishes the environment, so others can reproduce what you did</td></tr>
-<tr><td>The playbook steps completing successfully</td><td>Evidence of what happened, not a recollection</td></tr>
-<tr><td>Visiting the resulting website</td><td>Verifies the outcome from the user's side</td></tr>
-<tr><td>Your top 2 takeaways or "lessons learned"</td><td>The actual retrospective: what to keep and what to change</td></tr>
-</table></div>
-<p>The practical skills were screen capture and three editing moves (import, split, export), with the lesson that a retrospective is a <em>communication</em> artifact: short, legible, under the size limit.</p>
-<div class="cap">A postmortem skeleton worth being able to sketch</div>
-<pre class="code">Title / date / authors
-Summary          one paragraph: what broke, for whom, for how long
-Timeline         when it started, was detected, was mitigated, was resolved
-Impact           users / requests / revenue affected  (the blast radius)
-Root cause       the technical cause AND the process gap that let it through
-What went well   detection, rollback, communication that worked
-What went wrong  missing tests, alerts, runbooks, slow rollback
-Action items     concrete change, owner, due date  (e.g. add a pipeline stage, an alert, a test)</pre>
-<p>The README pointed to a real example, Anthropic's September 2025 "A postmortem of three recent issues", and asked you to look for how they proposed <strong>modifying their DevOps pipeline</strong> as a result. That is the pattern to remember: a good postmortem ends in changes to tests, evaluations and monitoring, not in an apology.</p>
-<p>Honest takeaways from Workshop 5 that would fit the video: test the playbook on a freshly provisioned VM; make every task idempotent so reruns are safe; keep secrets out of the repo with <code>vars_prompt</code> and <code>.gitignore</code>; let the playbook verify its own result with <code>uri</code>.</p>
-</section>
-
 <section id="silos">
 <h2>DevOps silos and the "wall of confusion"</h2>
 <figure class="fig"><div class="scroll"><svg viewBox="0 0 740 250" role="img" aria-label="In a siloed organisation development throws releases over a wall to operations through tickets; in DevOps one team owns the change from code to production" style="max-width:740px;min-width:600px"><text x="190" y="16" text-anchor="middle" class="l">Siloed</text>
@@ -239,6 +195,43 @@ Action items     concrete change, owner, due date  (e.g. add a pipeline stage, a
 <p>The study guide lists <strong>change management</strong> as its own bullet. Pull the threads together: every change to production is a risk, so DevOps controls change by making each one <em>small</em> (CI, units of change), <em>reviewed</em> (pull requests at diff time), <em>automatically verified</em> (pipeline stages and quality gates), <em>gradually exposed</em> (flags, canaries, rings), <em>owned</em> (change ownership), <em>reversible</em> (rollback plan) and <em>learned from</em> (retrospectives). The pre-DevOps version of change management was the ticket queue and the gatekeeping ops team.</p>
 </section>
 
+<section id="retro">
+<h2>Retrospectives</h2>
+<p>Glossary 2: a <strong>retrospective</strong> is "a practice in which team members discuss the causes and consequences of an unexpected operation outage or deployment failure." The README adds the synonyms: a retrospective is also called a <strong>postmortem</strong> or a <strong>hotwash</strong>, "a mechanism to reflect and communicate what happened during a DevOps process, especially when trying to learn from past mistakes".</p>
+<p>The adage is <strong>"Looking Back to Move Forward"</strong>. Beyond one incident, with a collection of retrospectives "developers can perform a meta-analysis of them to uncover trends and systematic issues with deployment processes".</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 216" role="img" aria-label="A retrospective turns an incident or sprint into three questions and then into action items that change the pipeline" style="max-width:740px;min-width:600px"><rect class="d-box" x="10" y="66" width="150" height="54" rx="5"/><text x="85" y="89.5" text-anchor="middle" class="b">Something happened</text><text x="85" y="104.5" text-anchor="middle" class="m">outage, failed deploy</text>
+<line class="d-ln" x1="160" y1="93" x2="190" y2="93" marker-end="url(#ah)"/>
+<rect class="d-box ok" x="190" y="20" width="220" height="40" rx="5"/><text x="300" y="44" text-anchor="middle" class="b">1. What worked / went well?</text>
+<rect class="d-box bad" x="190" y="73" width="220" height="40" rx="5"/><text x="300" y="97" text-anchor="middle" class="b">2. What didn&#x27;t work?</text>
+<rect class="d-box warn" x="190" y="126" width="220" height="40" rx="5"/><text x="300" y="150" text-anchor="middle" class="b">3. What can we do better?</text>
+<line class="d-ln" x1="410" y1="93" x2="450" y2="93" marker-end="url(#ah)"/>
+<rect class="d-box acc" x="450" y="66" width="130" height="54" rx="5"/><text x="515" y="89.5" text-anchor="middle" class="b">Action items</text><text x="515" y="104.5" text-anchor="middle" class="m">owner + due date</text>
+<line class="d-ln" x1="580" y1="93" x2="620" y2="93" marker-end="url(#ah)"/>
+<rect class="d-box" x="620" y="66" width="110" height="54" rx="5"/><text x="675" y="89.5" text-anchor="middle" class="b">Change the</text><text x="675" y="104.5" text-anchor="middle" class="m">process / pipeline</text>
+<path class="d-ln dash" d="M675 120 C675 214 85 214 85 122" marker-end="url(#ah)"/>
+<text x="380" y="208" text-anchor="middle" class="m">the next deployment runs through the improved pipeline</text></svg></div><figcaption>The summary slide's wording: the three main goals are "what worked, what didn't work, what can we do better".</figcaption></figure>
+<div class="two"><div>
+<h3>Why hold them (slide)</h3>
+<ul><li>Build trust</li><li>Try new things</li><li>Improve continuously</li><li>(Self) reflection</li><li>Collaborative learning</li><li>Shared understanding</li></ul>
+</div><div>
+<h3>How to run them well (slides)</h3>
+<ul><li>Agree on <strong>vocabulary</strong></li><li>Use <strong>ice breakers</strong></li><li>Foster team <strong>psychological safety</strong></li><li><strong>Make it fun</strong>: give it a theme (the slides' example was an outdoor trip)</li><li>Five quick tips: keep it simple, incorporate novelty, stay focused, make it action-oriented, bring in an outside perspective</li></ul>
+</div></div>
+<aside class="exam"><b>Exam angle</b>Psychological safety is the load-bearing idea. If people fear blame they hide what happened, and the team cannot learn. A retrospective asks "what in our process allowed this?", not "who did this?". Contrast this with the siloed world below, where "organizational silos blame each other for production problems".</aside>
+<h3>Terms that mean nearly the same thing</h3>
+<div class="scroll"><table>
+<tr><th>Term</th><th>Flavor</th></tr>
+<tr><td>Retrospective</td><td>The general word. In Agile, held at the end of every sprint, not only after failures</td></tr>
+<tr><td>Postmortem</td><td>Written analysis after an incident or outage: what happened, why, and what changes</td></tr>
+<tr><td>Hotwash</td><td>An immediate after-action discussion held right after the event, while it is fresh</td></tr>
+</table></div>
+</section>
+
+<section id="comfort">
+<h2>"Comfort the customer with discomfort"</h2>
+<p>Slide title: <strong>releases are part of the user experience</strong>, with the question "does the user choose… or not?". Continuous deployment means the product changes under the user constantly. Some users welcome that; others are disturbed when a feature appears, moves or disappears without warning. Teams have to manage that discomfort: communicate with end users, let them opt in to previews (early-adopter rings), roll out gradually, and keep the ability to turn things back. The slides paired it with a paper on availability and accountability for IoT updates, where an update the user did not choose has physical consequences.</p>
+</section>
+
 <section id="g2">
 <h2>Continuous-Deployment Glossary 2</h2>
 <div class="scroll"><table>
@@ -249,12 +242,7 @@ Action items     concrete change, owner, due date  (e.g. add a pipeline stage, a
 <tr><td>Telemetry</td><td>A practice in which code is instrumented to compute metrics about feature use and software performance and stability</td><td>WS6 benchmark; A/B tests</td></tr>
 <tr><td>Microservices</td><td>An architectural style in which services are created as small and often stateless instances and connected through a central discovery service and property store</td><td>Services lecture; two-pizza teams</td></tr>
 </table></div>
-<p>Glossary 1 (continuous deployment, feature flags, dark launching, deflighting / rollback, staging / baking) is on the Workshop 5 page.</p>
-</section>
-
-<section id="comfort">
-<h2>"Comfort the customer with discomfort"</h2>
-<p>Slide title: <strong>releases are part of the user experience</strong>, with the question "does the user choose… or not?". Continuous deployment means the product changes under the user constantly. Some users welcome that; others are disturbed when a feature appears, moves or disappears without warning. Teams have to manage that discomfort: communicate with end users, let them opt in to previews (early-adopter rings), roll out gradually, and keep the ability to turn things back. The slides paired it with a paper on availability and accountability for IoT updates, where an update the user did not choose has physical consequences.</p>
+<p>Glossary 1 (continuous deployment, feature flags, dark launching, deflighting / rollback, staging / baking) is in Lecture 5.</p>
 </section>
 
 <section id="adages">
@@ -276,55 +264,64 @@ Action items     concrete change, owner, due date  (e.g. add a pipeline stage, a
 <p>Two other quotations used as slide openers: "There are only two hard things in Computer Science: cache invalidation and naming things" (Phil Karlton), and Lamport's line that a distributed system is one where "the failure of a computer you didn't even know existed can render your own computer unusable".</p>
 </section>
 
-<section id="format">
-<h2>Exam format, as confirmed in the midterm review deck</h2>
+<section id="slides">
+<h2>The slides, in order</h2>
+<p class="deckmeta">6_Feature_flags_change_ownership.pdf · 41 slides</p>
+<p>The first fourteen slides repeat the experiments material from deck 5 (A/B, canary, flags vs canary, dark launch, summary). The new material is three adages: You are the support person, Looking back to move forward, and Comfort the customer with discomfort.</p>
 <div class="scroll"><table>
-<tr><th>Yes, on the exam</th><th>Not on the exam</th></tr>
-<tr><td style="font-weight:400"><strong>Matching concepts.</strong> Draw lines from items on the left to the most related item on the right. Left items might connect to nothing.</td><td style="font-weight:400">No coding or scripting</td></tr>
-<tr><td style="font-weight:400"><strong>Distinguishing code kinds.</strong> "What kind of code is represented in this figure?" Name the tool: GitHub Actions, Dockerfile, Ansible file, or Bash shell commands from class.</td><td style="font-weight:400">No "define the term…" open-ended definitions</td></tr>
-<tr><td style="font-weight:400"><strong>True / false with corrections.</strong> If false, underline the word(s) to change and write the new word(s) below.</td><td style="font-weight:400">No fill-in-the-blank</td></tr>
+<tr><th>Slides</th><th>What they say and what to know</th></tr>
+<tr><td>3–14 · Recap</td><td style="font-weight:400">Every feature is an experiment; A/B testing; methods for rollout; canary releasing; feature flags vs canary; dark launching; summary. Same content as deck 5.</td></tr>
+<tr><td>16 · Glossary #2</td><td style="font-weight:400">Change ownership, end-user communication, retrospectives, telemetry, microservices. Learn the five definitions.</td></tr>
+<tr><td>17–18 · You are the support person</td><td style="font-weight:400">Introduces the paper "DevOps in practice: a multiple case study of five companies" (Finnish companies).</td></tr>
+<tr><td>19 · Dev and Ops are "siloed"</td><td style="font-weight:400">Cartoon of separate, heavily defended silos labelled Development and Ops. "Traditionally (and sometimes today)."</td></tr>
+<tr><td>20 · DevOps seeks to unite silos</td><td style="font-weight:400">The ticket-system quote: in theory higher stability, in practice "long delays between code updates and deployment" and silos that "blame each other for production problems".</td></tr>
+<tr><td>21 · "Wall of confusion"</td><td style="font-weight:400">Development throws packages over a wall to Operations. "Software goes over the wall. Ops owns provisioning and rollout."</td></tr>
+<tr><td>22 · Case study of five companies</td><td style="font-weight:400">Arrows point at two cases with "no separate operations team": Dev and Ops are the same team.</td></tr>
+<tr><td>23 · DevOps means ownership and responsibility</td><td style="font-weight:400">Three interview quotes: "don't handover to operations your deployment"; "full responsibility of the software you are developing in production"; "persons who are developing the applications are also the same ones to maintain them in production".</td></tr>
+<tr><td>24 · "Change ownership" (2015)</td><td style="font-weight:400">Survey chart: how often 17 teams from nine companies used 11 continuous-deployment practices. Change ownership is the highlighted row.</td></tr>
+<tr><td>26–28 · Looking back to move forward</td><td style="font-weight:400">Why retrospectives: build trust, try new things, improve continuously, (self) reflection, collaborative learning, shared understanding.</td></tr>
+<tr><td>29 · Tips from Agile</td><td style="font-weight:400">Vocabulary, ice breakers, foster team psychological safety, make it fun. The poster adds: plan the session, motivate participation, prioritize action items.</td></tr>
+<tr><td>30 · Retrospective with a theme: outdoor trip</td><td style="font-weight:400">Weather: how did we feel about the work? Boulders: what blocked us from reaching our goal? Missing stuff: what could have made the journey more fun? Equipment: what helped us reach our goal?</td></tr>
+<tr><td>31 · Retrospectives for agile sprints</td><td style="font-weight:400">A three-column board: what went well, what to improve, action items.</td></tr>
+<tr><td>32 · Main 3 objectives</td><td style="font-weight:400">01 What worked or went well? 02 What caused problems, failed to work properly, or did not go well? 03 What can be done differently in the next sprint to improve the process?</td></tr>
+<tr><td>33–34 · More tips, tools</td><td style="font-weight:400">Keep it simple, incorporate novelty, stay focused, make it action-oriented, bring in an outside perspective. Tool example: Team Retrospectives, an Azure DevOps extension.</td></tr>
+<tr><td>35 · Activity</td><td style="font-weight:400">You now manage a team that just had a major outage. Brainstorm a theme and the top goals for the retrospective.</td></tr>
+<tr><td>37–39 · Comfort the customer with discomfort</td><td style="font-weight:400">"Releases are part of the user experience (UX)." Does the user choose to update, or not? Followed by a paper on availability and accountability for IoT updates.</td></tr>
+<tr><td>41–42 · Semantically rich variable names</td><td style="font-weight:400"><em>Not on the midterm.</em></td></tr>
+<tr><td>43 · Summary</td><td style="font-weight:400">The three main goals of retrospectives are "what worked, what didn't work, what can we do better". "Change ownership" means the software developer has responsibility for the consequences of changes.</td></tr>
 </table></div>
-<ul>
-<li><strong>No simple negation.</strong> Turning "is made of salt water" into "is <em>not</em> made of salt water" earns no points. Replace the wrong word with the right one.</li>
-<li>Sample statements shown in the review: "In DevOps, PR stands for pull <u class="fix">requirement</u>" (request). "A PR contains <u class="fix">at most a single</u> commit" (one or more). The two-large-pizzas statement (it is about team size).</li>
-<li>Logistics: paper, pen preferred, <strong>no notes</strong>, assigned seats, arrive early, phones and devices in a bag, no smart watches. Cover your answers as you go with the sheet of paper provided.</li>
-<li>Not on the midterm even though on slides: DevOps job postings, semantically rich identifiers, unikernels, reverse proxy, docker command syntax.</li>
-</ul>
-<aside class="note">Since there are no open-ended definition or short-answer questions, definitions are tested by <em>recognition</em>: a true / false statement with one word swapped, or a matching line. The Exam page drills all three question types.</aside>
-</section>
-
-<section id="map">
-<h2>Study-guide map</h2>
-<div class="scroll"><table>
-<tr><th>Study-guide bullet</th><th>Page</th><th>One-line answer</th></tr>
-<tr><td>Git Flow / branch-based development / PRs / Modern Code Review</td><td>WS2</td><td style="font-weight:400">Features branch from and merge to develop; only release and hotfix reach main; review happens on the PR</td></tr>
-<tr><td>Containers, bind mount (-v)</td><td>WS1</td><td style="font-weight:400">Image is the template, container the instance; <code>-v host:container</code> shares a host folder</td></tr>
-<tr><td>DevOps lifecycle / pipelines / events / roles</td><td>WS3</td><td style="font-weight:400">Event-driven stages carry a unit of change from code to production; five named roles</td></tr>
-<tr><td>Ansible: idempotent, declarative | imperative, agents, controllers, role of SSH, hosts</td><td>WS4</td><td style="font-weight:400">Agentless, declarative, idempotent; control node pushes over SSH to inventory hosts</td></tr>
-<tr><td>Configuration management</td><td>WS4, WS5</td><td style="font-weight:400">Inventory of assets provisioned and controlled through tools such as Ansible</td></tr>
-<tr><td>Diff time</td><td>WS2</td><td style="font-weight:400">The discrete moment a change is proposed; when review and static analysis run</td></tr>
-<tr><td>Bit rot</td><td>WS1</td><td style="font-weight:400">Unchanged code stops working as its environment and dependencies change</td></tr>
-<tr><td>Environment variables</td><td>WS2, WS5, WS6</td><td style="font-weight:400">Name=value configuration injected at run time; keeps config and secrets out of code</td></tr>
-<tr><td>Feature flags / dark launching</td><td>WS5</td><td style="font-weight:400">Run-time switches; deployed but not released</td></tr>
-<tr><td>Change management</td><td>WS7</td><td style="font-weight:400">Small, reviewed, verified, gradual, owned, reversible changes</td></tr>
-<tr><td>DevOps silos / wall of confusion</td><td>WS7</td><td style="font-weight:400">Dev and Ops separated by a ticket hand-off; delays and blame</td></tr>
-<tr><td>Continuous Deployment</td><td>WS3, WS5</td><td style="font-weight:400">Changes automatically tested, vetted and deployed to production</td></tr>
-<tr><td>GitHub Actions</td><td>WS3</td><td style="font-weight:400">YAML workflows: <code>on</code> event → jobs → steps on a runner</td></tr>
-<tr><td>Releases: canary / deflighting / rollback / A-B testing / load balancing</td><td>WS5, WS6</td><td style="font-weight:400">Small share first; shift traffic or flip the flag to undo; compare variants by metric</td></tr>
-<tr><td>Two large pizzas rule</td><td>WS3</td><td style="font-weight:400">Team size: no bigger than two pizzas can feed</td></tr>
-<tr><td>Retrospectives / hotwashes</td><td>WS7</td><td style="font-weight:400">What worked, what didn't, what can we do better</td></tr>
-<tr><td>Computing environments: shells / VMs / containers / virtualization</td><td>WS1</td><td style="font-weight:400">VMs virtualize hardware with a guest OS; containers share the host kernel</td></tr>
-<tr><td>All the adages</td><td>WS7</td><td style="font-weight:400">Table above</td></tr>
-<tr><td>Continuous Deployment Glossaries 1 &amp; 2</td><td>WS5, WS7</td><td style="font-weight:400">Ten definitions; learn them near verbatim</td></tr>
-<tr><td>Deployment rings / blast radius</td><td>WS6</td><td style="font-weight:400">Canaries → early adopters → users; impact grows with each ring</td></tr>
-<tr><td>Shift left / shift right</td><td>WS6</td><td style="font-weight:400">Test earlier to prevent; test in production to detect</td></tr>
-</table></div>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>Change ownership<span class="src">slide wording</span></dt><dd>A practice in which developers are responsible for software changes for all phases, including development, testing, deployment, and fixing problems.</dd></div>
+<div class="term"><dt>End-user communication<span class="src">slide wording</span></dt><dd>A practice enabling communication with users to receive feedback and gather requirements.</dd></div>
+<div class="term"><dt>Retrospectives<span class="src">slide wording</span></dt><dd>A practice in which team members discuss the causes and consequences of an unexpected operation outage or deployment failure.</dd></div>
+<div class="term"><dt>Telemetry<span class="src">slide wording</span></dt><dd>A practice in which code is instrumented to compute metrics about feature use and software performance and stability.</dd></div>
+<div class="term"><dt>Microservices<span class="src">slide wording</span></dt><dd>An architectural style in which services are created as small and often stateless instances and connected through a central discovery service and property store.</dd></div>
+<div class="term"><dt>Silo</dt><dd>A team isolated from others, with its own goals and tools.</dd></div>
+<div class="term"><dt>Wall of confusion<span class="src">slide wording</span></dt><dd>The Dev/Ops barrier: software goes over the wall and Ops owns provisioning and rollout.</dd></div>
+<div class="term"><dt>Ticket system<span class="src">slide wording</span></dt><dd>The pre-DevOps interface between Dev and Ops; a source of long delays and blame.</dd></div>
+<div class="term"><dt>Three objectives of a retrospective<span class="src">slide wording</span></dt><dd>What worked; what didn't work; what can we do better.</dd></div>
+<div class="term"><dt>Psychological safety</dt><dd>Team members can speak honestly without fear of blame.</dd></div>
+<div class="term"><dt>Action item</dt><dd>A concrete follow-up from a retrospective that someone is assigned to complete.</dd></div>
+<div class="term"><dt>Releases are part of the UX<span class="src">slide wording</span></dt><dd>How and when updates reach users is part of their experience of the product.</dd></div>
+</dl>
+<h3>Activity prompt and a model answer</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>You are promoted to manage a team that just had a major outage. Give a theme and your top goals for the retrospective.</summary><div class="ans">Theme: for example "the storm at sea": what was the storm (what happened), what kept the ship afloat (what worked), where did we take on water (what failed), and what do we repair before the next voyage (what to do better). Top goals: establish a shared, blame-free timeline; identify the process gaps that let the outage happen and slowed recovery; and leave with a short list of action items with owners. An extra goal for a new manager: build trust.</div></details>
+</div>
+<h3>Check yourself</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>What did the ticket system promise in theory, and what happened in practice?</summary><div class="ans">In theory, higher stability for software in production. In practice, long delays between code updates and deployment, and ineffective problem solving in which silos blame each other.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name the four parts of the "outdoor trip" retrospective theme.</summary><div class="ans">Weather (how we felt about the work), boulders (what blocked us), missing stuff (what could have made it better), equipment (what helped us reach the goal).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which adage goes with each: change ownership, retrospectives, releases as UX?</summary><div class="ans">You are the support person; Looking back to move forward; Comfort the customer with discomfort.</div></details>
+</div>
 </section>
 
 <section id="quiz">
-<h2>Mixed practice across all seven workshops</h2>
+<h2>Practice</h2>
 <div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
 <div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>Telemetry is a practice in which team members discuss the causes of an outage.</summary><div class="ans"><span class="F">False.</span> That is a <strong>retrospective</strong>. Telemetry is instrumenting code to compute metrics about feature use, performance and stability.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>The three main goals of a retrospective are who caused it, how to punish it, and how to hide it.</summary><div class="ans"><span class="F">False.</span> The goals are <strong>what worked, what didn't work, and what can we do better</strong>. Blame destroys the psychological safety a retrospective depends on.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>"Change ownership" means the operations team is responsible for the consequences of software changes.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">operations team</u> to <strong>software developer</strong>.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>In the pre-DevOps era, the interface between development and operations was usually a ticket system.</summary><div class="ans"><span class="T">True.</span> Which led to long delays and silos blaming each other.</div></details>
@@ -332,21 +329,13 @@ Action items     concrete change, owner, due date  (e.g. add a pipeline stage, a
 <details class="q"><summary><span class="chip">True / False</span>Telemetry is a practice in which code is instrumented to compute metrics about feature use, performance and stability.</summary><div class="ans"><span class="T">True.</span> Glossary 2.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>Microservices are created as large, stateful instances connected through a shared database.</summary><div class="ans"><span class="F">False.</span> They are <strong>small and often stateless</strong> instances connected through a <strong>central discovery service and property store</strong>.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>The adage "Looking back to move forward" is most closely tied to feature flags.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">feature flags</u> to <strong>retrospectives</strong>.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>"Be fast to deploy but slow to release" is supported by dark launching.</summary><div class="ans"><span class="T">True.</span> Code is in production (deployed) but invisible to users (not released).</div></details>
-<details class="q"><summary><span class="chip">True / False</span>Continuous deployment is a process in which software changes are manually tested and deployed to production once per quarter.</summary><div class="ans"><span class="F">False.</span> Changes are <strong>incremental</strong> and are <strong>automatically</strong> tested, vetted and deployed.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>A hotwash is a kind of feature flag.</summary><div class="ans"><span class="F">False.</span> A hotwash is a kind of <strong>retrospective</strong> (an immediate after-action review).</div></details>
 <details class="q"><summary><span class="chip">Matching</span>Connect each concept to the most related adage. Concepts: Ansible playbook · A/B testing · postmortem · on-call developer · dark launch · Boehm's curve · early security review · reverse proxy.</summary><div class="ans">Ansible playbook ↔ Configuration is code. A/B testing ↔ Every feature is an experiment. Postmortem ↔ Looking back to move forward. On-call developer ↔ You are the support person. Dark launch ↔ Be fast to deploy but slow(er) to release. Boehm's curve ↔ The cost of change is dead. Early security review ↔ Invite privacy and security in. Reverse proxy ↔ nothing (and it is excluded from the midterm). Leaving an item unmatched is allowed.</div></details>
-<details class="q"><summary><span class="chip">Matching</span>Connect each term to its tool. Terms: version control · continuous integration · infrastructure as code · containerization · secrets manager · package manager. Tools: Git · GitHub Actions · Ansible · Docker / Podman · GitHub repository secrets · apk / apt.</summary><div class="ans">In the same order: Git, GitHub Actions, Ansible, Docker / Podman, GitHub repository secrets, apk / apt.</div></details>
-<details class="q"><summary><span class="chip">Matching</span>Connect each role to its responsibility: Service Owner · Gatekeeper · Release Engineer · DevOps Engineer · Reliability Engineer.</summary><div class="ans">Service Owner: outside coordination and the vision of the service. Gatekeeper: decisions to move to the next pipeline stage. Release Engineer: the entire release process, including back-out decisions. DevOps Engineer: care and feeding of the toolchain. Reliability Engineer: the period immediately after deployment.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>Explain how DevOps addresses the wall of confusion. Mention at least three practices.</summary><div class="ans">It removes the hand-off. One small team owns a service from code to production (change ownership, two-pizza teams); automation replaces tickets (CI/CD pipelines, configuration as code); shared telemetry and blameless retrospectives replace blame; gradual releases with fast rollback make frequent change safe enough that ops no longer needs to resist it.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>A deployment caused a 40-minute outage. Outline the retrospective you would run.</summary><div class="ans">Gather the timeline and data first. Set a blameless tone (psychological safety). Ask what worked (e.g. alert fired, rollback was fast), what didn't (e.g. no canary, missing test), and what to do better. End with specific action items with owners, such as adding a staging test, a ring-0 canary, or an alert, and track them. Keep the write-up so trends across incidents can be analyzed.</div></details>
-<details class="q"><summary><span class="chip">Self-check</span>Trace one code change from a developer's laptop to all users, naming a concept from each workshop.</summary><div class="ans">The developer works in a container (WS1) on a feature branch and opens a pull request, the diff-time review point (WS2). The PR event triggers a GitHub Actions workflow that tests it (WS3). After merge, an idempotent Ansible playbook configures the servers (WS4) and deploys the app with the new feature behind a flag, dark (WS5). It is enabled ring by ring, canaries first, while telemetry is watched and the blast radius stays small (WS6). If anything goes wrong it is rolled back and the team holds a retrospective (WS7).</div></details>
-<details class="q"><summary><span class="chip">Self-check</span>Why is "no simple negation" a rule on the true / false questions, and how do you correct "Ansible requires agents on managed nodes"?</summary><div class="ans">Adding "not" shows you know the statement is false but not what is true. Replace the wrong term: underline "requires agents" and write "requires no agents (is agentless), connecting over SSH".</div></details>
 </div>
 </section>
-
-<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws6.html" rel="prev"><small>← Previous</small>DevOps WS6 Multi-Host Orchestration</a><a class="next" href="exam.html" rel="next"><small>Next →</small>DevOps Midterm Exam Drill</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="10-workshop-5-ansible-deployment.html" rel="prev"><small>← Previous</small>Workshop 5: Ansible 2: security patching and a single-host deployment</a><a class="next" href="12-lecture-7-rings-blast-radius.html" rel="next"><small>Next →</small>Lecture 7: Deployment rings, blast radius, shift left and shift right</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

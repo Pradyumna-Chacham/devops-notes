@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DevOps WS5 Ansible Deployment</title>
+<title>DevOps Lecture 5 Feature Flags</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
 /* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
@@ -36,12 +36,23 @@ body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-in
 .wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
 a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
 nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
 nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
 
 header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
 .eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
 .lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
@@ -97,7 +108,7 @@ details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transfor
 details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
-section[id^="d"] table td:first-child{min-width:10.5rem}
+section#slides table td:first-child{min-width:10.5rem}
 .snip{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
 .cols ul{margin:0}
@@ -115,7 +126,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 @media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 </style>
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -125,182 +136,16 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><span class="cur" aria-current="page">WS5<small>Deploy &amp; feature flags</small></span><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><span class="cur" aria-current="page">L5<small>Feature flags, releases</small></span><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
 <header class="top">
-<div class="eyebrow">CSC 519 · Midterm prep · Workshop 5</div>
-<h1>Ansible for security patching and a single-host deployment</h1>
-<p class="lede">Workshop 5 used two playbooks: one that applies security updates to every host, and one that turns a bare VM into a working Node.js + MySQL application. The lectures that week were about what happens after deployment: feature flags, dark launches, canaries and rollback. Both halves are here.</p>
-<ul class="tags"><li>configuration management</li><li>idempotence in practice</li><li>environment variables</li><li>Continuous Deployment</li><li>Glossary 1</li><li>feature flags</li><li>dark launching</li><li>canary / A-B / rollback</li><li>adages</li></ul>
-<ul class="toc"><li><a href="#arch">What you built</a></li><li><a href="#sec">Security playbook</a></li><li><a href="#setup">Setup playbook</a></li><li><a href="#toolbox">Ansible keywords</a></li><li><a href="#idem">Idempotence patterns</a></li><li><a href="#app">The app</a></li><li><a href="#cd">Continuous deployment</a></li><li><a href="#flags">Feature flags</a></li><li><a href="#dark">Dark launching</a></li><li><a href="#rollout">Canary, A/B, blue-green</a></li><li><a href="#rollback">Rollback</a></li><li><a href="#cost">Cost of change</a></li><li><a href="#quiz">Practice</a></li></ul>
+<div class="eyebrow"><span class="kind l">Lecture 5 · concept</span> Monday Sep 14</div>
+<h1>Feature flags and release engineering</h1>
+<p class="lede">Deploying is not releasing. This lecture covered Glossary 1, feature flags, dark launching, A/B tests, canary releases, rollback, and three adages: the cost of change is dead, be fast to deploy but slow to release, every feature is an experiment.</p>
+<p class="pair">Workshop that followed: <a href="10-workshop-5-ansible-deployment.html">Workshop 5</a> (Wed Sep 16), which continues Ansible from Lecture 4. No workshop practises feature flags directly, so this lecture is concept-only.</p>
+<p class="deckmeta">Source: 5_Feature_flags.pdf</p>
+<ul class="tags"><li>Continuous Deployment</li><li>Glossary 1</li><li>feature flags</li><li>dark launching</li><li>canary / A-B / rollback</li><li>adages</li></ul>
+<ul class="toc"><li><a href="#cd">Continuous deployment and Glossary 1</a></li><li><a href="#cost">"The cost of change is dead" (with an asterisk)</a></li><li><a href="#flags">Feature flags</a></li><li><a href="#dark">Dark launching</a></li><li><a href="#rollout">Experiments and rollout methods</a></li><li><a href="#rollback">De-flighting, rollback and load balancing</a></li><li><a href="#slides">The slides, in order</a></li><li><a href="#quiz">Practice</a></li></ul>
 </header>
-
-<section id="arch">
-<h2>What Workshop 5 builds</h2>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 230" role="img" aria-label="The control node configures one VM over SSH; on that VM a systemd service runs a Node.js app on port 80 that queries a local MySQL database" style="max-width:740px;min-width:600px"><rect class="d-box soft" x="20" y="60" width="150" height="110" rx="5"/><text x="30" y="77" class="b">Control node</text><text x="30" y="93" class="m">Ansible container</text><text x="30" y="107" class="m">0-update-security.yaml</text><text x="30" y="121" class="m">1-setup-config.yaml</text>
-<line class="d-ln a" x1="170" y1="115" x2="250" y2="115" marker-end="url(#aha)"/><text x="210" y="105" text-anchor="middle" class="m a">SSH</text>
-<rect class="d-box soft" x="250" y="20" width="470" height="190" rx="5"/><text x="260" y="37" class="b">VM1: Ubuntu 24.04 (the single managed host)</text>
-<rect class="d-box" x="270" y="70" width="120" height="50" rx="5"/><text x="330" y="91.5" text-anchor="middle" class="b">systemd unit</text><text x="330" y="106.5" text-anchor="middle" class="m">keeps the app running</text>
-<line class="d-ln" x1="390" y1="95" x2="420" y2="95" marker-end="url(#ah)"/>
-<rect class="d-box acc" x="420" y="70" width="130" height="50" rx="5"/><text x="485" y="91.5" text-anchor="middle" class="b">Node.js app</text><text x="485" y="106.5" text-anchor="middle" class="m">listens on port 80</text>
-<line class="d-ln" x1="550" y1="95" x2="590" y2="95" marker-end="url(#ah)"/><text x="570" y="85" text-anchor="middle" class="m">SQL</text>
-<rect class="d-box" x="590" y="70" width="115" height="50" rx="5"/><text x="647.5" y="91.5" text-anchor="middle" class="b">MySQL</text><text x="647.5" y="106.5" text-anchor="middle" class="m">127.0.0.1:3306</text>
-<text x="647" y="138" text-anchor="middle" class="m">points table</text>
-<text x="647" y="153" text-anchor="middle" class="m">10,000 (x, y) rows</text>
-<rect class="d-box warn" x="270" y="150" width="280" height="44" rx="5"/><text x="410" y="168.5" text-anchor="middle" class="b">Environment= lines in the unit</text><text x="410" y="183.5" text-anchor="middle" class="m">DB_HOST, DB_USER… read as process.env</text>
-<line class="d-ln dash" x1="410" y1="150" x2="470" y2="120" marker-end="url(#ah)"/></svg></div><figcaption>Everything on one host. Workshop 6 moves the database to a second VM and measures what that costs.</figcaption></figure>
-</section>
-
-<section id="sec">
-<h2>Playbook 0: security updates</h2>
-<pre class="code">- name: Apply system security updates
-  <mark>hosts: all</mark><span class="c">                         # every machine in the inventory, whatever its group</span>
-  become: true
-  tasks:
-    - name: Refresh the package index
-      apt: { update_cache: true, cache_valid_time: 3600 }
-    - name: Upgrade all packages to latest security patches
-      apt: { <mark>upgrade: dist</mark> }
-    - name: Remove packages no longer required
-      apt: { autoremove: true }
-    - name: Check whether a reboot is required
-      stat: { path: /var/run/reboot-required }
-      <mark>register: reboot_required</mark><span class="c">        # save the result in a variable</span>
-    - name: Reboot host if required by updates
-      reboot: { reboot_timeout: 300 }
-      <mark>when: reboot_required.stat.exists</mark><span class="c">   # conditional task</span></pre>
-<ul>
-<li><strong>Patching as code.</strong> The same file patches one VM or the whole fleet, can run on a schedule, and its history is in git. This is "Configuration is Code" applied to security, and it speaks to the adage "Invite Privacy and Security In".</li>
-<li><strong>Idempotent by nature.</strong> A patched host reports nothing to change.</li>
-<li><strong><code>register</code> + <code>when</code></strong> is the standard "look, then decide" pair: gather a fact, then run a task only if needed.</li>
-</ul>
-</section>
-
-<section id="setup">
-<h2>Playbook 1: environment, datastore, app</h2>
-<pre class="code">- name: Configure VM1 with Node.js app and MySQL datastore
-  hosts: myserver
-  become: true
-  <mark>vars_prompt:</mark><span class="c">                          # ask at run time; the password is never in the repo</span>
-    - { name: db_password, prompt: &quot;Enter password for the MySQL application user&quot;, private: true }
-  <mark>vars:</mark>
-    db_name: pointsdb
-    db_user: appuser
-    app_dir: /opt/nearest-app
-  tasks:
-    - name: Install Node.js, npm, and MySQL server
-      apt: { name: [nodejs, npm, mysql-server], state: present }
-    - name: Ensure MySQL service is started and enabled
-      service: { name: mysql, state: started, enabled: true }
-    - name: Create application database
-      command: mysql -u root -e &quot;CREATE DATABASE <mark>IF NOT EXISTS</mark> {{ db_name }};&quot;
-      changed_when: false
-    - name: Check whether points table already has data
-      command: mysql -u root {{ db_name }} -N -B -e &quot;SELECT COUNT(*) FROM points;&quot;
-      register: points_count
-      changed_when: false
-    - name: Import CSV data into points table
-      command: mysql -u root {{ db_name }} -e &quot;LOAD DATA INFILE … INTO TABLE points …&quot;
-      <mark>when: points_count.stdout | int == 0</mark><span class="c">      # import only into an empty table</span>
-    - name: Deploy application server.js
-      copy: { src: app/server.js, dest: &quot;{{ app_dir }}/server.js&quot; }
-      <mark>notify: restart nearest-app</mark><span class="c">             # queue the handler if this task changed</span>
-    - name: Deploy systemd unit for the application
-      template: { src: app/nearest-app.service.j2, dest: /etc/systemd/system/nearest-app.service }
-      no_log: true<span class="c">                            # the rendered file contains the password</span>
-      notify: restart nearest-app
-    - name: Apply pending restarts before verifying the app
-      meta: flush_handlers
-    - name: Verify the app responds on port 80
-      uri: { url: &quot;http://127.0.0.1/&quot;, return_content: true }
-      register: app_response
-      until: app_response.status == 200
-      retries: 10
-      delay: 3
-  <mark>handlers:</mark>
-    - name: restart nearest-app
-      systemd: { name: nearest-app, state: restarted, daemon_reload: true }</pre>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 190" role="img" aria-label="Tasks that report changed notify a handler, and the handler runs once after the tasks instead of once per notification" style="max-width:740px;min-width:600px"><rect class="d-box ok" x="20" y="20" width="230" height="36" rx="5"/><text x="135" y="42" text-anchor="middle" class="b">copy package.json: changed</text>
-<rect class="d-box" x="20" y="64" width="230" height="36" rx="5"/><text x="135" y="86" text-anchor="middle" class="b">copy server.js: ok (no change)</text>
-<rect class="d-box ok" x="20" y="108" width="230" height="36" rx="5"/><text x="135" y="130" text-anchor="middle" class="b">template service unit: changed</text>
-<line class="d-ln" x1="250" y1="38" x2="370" y2="76" marker-end="url(#ah)"/><text x="318" y="46" text-anchor="middle" class="m">notify</text>
-<line class="d-ln" x1="250" y1="126" x2="370" y2="96" marker-end="url(#ah)"/><text x="318" y="128" text-anchor="middle" class="m">notify</text>
-<rect class="d-box warn" x="370" y="62" width="150" height="48" rx="5"/><text x="445" y="82.5" text-anchor="middle" class="b">Handler queue</text><text x="445" y="97.5" text-anchor="middle" class="m">&quot;restart nearest-app&quot; ×1</text>
-<line class="d-ln" x1="520" y1="86" x2="590" y2="86" marker-end="url(#ah)"/>
-<rect class="d-box acc" x="590" y="62" width="130" height="48" rx="5"/><text x="655" y="82.5" text-anchor="middle" class="b">Restart runs once</text><text x="655" y="97.5" text-anchor="middle" class="m">at end of play or flush</text>
-<text x="135" y="170" text-anchor="middle" class="m">an unchanged task notifies nothing</text></svg></div><figcaption>Handlers are how a playbook restarts a service only when its configuration really changed. On a second run with no changes the app is not restarted at all.</figcaption></figure>
-</section>
-
-<section id="toolbox">
-<h2>Ansible keywords you should be able to read</h2>
-<div class="scroll"><table class="anno">
-<tr><th>Keyword</th><th>What it does</th></tr>
-<tr><td><code>vars:</code> / <code>{{ name }}</code></td><td>Define variables; substitute them with Jinja2 double braces</td></tr>
-<tr><td><code>vars_prompt:</code> + <code>private: true</code></td><td>Ask the operator for a value at run time without echoing it. Keeps secrets out of the repo</td></tr>
-<tr><td><code>register: x</code></td><td>Store a task's result (stdout, return code, status…) in variable <code>x</code></td></tr>
-<tr><td><code>when:</code></td><td>Run the task only if the condition is true</td></tr>
-<tr><td><code>changed_when:</code> / <code>failed_when:</code></td><td>Override Ansible's idea of whether a command changed something or failed</td></tr>
-<tr><td><code>notify:</code> / <code>handlers:</code></td><td>Run a handler (usually a restart) once, later, only if the notifying task changed</td></tr>
-<tr><td><code>meta: flush_handlers</code></td><td>Run queued handlers now instead of at the end of the play</td></tr>
-<tr><td><code>until:</code> / <code>retries:</code> / <code>delay:</code></td><td>Retry a task until a condition holds</td></tr>
-<tr><td><code>no_log: true</code></td><td>Hide this task's inputs and outputs from logs (secrets)</td></tr>
-<tr><td><code>template:</code></td><td>Render a <code>.j2</code> file with variables, then copy it to the host</td></tr>
-<tr><td><code>wait_for:</code> / <code>uri:</code></td><td>Wait for a port to open / make an HTTP request and check the status</td></tr>
-<tr><td><code>hosts: all</code></td><td>Target every host in the inventory</td></tr>
-</table></div>
-<h3>Workshop antipatterns the instructor called out</h3>
-<div class="scroll"><table>
-<tr><th>Antipattern</th><th>Instead</th></tr>
-<tr><td style="font-weight:400">Remote Desktop into the VM and open a terminal</td><td>SSH directly into the VM (headless)</td></tr>
-<tr><td style="font-weight:400">Lots of Ansible development against the same VM, leaving it in a strange state</td><td>Re-provision a fresh instance ("turn it off and on again") and test from clean before submitting</td></tr>
-<tr><td style="font-weight:400">Staying stuck on one step for 3–6 hours</td><td>Ask on EdStem, email a TA, or go around the step</td></tr>
-<tr><td style="font-weight:400">Adding SSH tokens to version control</td><td>Never check in tokens (the only exception was the DB password for WS4 and WS5)</td></tr>
-</table></div>
-<aside class="exam"><b>Exam angle</b>The second row is a configuration-management idea worth a short answer: a playbook is only proven if it works on a <strong>fresh</strong> machine. A VM you have poked by hand has hidden state, so "it works on my VM" proves nothing. Reproducibility is the point.</aside>
-</section>
-
-<section id="idem">
-<h2>Idempotence patterns in a real playbook</h2>
-<div class="scroll"><table>
-<tr><th>Pattern</th><th>Where you used it</th><th>Effect on a second run</th></tr>
-<tr><td>Declarative module</td><td><code>apt: state=present</code>, <code>service: state=started</code>, <code>file: state=directory</code></td><td>Reports <code>ok</code>, does nothing</td></tr>
-<tr><td>Idempotent command</td><td><code>CREATE DATABASE IF NOT EXISTS</code>, <code>CREATE TABLE IF NOT EXISTS</code></td><td>The SQL itself is a no-op</td></tr>
-<tr><td>Check, then act</td><td><code>SELECT COUNT(*)</code> → <code>register</code> → import <code>when</code> count is 0</td><td>Import is skipped; no duplicate 10,000 rows</td></tr>
-<tr><td>Guard file</td><td><code>stat</code> node_modules → <code>npm install</code> only when missing or package.json changed</td><td>Skipped</td></tr>
-<tr><td>Honest reporting</td><td><code>changed_when: false</code> on read-only commands</td><td>"changed" count stays meaningful</td></tr>
-<tr><td>Handlers</td><td>Restart only on <code>notify</code></td><td>No needless restart, no downtime</td></tr>
-</table></div>
-<p>Without the count check, every run would load the CSV again and the "nearest point" query would return duplicates from a table of 20,000, then 30,000 rows. That is the concrete cost of a non-idempotent task.</p>
-</section>
-
-<section id="app">
-<h2>The app: let the database do the work</h2>
-<p>The app answers <code>GET /</code> by generating a random point in (0,0)–(100,100) and finding its nearest neighbour among 10,000 stored points. The README forbade loading the dataset into Node's memory, so the distance is computed in SQL and only the winning row comes back:</p>
-<pre class="code">SELECT x, y, SQRT(POW(x - ?, 2) + POW(y - ?, 2)) AS distance    -- Cartesian distance
-FROM points
-ORDER BY distance ASC
-LIMIT 1;</pre>
-<div class="two"><div>
-<div class="cap">systemd unit template (.j2)</div>
-<pre class="code">[Service]
-ExecStart=/usr/bin/node {{ app_dir }}/server.js
-Restart=always
-Environment=PORT=80
-Environment=DB_HOST=127.0.0.1
-Environment=DB_USER={{ db_user }}
-Environment=DB_PASSWORD={{ db_password }}</pre>
-</div><div>
-<div class="cap">server.js reads them</div>
-<pre class="code">const PORT = Number(process.env.PORT) || 80;
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || &quot;127.0.0.1&quot;,
-  user: process.env.DB_USER || &quot;appuser&quot;,
-  password: process.env.DB_PASSWORD || &quot;&quot;,
-  database: process.env.DB_NAME || &quot;pointsdb&quot;,
-});</pre>
-</div></div>
-<aside class="exam"><b>Exam angle</b>This is the environment-variable idea from Workshop 2 again. The code contains no host name or password; configuration is injected by the environment, so the <em>same</em> <code>server.js</code> runs unchanged in Workshop 6 when only <code>DB_HOST</code> changes to point at another machine.</aside>
-</section>
-
 <section id="cd">
 <h2>Continuous deployment and Glossary 1</h2>
 <p>The lecture's source is "The Top 10 Adages in Continuous Deployment" (IEEE Software, 2017; authors from Microsoft, SAS, Red Hat, Mozilla, Cisco, IBM, Oracle, LexisNexis and NC State). Learn these five definitions close to verbatim.</p>
@@ -329,6 +174,40 @@ const pool = mysql.createPool({
 <li><strong>Deploy</strong>: the new code is installed and running in production.</li>
 <li><strong>Release</strong>: users can see and use the feature.</li>
 </ul>
+</section>
+
+<section id="cost">
+<h2>"The cost of change is dead" (with an asterisk)</h2>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 270" role="img" aria-label="Boehm&#x27;s 1981 relative cost to fix an error rises from 1 at requirements to as much as 100 in operation" style="max-width:740px;min-width:600px"><line class="d-ln grid" x1="200" y1="30" x2="200" y2="222"/><line class="d-ln grid" x1="320" y1="30" x2="320" y2="222"/><line class="d-ln grid" x1="440" y1="30" x2="440" y2="222"/><line class="d-ln grid" x1="560" y1="30" x2="560" y2="222"/><line class="d-ln grid" x1="680" y1="30" x2="680" y2="222"/>
+<text x="200" y="240" text-anchor="middle" class="m">0</text>
+<text x="320" y="240" text-anchor="middle" class="m">25</text>
+<text x="440" y="240" text-anchor="middle" class="m">50</text>
+<text x="560" y="240" text-anchor="middle" class="m">75</text>
+<text x="680" y="240" text-anchor="middle" class="m">100</text>
+<text x="440" y="260" text-anchor="middle" class="m">relative cost to fix (requirements = 1)</text>
+<text x="190" y="50" text-anchor="end">Requirements</text>
+<text x="190" y="82" text-anchor="end">Design</text>
+<text x="190" y="114" text-anchor="end">Coding</text>
+<text x="190" y="146" text-anchor="end">Development testing</text>
+<text x="190" y="178" text-anchor="end">Acceptance testing</text>
+<text x="190" y="210" text-anchor="end">Operation (field)</text>
+<rect class="d-box s1" x="200" y="38" width="4.8" height="18" rx="2"><title>Requirements: 1</title></rect>
+<rect class="d-box s1" x="200" y="70" width="14.4" height="18" rx="2"><title>Design: 3 to 6</title></rect><rect class="d-box s1l" x="216.4" y="70" width="12.4" height="18" rx="2"><title>Design: 3 to 6</title></rect>
+<rect class="d-box s1" x="200" y="102" width="48" height="18" rx="2"><title>Coding: 10</title></rect>
+<rect class="d-box s1" x="200" y="134" width="72" height="18" rx="2"><title>Development testing: 15 to 40</title></rect><rect class="d-box s1l" x="274" y="134" width="118" height="18" rx="2"><title>Development testing: 15 to 40</title></rect>
+<rect class="d-box s1" x="200" y="166" width="144" height="18" rx="2"><title>Acceptance testing: 30 to 70</title></rect><rect class="d-box s1l" x="346" y="166" width="190" height="18" rx="2"><title>Acceptance testing: 30 to 70</title></rect>
+<rect class="d-box s1" x="200" y="198" width="192" height="18" rx="2"><title>Operation: 40 to 100</title></rect><rect class="d-box s1l" x="394" y="198" width="286" height="18" rx="2"><title>Operation: 40 to 100</title></rect>
+<text x="212" y="51" class="m">1</text>
+<text x="236" y="83" class="m">3–6</text>
+<text x="256" y="115" class="m">10</text>
+<text x="400" y="147" class="m">15–40</text>
+<text x="544" y="179" class="m">30–70</text>
+<text x="672" y="211" text-anchor="end" class="m">40–100</text></svg></div><figcaption>Barry Boehm, <em>Software Engineering Economics</em> (1981), from 63 plan-driven projects. Solid bar = low estimate, pale extension = high estimate.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th>Error found during</th><th class="num">Cost ratio</th></tr>
+<tr><td>Requirements</td><td class="num">1</td></tr><tr><td>Design</td><td class="num">3–6</td></tr><tr><td>Coding / implementation</td><td class="num">10</td></tr><tr><td>Development testing (unit)</td><td class="num">15–40</td></tr><tr><td>Acceptance testing</td><td class="num">30–70</td></tr><tr><td>Operation (field)</td><td class="num">40–100</td></tr>
+</table></div>
+<p>Adage 2 says this curve is "dead" <strong>in continuously deployed systems</strong>: when a fix can reach production in minutes and a flag can switch a feature off, a production bug is no longer 100 times dearer. The asterisk: the old curve "still applies to many real-world systems: airplanes, power plants, aircraft carriers".</p>
 </section>
 
 <section id="flags">
@@ -414,41 +293,60 @@ const pool = mysql.createPool({
 <p>Two options from the slide, and one rule:</p>
 <ol><li><strong>Use the load balancer</strong> to shift traffic away from the canary release(s). Infrastructure level; removes the whole new version from service.</li><li><strong>Disable the feature flag.</strong> Application level; "send a signal to the application to disable the feature". Needs a push update or equivalent.</li></ol>
 <p><strong>"In any case, have a rollback plan."</strong></p>
-<p>A <strong>load balancer</strong> sits in front of several instances and decides which one each request goes to. That routing decision is what makes canary (10% to v2), blue-green (flip 100%), rollback (send 0% to the bad version) and scaling possible. See Workshop 6 for the picture.</p>
+<p>A <strong>load balancer</strong> sits in front of several instances and decides which one each request goes to. That routing decision is what makes canary (10% to v2), blue-green (flip 100%), rollback (send 0% to the bad version) and scaling possible. Lecture 7 has the picture.</p>
 </section>
 
-<section id="cost">
-<h2>"The cost of change is dead" (with an asterisk)</h2>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 270" role="img" aria-label="Boehm&#x27;s 1981 relative cost to fix an error rises from 1 at requirements to as much as 100 in operation" style="max-width:740px;min-width:600px"><line class="d-ln grid" x1="200" y1="30" x2="200" y2="222"/><line class="d-ln grid" x1="320" y1="30" x2="320" y2="222"/><line class="d-ln grid" x1="440" y1="30" x2="440" y2="222"/><line class="d-ln grid" x1="560" y1="30" x2="560" y2="222"/><line class="d-ln grid" x1="680" y1="30" x2="680" y2="222"/>
-<text x="200" y="240" text-anchor="middle" class="m">0</text>
-<text x="320" y="240" text-anchor="middle" class="m">25</text>
-<text x="440" y="240" text-anchor="middle" class="m">50</text>
-<text x="560" y="240" text-anchor="middle" class="m">75</text>
-<text x="680" y="240" text-anchor="middle" class="m">100</text>
-<text x="440" y="260" text-anchor="middle" class="m">relative cost to fix (requirements = 1)</text>
-<text x="190" y="50" text-anchor="end">Requirements</text>
-<text x="190" y="82" text-anchor="end">Design</text>
-<text x="190" y="114" text-anchor="end">Coding</text>
-<text x="190" y="146" text-anchor="end">Development testing</text>
-<text x="190" y="178" text-anchor="end">Acceptance testing</text>
-<text x="190" y="210" text-anchor="end">Operation (field)</text>
-<rect class="d-box s1" x="200" y="38" width="4.8" height="18" rx="2"><title>Requirements: 1</title></rect>
-<rect class="d-box s1" x="200" y="70" width="14.4" height="18" rx="2"><title>Design: 3 to 6</title></rect><rect class="d-box s1l" x="216.4" y="70" width="12.4" height="18" rx="2"><title>Design: 3 to 6</title></rect>
-<rect class="d-box s1" x="200" y="102" width="48" height="18" rx="2"><title>Coding: 10</title></rect>
-<rect class="d-box s1" x="200" y="134" width="72" height="18" rx="2"><title>Development testing: 15 to 40</title></rect><rect class="d-box s1l" x="274" y="134" width="118" height="18" rx="2"><title>Development testing: 15 to 40</title></rect>
-<rect class="d-box s1" x="200" y="166" width="144" height="18" rx="2"><title>Acceptance testing: 30 to 70</title></rect><rect class="d-box s1l" x="346" y="166" width="190" height="18" rx="2"><title>Acceptance testing: 30 to 70</title></rect>
-<rect class="d-box s1" x="200" y="198" width="192" height="18" rx="2"><title>Operation: 40 to 100</title></rect><rect class="d-box s1l" x="394" y="198" width="286" height="18" rx="2"><title>Operation: 40 to 100</title></rect>
-<text x="212" y="51" class="m">1</text>
-<text x="236" y="83" class="m">3–6</text>
-<text x="256" y="115" class="m">10</text>
-<text x="400" y="147" class="m">15–40</text>
-<text x="544" y="179" class="m">30–70</text>
-<text x="672" y="211" text-anchor="end" class="m">40–100</text></svg></div><figcaption>Barry Boehm, <em>Software Engineering Economics</em> (1981), from 63 plan-driven projects. Solid bar = low estimate, pale extension = high estimate.</figcaption></figure>
+<section id="slides">
+<h2>The slides, in order</h2>
+<p class="deckmeta">5_Feature_flags.pdf · 33 slides · opening quote "Ready or not, here comes continuous deployment"</p>
+<p>Objectives: overview of feature flags; deployment is not releasing; what dark launching is and how feature flags enable it; how software features become experiments; CI/CD pipelines from a "Top 10 Adages" perspective.</p>
 <div class="scroll"><table>
-<tr><th>Error found during</th><th class="num">Cost ratio</th></tr>
-<tr><td>Requirements</td><td class="num">1</td></tr><tr><td>Design</td><td class="num">3–6</td></tr><tr><td>Coding / implementation</td><td class="num">10</td></tr><tr><td>Development testing (unit)</td><td class="num">15–40</td></tr><tr><td>Acceptance testing</td><td class="num">30–70</td></tr><tr><td>Operation (field)</td><td class="num">40–100</td></tr>
+<tr><th>Slides</th><th>What they say and what to know</th></tr>
+<tr><td>3–4 · Workshop antipatterns</td><td style="font-weight:400">Don't remote-desktop into a VM to open a terminal; SSH in (headless). Don't keep developing against one VM in a strange state; re-provision a fresh instance. Don't stay stuck 3–6 hours; ask. Don't add SSH tokens to version control (exception: the DB password for WS4 and WS5).</td></tr>
+<tr><td>6 · The Top 10 Adages</td><td style="font-weight:400">The full list of ten, from the IEEE Software article by authors at Microsoft, SAS, Red Hat, Mozilla, Cisco, IBM, Oracle, LexisNexis and NC State.</td></tr>
+<tr><td>7–8 · The cost of change is dead*</td><td style="font-weight:400">*in continuously deployed systems. Boehm's table of relative cost to fix an error (1, 3–6, 10, 15–40, 30–70, 40–100). "In CI/CD, this is now much less true. HOWEVER: cost relationships still apply to many real-world systems: airplanes, power plants, aircraft carriers."</td></tr>
+<tr><td>9–11 · Fast deployment, slow(er) release</td><td style="font-weight:400">The CD pipeline again. Two labels to notice: "PR to release branch" on the way from code into testing, and "'big flip' or 'canary'" on the last arrow into production.</td></tr>
+<tr><td>12 · Glossary #1</td><td style="font-weight:400">Continuous deployment, feature flags, dark launching, deflighting or rollback, staging or baking. Learn the five definitions.</td></tr>
+<tr><td>13–15 · Feature flags</td><td style="font-weight:400">"How deployed features become released features." A new feature passes through flags that are on for some customers and off for others. Anatomy: unique name, variations, rules. An evaluator takes the flag and the request context and picks a variation (new UI or old UI).</td></tr>
+<tr><td>16 · Activity</td><td style="font-weight:400">What's the difference between deploying and releasing? What could go wrong from a user's perspective?</td></tr>
+<tr><td>17 · Stale feature flags → technical debt</td><td style="font-weight:400">Ambiguous staleness and no incentive to clean up. The paper shown is "Piranha: Reducing Feature Flag Debt at Uber".</td></tr>
+<tr><td>18–21 · Dark launching</td><td style="font-weight:400">"Deployed but not released." Enabled by feature flags; Fowler's parallel-run quote. A flag store looks like <code>{'new.feature': true, 'some.other.feature': false}</code> and the code is <code>if (features['new.feature']) { RenderNewFeature() } else { RenderOldFeature() }</code>. Four use scenarios.</td></tr>
+<tr><td>19 · Dark launch for beta testing</td><td style="font-weight:400">Concept → design → build → controlled release → production server. Flag OFF path serves 100% of users; flag ON path serves test engineers and developers. Feedback loops back.</td></tr>
+<tr><td>22 · De-flighting or rollback</td><td style="font-weight:400">1. Load balancer shifts traffic away from the canary. 2. Disable the feature flag (application level, needs a push update or equivalent). "In any case, have a rollback plan."</td></tr>
+<tr><td>23 · Baking / staging</td><td style="font-weight:400">The staged "pre-deploy" box is the baking stage. "Some companies might bake a new version for eight hours before deployment."</td></tr>
+<tr><td>24–26 · Every feature is an experiment / A/B testing</td><td style="font-weight:400">The "'Test in production' they said" joke. A/B: 50% of visitors see variation A (23% conversion), 50% see variation B (11% conversion).</td></tr>
+<tr><td>27 · Experiments: methods for rollout</td><td style="font-weight:400">A/B testing (feature flags, networking layer); canary testing with a 90% / 10% split (usually networking layer); blue-green deployment (separate delivery infrastructure).</td></tr>
+<tr><td>28–30 · Canary releasing</td><td style="font-weight:400">"Released to real users": flag OFF for 95%, ON for a 5% canary group. Before: all V1. During: V1, V1, V2. After: all V2. With feature flags the "during" picture is all-new instances carrying feature A and feature B switches.</td></tr>
+<tr><td>31 · Feature flags vs canary release</td><td style="font-weight:400">The comparison table: placement, orchestrated by, percentage, IP allowlist, rule-based, group-based, rollback.</td></tr>
+<tr><td>33 · Summary</td><td style="font-weight:400">Feature flags allow deployment without release and easy rollback, at the price of some technical debt and possibly bad UX. Features in continuous deployment become experiments and must demonstrate usefulness (ROI, retention, engagement, conversion).</td></tr>
 </table></div>
-<p>Adage 2 says this curve is "dead" <strong>in continuously deployed systems</strong>: when a fix can reach production in minutes and a flag can switch a feature off, a production bug is no longer 100 times dearer. The asterisk: the old curve "still applies to many real-world systems: airplanes, power plants, aircraft carriers".</p>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>Continuous Deployment<span class="src">slide wording</span></dt><dd>A process in which incremental software changes are automatically tested, vetted, and deployed to production environments.</dd></div>
+<div class="term"><dt>Feature flags<span class="src">slide wording</span><small>toggles, release toggles, feature flippers</small></dt><dd>A mechanism for dynamically enabling features during production, often controlled by a global in-memory store and cached locally in service instances.</dd></div>
+<div class="term"><dt>Dark launching<span class="src">slide wording</span></dt><dd>A practice in which code is incrementally deployed into production but remains invisible to users.</dd></div>
+<div class="term"><dt>Deflighting or rollback<span class="src">slide wording</span></dt><dd>A method for rolling back or decommissioning a defective change and removing it from the deployment pipeline.</dd></div>
+<div class="term"><dt>Staging or baking<span class="src">slide wording</span></dt><dd>A stage in the deployment pipeline in which developers test a new software version in a production-like environment.</dd></div>
+<div class="term"><dt>Deploy vs release</dt><dd>Deployed = running in production. Released = visible to users.</dd></div>
+<div class="term"><dt>Flag anatomy<span class="src">slide wording</span></dt><dd>Unique name; variations selected by an <code>if</code>; rules used by the evaluation engine.</dd></div>
+<div class="term"><dt>Evaluator</dt><dd>The component that combines a flag's rules with the request context and returns a variation.</dd></div>
+<div class="term"><dt>Stale flag<span class="src">slide wording</span></dt><dd>A flag no longer needed whose code remains: technical debt.</dd></div>
+<div class="term"><dt>A/B testing</dt><dd>Show different variants to different users and compare a metric.</dd></div>
+<div class="term"><dt>Canary release</dt><dd>Give the new version to a small percentage of real users first.</dd></div>
+<div class="term"><dt>Blue-green deployment</dt><dd>Two full environments; switch traffic from one to the other.</dd></div>
+<div class="term"><dt>"Big flip"</dt><dd>Moving all production traffic to the new version at once, as opposed to a canary.</dd></div>
+<div class="term"><dt>Cost of change (Boehm)<span class="src">slide wording</span></dt><dd>Relative cost to fix an error rises from 1 at requirements to 40–100 in operation, in plan-driven projects.</dd></div>
+</dl>
+<h3>Activity prompt and a model answer</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>What's the difference between deploying and releasing, and what could go wrong from a user's perspective?</summary><div class="ans">Deploying installs the code in production; releasing switches the feature on for users. From the user's side: features appear and disappear without warning; two people see different versions of the same app; a half-finished feature leaks out; support cannot reproduce "my screen looks different"; the user is part of an experiment they did not choose.</div></details>
+</div>
+<h3>Check yourself</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>Give two of the four dark-launch use scenarios.</summary><div class="ans">Release an experimental one-click checkout to see if it increases sales; test new application infrastructure without switching all traffic; roll out to VIP users first; release a feature for beta testing.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>In the feature-flags-vs-canary table, which rows differ?</summary><div class="ans">Placement (application vs infrastructure networking layer), orchestrated by (developers, PMs, QA vs DevOps, SREs), rule-based and group-based targeting (flags yes, canary no), and rollback (specific feature vs entire deployment).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What does the asterisk on "The cost of change is dead*" mean?</summary><div class="ans">It holds in continuously deployed systems. For many real-world systems such as airplanes and power plants, Boehm's rising cost still applies.</div></details>
+</div>
 </section>
 
 <section id="quiz">
@@ -462,19 +360,16 @@ const pool = mysql.createPool({
 <details class="q"><summary><span class="chip">True / False</span>"Baking" is a stage in which a new software version is tested in a production-like environment.</summary><div class="ans"><span class="T">True.</span> Also called staging. Some companies bake for eight hours.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>According to "The cost of change is dead", fixing an error in operation is always 40 to 100 times more expensive than in requirements.</summary><div class="ans"><span class="F">False.</span> That is Boehm's 1981 finding for plan-driven projects. The adage says it is much less true <strong>in continuously deployed systems</strong> (though still true for airplanes and power plants).</div></details>
 <details class="q"><summary><span class="chip">True / False</span>Stale feature flags are a form of technical debt.</summary><div class="ans"><span class="T">True.</span> Nobody is rewarded for removing them, and it is unclear which are still needed.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>In an Ansible playbook, a handler runs every time the play runs.</summary><div class="ans"><span class="F">False.</span> A handler runs only when a task that <strong>notifies</strong> it reports <strong>changed</strong>, and then only once.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>A/B testing sends about 5% of users to the new version to check that it is safe before widening the rollout.</summary><div class="ans"><span class="F">False.</span> That describes a <strong>canary release</strong>. A/B testing splits users between variants to compare a metric such as conversion.</div></details>
-<details class="q"><summary><span class="chip">Read the code</span><code>when: points_count.stdout | int == 0</code> sits on the CSV import task. What problem does it prevent?</summary><div class="ans">Importing the 10,000 rows again on every run. The earlier task counted the rows and registered the result; the import runs only when the table is empty, which makes the playbook idempotent.</div></details>
-<details class="q"><summary><span class="chip">Read the code</span>Why is <code>no_log: true</code> on the task that templates the systemd unit, and why is the password asked with <code>vars_prompt</code>?</summary><div class="ans">The rendered unit contains <code>DB_PASSWORD</code>, so its content must not be printed in Ansible's output or logs. <code>vars_prompt</code> with <code>private: true</code> gets the password from the operator at run time, so it is never written in the playbook or committed to the repo.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>What is the difference between deploying and releasing, and which adage does it support?</summary><div class="ans">Deploying puts code into the production environment; releasing makes the feature available to users. Feature flags separate the two. Adage: "Be fast to deploy but slow (or slower) to release."</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>Give the two rollback options from lecture and one difference between them.</summary><div class="ans">(1) Use the load balancer to shift traffic away from the canary; (2) disable the feature flag. The load balancer acts at the infrastructure level on the whole version; the flag acts at the application level on one feature and needs a push update or equivalent.</div></details>
-<details class="q"><summary><span class="chip">Self-check</span>Why does the instructor recommend re-provisioning a fresh VM before submitting an Ansible workshop?</summary><div class="ans">A VM that has been modified by many trial runs holds hidden state, so a passing run proves nothing about the playbook alone. Running on a fresh instance shows the playbook reproduces the full configuration from scratch.</div></details>
 <details class="q"><summary><span class="chip">Matching</span>Match each to an adage: (a) feature flags and canaries (b) A/B testing (c) Ansible playbooks in git (d) Boehm's cost curve.</summary><div class="ans">(a) Be fast to deploy but slow(er) to release. (b) Every feature is an experiment. (c) Configuration is code. (d) The cost of change is dead.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>"Be fast to deploy but slow to release" is supported by dark launching.</summary><div class="ans"><span class="T">True.</span> Code is in production (deployed) but invisible to users (not released).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Continuous deployment is a process in which software changes are manually tested and deployed to production once per quarter.</summary><div class="ans"><span class="F">False.</span> Changes are <strong>incremental</strong> and are <strong>automatically</strong> tested, vetted and deployed.</div></details>
 </div>
 </section>
-
-<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws4.html" rel="prev"><small>← Previous</small>DevOps WS4 Ansible Fundamentals</a><a class="next" href="ws6.html" rel="next"><small>Next →</small>DevOps WS6 Multi-Host Orchestration</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="08-workshop-4-ansible-intro.html" rel="prev"><small>← Previous</small>Workshop 4: Intro to Ansible: your first playbooks</a><a class="next" href="10-workshop-5-ansible-deployment.html" rel="next"><small>Next →</small>Workshop 5: Ansible 2: security patching and a single-host deployment</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DevOps Midterm Study Pages</title>
+<title>DevOps Midterm Start Here</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
 /* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
@@ -36,12 +36,23 @@ body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-in
 .wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
 a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
 nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
 nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
 
 header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
 .eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
 .lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
@@ -97,7 +108,7 @@ details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transfor
 details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
-section[id^="d"] table td:first-child{min-width:10.5rem}
+section#slides table td:first-child{min-width:10.5rem}
 .snip{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
 .cols ul{margin:0}
@@ -115,7 +126,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 @media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 </style>
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -125,60 +136,111 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><span class="cur" aria-current="page">Home</span><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><a href="ws6.html">WS6<small>Multi-host &amp; rings</small></a><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><span class="cur" aria-current="page">Start here</span><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
 <header class="top">
 <div class="eyebrow">CSC 519 · DevOps · Midterm prep</div>
-<h1>DevOps midterm study pages</h1>
-<p class="lede">Seven pages, one per workshop, plus lecture-deck notes and a glossary, built from the course slides, the workshop READMEs, the midterm study guide and your own workshop repos. Each page explains the workshop's concepts with diagrams, annotated code and pseudocode, and ends with practice questions in the announced exam formats.</p>
-<ul class="tags"><li>7 workshops</li><li>202 definitions</li><li>29 diagrams</li><li>102 practice questions</li><li>exam drill</li><li>works offline</li></ul>
+<h1>Start here: concepts first, then workshops</h1>
+<p class="lede">The course runs on a weekly rhythm: a lecture introduces a concept, then a workshop makes you use something. These study pages now follow the same split. <strong>Lecture pages</strong> explain the concepts. <strong>Workshop pages</strong> cover only the hands-on work. Every page is labelled with its number, its date, and the pages it connects to.</p>
+<ul class="toc"><li><a href="#week">Week-by-week map</a></li><li><a href="#lectures">Lecture pages</a></li><li><a href="#workshops">Workshop pages</a></li><li><a href="#practice">Practice and reference</a></li><li><a href="#guide">Study-guide map</a></li><li><a href="#format">Exam format</a></li><li><a href="#caveats">What to double-check</a></li></ul>
 </header>
 
-<section id="pages">
-<h2>The pages</h2>
+<section id="week">
+<h2>Week-by-week map</h2>
+<p>From the course calendar. Read across a row to see what was introduced and what was practised that week.</p>
 <div class="scroll"><table>
-<tr><th>Page</th><th>Workshop</th><th>Study-guide topics covered</th></tr>
-<tr><td><a href="ws1.html">WS1</a></td><td><a href="ws1.html">Command line tools and containers</a></td><td style="font-weight:400">Containers, image vs container, the bind mount (<code>-v</code>), shells, bit rot, computing environments, VMs and virtualization</td></tr>
-<tr><td><a href="ws2.html">WS2</a></td><td><a href="ws2.html">Automating GitHub from inside a container</a></td><td style="font-weight:400">Environment variables, secrets and least privilege, REST APIs, Git Flow, branch-based development, pull requests, Modern Code Review, diff time</td></tr>
-<tr><td><a href="ws3.html">WS3</a></td><td><a href="ws3.html">GitHub Actions and the DevOps pipeline</a></td><td style="font-weight:400">GitHub Actions, events, runners, contexts, DevOps lifecycle, pipelines, stages, hooks, CI / CD, roles, two large pizzas</td></tr>
-<tr><td><a href="ws4.html">WS4</a></td><td><a href="ws4.html">Intro to Ansible and configuration management</a></td><td style="font-weight:400">Configuration management, agentless, control node, role of SSH, hosts / inventory, declarative vs imperative, idempotence</td></tr>
-<tr><td><a href="ws5.html">WS5</a></td><td><a href="ws5.html">Ansible for security patching and a single-host deployment</a></td><td style="font-weight:400">Playbook keywords, handlers, Continuous Deployment, Glossary 1, feature flags, dark launching, canary, A/B testing, rollback, cost of change</td></tr>
-<tr><td><a href="ws6.html">WS6</a></td><td><a href="ws6.html">Multi-host orchestration and performance profiling</a></td><td style="font-weight:400">Multi-play playbooks, benchmarking and telemetry, deployment rings, blast radius, shift left / shift right, load balancing</td></tr>
-<tr><td><a href="ws7.html">WS7</a></td><td><a href="ws7.html">Retrospectives, ownership, and the ten adages</a></td><td style="font-weight:400">Retrospectives / hotwashes, silos, wall of confusion, change ownership, change management, Glossary 2, all the adages, exam format</td></tr>
-<tr><td><a href="exam.html">Exam</a></td><td><a href="exam.html">Midterm exam drill</a></td><td style="font-weight:400">The three confirmed question types: how to tell GitHub Actions, Dockerfiles, Ansible files and Bash apart with 24 practice snippets, 58 true / false statements to correct, and 7 matching sets</td></tr>
-<tr><td><a href="notes.html">Notes</a></td><td><a href="notes.html">Notes for each slide deck</a></td><td style="font-weight:400">The ten lecture decks in order: slide-by-slide notes including the picture-only slides, the definitions each deck introduced, the in-class activity prompts with model answers, and check-yourself questions</td></tr>
-<tr><td><a href="glossary.html">Glossary</a></td><td><a href="glossary.html">DevOps midterm glossary</a></td><td style="font-weight:400">About 200 one- or two-sentence definitions for every study-guide and slide term, a filter box, the pairs that get swapped in true / false questions, and names and quotes to recognise</td></tr>
+<tr><th>Week</th><th>Monday</th><th>Wednesday</th></tr>
+<tr><td>1</td><td style="font-weight:400">Aug 17 · <a href="01-lecture-1-devops-git-flow.html"><strong>Lecture 1</strong></a><br>What is DevOps, Git Flow</td><td style="font-weight:400">Aug 19 · <a href="02-workshop-1-docker-cli.html"><strong>Workshop 1</strong></a><br>Command line tools and Docker</td></tr>
+<tr><td>2</td><td style="font-weight:400">Aug 24 · <a href="03-lecture-2-pipelines-roles.html"><strong>Lecture 2</strong></a><br>DevOps pipelines, diff time, team roles, REST</td><td style="font-weight:400">Aug 26 · <a href="04-workshop-2-secrets-github-api.html"><strong>Workshop 2</strong></a><br>Automating GitHub from inside a container</td></tr>
+<tr><td>3</td><td style="font-weight:400">Aug 31 · <a href="05-lecture-3-computing-environments.html"><strong>Lecture 3</strong></a><br>Computing environments, virtualization</td><td style="font-weight:400">Sep 2 · <a href="06-workshop-3-github-actions.html"><strong>Workshop 3</strong></a><br>Intro to GitHub Actions</td></tr>
+<tr><td>4</td><td style="font-weight:400">Sep 7 · no class (Labor Day)</td><td style="font-weight:400">Sep 9 · <a href="07-lecture-4-configuration-management.html"><strong>Lecture 4</strong></a> then <a href="08-workshop-4-ansible-intro.html"><strong>Workshop 4</strong></a><br>Configuration management; Ansible 1</td></tr>
+<tr><td>5</td><td style="font-weight:400">Sep 14 · <a href="09-lecture-5-feature-flags.html"><strong>Lecture 5</strong></a><br>Feature flags, release engineering</td><td style="font-weight:400">Sep 16 · <a href="10-workshop-5-ansible-deployment.html"><strong>Workshop 5</strong></a><br>Ansible 2: security and single-host deployment</td></tr>
+<tr><td>6</td><td style="font-weight:400">Sep 21 · <a href="11-lecture-6-ownership-retrospectives.html"><strong>Lecture 6</strong></a><br>Canary recap, change ownership, retrospectives</td><td style="font-weight:400">Sep 23 · <a href="12-lecture-7-rings-blast-radius.html"><strong>Lecture 7</strong></a> then <a href="13-workshop-6-multi-host-ansible.html"><strong>Workshop 6</strong></a><br>Rings, blast radius, shift left / right; Ansible 3</td></tr>
+<tr><td>7</td><td style="font-weight:400">Sep 28 · <a href="14-workshop-7-retrospectives.html"><strong>Workshop 7</strong></a><br>Retrospectives</td><td style="font-weight:400">Sep 30 · <a href="15-lecture-8-pipelines.html"><strong>Lecture 8</strong></a><br>Pipelines 2</td></tr>
+<tr><td>8</td><td style="font-weight:400">Oct 5 · Midterm review<br><a href="16-exam-drill.html"><strong>Exam drill</strong></a></td><td style="font-weight:400">Oct 7 · <strong>Midterm</strong>, in class, on paper</td></tr>
 </table></div>
-<p>Every page has the same strip at the top to jump to any other page, and previous / next links at the bottom to read them in order.</p>
+<aside class="note">The lecture numbers here count lectures in date order (1 to 8). They are not the numbers in the slide file names (0, 1, 2, 3, 5, 6, 6.5, 8); each lecture page names its slide file.</aside>
+<h3>The workshop does not always practise that week's lecture</h3>
+<p>This is the part that makes the course feel out of order, so here it is spelled out:</p>
+<div class="scroll"><table>
+<tr><th>Workshop</th><th>Mainly uses concepts from</th><th>Why it is worth knowing</th></tr>
+<tr><td><a href="02-workshop-1-docker-cli.html">Workshop 1</a> Docker, CLI</td><td style="font-weight:400"><a href="05-lecture-3-computing-environments.html">Lecture 3</a> (containers vs VMs)</td><td style="font-weight:400">The theory arrived two weeks after the hands-on</td></tr>
+<tr><td><a href="04-workshop-2-secrets-github-api.html">Workshop 2</a> Secrets, GitHub API</td><td style="font-weight:400"><a href="03-lecture-2-pipelines-roles.html">Lecture 2</a> (REST, pull requests), <a href="01-lecture-1-devops-git-flow.html">Lecture 1</a> (Git Flow branches)</td><td style="font-weight:400">Matches its week</td></tr>
+<tr><td><a href="06-workshop-3-github-actions.html">Workshop 3</a> GitHub Actions</td><td style="font-weight:400"><a href="01-lecture-1-devops-git-flow.html">Lecture 1</a> (event-driven), <a href="03-lecture-2-pipelines-roles.html">Lecture 2</a> (pipelines), <a href="15-lecture-8-pipelines.html">Lecture 8</a> (hooks, CI)</td><td style="font-weight:400">That Monday's lecture was on computing environments</td></tr>
+<tr><td><a href="08-workshop-4-ansible-intro.html">Workshop 4</a> Ansible 1</td><td style="font-weight:400"><a href="07-lecture-4-configuration-management.html">Lecture 4</a></td><td style="font-weight:400">Same day</td></tr>
+<tr><td><a href="10-workshop-5-ansible-deployment.html">Workshop 5</a> Ansible 2</td><td style="font-weight:400"><a href="07-lecture-4-configuration-management.html">Lecture 4</a></td><td style="font-weight:400">That Monday's lecture was on feature flags, which no workshop practises</td></tr>
+<tr><td><a href="13-workshop-6-multi-host-ansible.html">Workshop 6</a> Ansible 3</td><td style="font-weight:400"><a href="07-lecture-4-configuration-management.html">Lecture 4</a>, <a href="12-lecture-7-rings-blast-radius.html">Lecture 7</a></td><td style="font-weight:400">Same day as the short rings lecture</td></tr>
+<tr><td><a href="14-workshop-7-retrospectives.html">Workshop 7</a> Retrospectives</td><td style="font-weight:400"><a href="11-lecture-6-ownership-retrospectives.html">Lecture 6</a></td><td style="font-weight:400">One week after the lecture</td></tr>
+</table></div>
 </section>
 
-<section id="how">
-<h2>How to use them</h2>
-<ul>
-<li><strong>Yellow "Exam angle" boxes</strong> mark the points most likely to be tested, including the sample questions shown on the lecture slides.</li>
-<li><strong>Code blocks</strong> highlight the lines that matter in amber. You will not write code, but you will be asked to name the tool behind a snippet, so notice what each kind of file <em>looks like</em> as you read.</li>
-<li><strong>Practice sections</strong> hide their answers. Answer first, then open. For true / false, practice writing the corrected word, because a plain "not" earns nothing.</li>
-<li><strong>The exam drill page</strong> is the closest thing to the real paper: <a href="exam.html#kinds">name the tool from a snippet</a>, <a href="exam.html#tf">true / false with corrections</a>, <a href="exam.html#match">matching</a>.</li>
-<li><strong>Need a definition fast?</strong> The <a href="glossary.html">glossary</a> answers "what is Git Flow / diff time / blast radius…?" in a sentence or two, and marks which wordings come straight from the slides.</li>
-<li><strong>Short on time?</strong> Start with the <a href="ws7.html#map">study-guide map on the WS7 page</a>: every study-guide bullet, the page it lives on, and a one-line answer. Then do the <a href="ws7.html#quiz">mixed practice</a>.</li>
-</ul>
+<section id="lectures">
+<h2>Lecture pages: the concepts</h2>
+<p>Each lecture page has the same parts: the ideas explained with diagrams, then the slides in order (including the picture-only ones), the definitions that deck introduced, and practice.</p>
+<div class="scroll"><table>
+<tr><th>Page</th><th>Date</th><th>Study-guide topics on it</th></tr>
+<tr><td><a href="01-lecture-1-devops-git-flow.html">Lecture 1</a><br><span style="font-weight:400">What is DevOps, Git Flow</span></td><td style="font-weight:400;white-space:nowrap">Aug 17</td><td style="font-weight:400">Git Flow, branch-based development, DevOps lifecycle, events</td></tr>
+<tr><td><a href="03-lecture-2-pipelines-roles.html">Lecture 2</a><br><span style="font-weight:400">Pipelines, diff time, roles</span></td><td style="font-weight:400;white-space:nowrap">Aug 24</td><td style="font-weight:400">Pull requests, Modern Code Review, diff time, pipelines, environments, roles, two large pizzas rule, REST</td></tr>
+<tr><td><a href="05-lecture-3-computing-environments.html">Lecture 3</a><br><span style="font-weight:400">Computing environments</span></td><td style="font-weight:400;white-space:nowrap">Aug 31</td><td style="font-weight:400">Bit rot, computing environments, shells, VMs, containers, virtualization</td></tr>
+<tr><td><a href="07-lecture-4-configuration-management.html">Lecture 4</a><br><span style="font-weight:400">Configuration management</span></td><td style="font-weight:400;white-space:nowrap">Sep 9</td><td style="font-weight:400">Configuration management; Ansible: idempotent, declarative | imperative, agents, controllers, hosts; "Configuration is code"</td></tr>
+<tr><td><a href="09-lecture-5-feature-flags.html">Lecture 5</a><br><span style="font-weight:400">Feature flags, releases</span></td><td style="font-weight:400;white-space:nowrap">Sep 14</td><td style="font-weight:400">Continuous Deployment, Glossary 1, feature flags, dark launching, canary, deflighting, rollback, A/B testing, cost of change</td></tr>
+<tr><td><a href="11-lecture-6-ownership-retrospectives.html">Lecture 6</a><br><span style="font-weight:400">Ownership, retrospectives</span></td><td style="font-weight:400;white-space:nowrap">Sep 21</td><td style="font-weight:400">DevOps silos, wall of confusion, change ownership, change management, retrospectives / hotwashes, Glossary 2, all ten adages</td></tr>
+<tr><td><a href="12-lecture-7-rings-blast-radius.html">Lecture 7</a><br><span style="font-weight:400">Rings, blast radius</span></td><td style="font-weight:400;white-space:nowrap">Sep 23</td><td style="font-weight:400">Deployment rings, blast radius, shift left / shift right, load balancing</td></tr>
+<tr><td><a href="15-lecture-8-pipelines.html">Lecture 8</a><br><span style="font-weight:400">Pipelines in depth</span></td><td style="font-weight:400;white-space:nowrap">Sep 30</td><td style="font-weight:400">Pipelines, unit of change, stages, hooks, Continuous Integration, build tools</td></tr>
+</table></div>
 </section>
 
-<section id="order">
-<h2>A reading order that follows one change to production</h2>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 130" role="img" aria-label="The seven pages in order, following a change from a container on a laptop to a retrospective after release" style="max-width:760px;min-width:600px"><rect class="d-box" x="10" y="40" width="96" height="50" rx="5"/><text x="58" y="61.5" text-anchor="middle" class="b">WS1</text><text x="58" y="76.5" text-anchor="middle" class="m">container</text>
-<rect class="d-box" x="118" y="40" width="96" height="50" rx="5"/><text x="166" y="61.5" text-anchor="middle" class="b">WS2</text><text x="166" y="76.5" text-anchor="middle" class="m">branch + PR</text>
-<rect class="d-box" x="226" y="40" width="96" height="50" rx="5"/><text x="274" y="61.5" text-anchor="middle" class="b">WS3</text><text x="274" y="76.5" text-anchor="middle" class="m">pipeline</text>
-<rect class="d-box" x="334" y="40" width="96" height="50" rx="5"/><text x="382" y="61.5" text-anchor="middle" class="b">WS4</text><text x="382" y="76.5" text-anchor="middle" class="m">configure</text>
-<rect class="d-box" x="442" y="40" width="96" height="50" rx="5"/><text x="490" y="61.5" text-anchor="middle" class="b">WS5</text><text x="490" y="76.5" text-anchor="middle" class="m">deploy, flag</text>
-<rect class="d-box" x="550" y="40" width="96" height="50" rx="5"/><text x="598" y="61.5" text-anchor="middle" class="b">WS6</text><text x="598" y="76.5" text-anchor="middle" class="m">rings, measure</text>
-<rect class="d-box acc" x="658" y="40" width="96" height="50" rx="5"/><text x="706" y="61.5" text-anchor="middle" class="b">WS7</text><text x="706" y="76.5" text-anchor="middle" class="m">look back</text>
-<line class="d-ln" x1="106" y1="65" x2="118" y2="65" marker-end="url(#ah)"/>
-<line class="d-ln" x1="214" y1="65" x2="226" y2="65" marker-end="url(#ah)"/>
-<line class="d-ln" x1="322" y1="65" x2="334" y2="65" marker-end="url(#ah)"/>
-<line class="d-ln" x1="430" y1="65" x2="442" y2="65" marker-end="url(#ah)"/>
-<line class="d-ln" x1="538" y1="65" x2="550" y2="65" marker-end="url(#ah)"/>
-<line class="d-ln" x1="646" y1="65" x2="658" y2="65" marker-end="url(#ah)"/>
-<text x="380" y="116" text-anchor="middle" class="m">develop in a container → propose at diff time → test on an event → configure servers → deploy dark → release gradually → learn</text></svg></div><figcaption>The workshops build on each other, so the pages do too: the bind mount from WS1 returns in WS4, environment variables from WS2 return in WS5 and WS6, idempotence from WS4 runs through WS5 and WS6.</figcaption></figure>
+<section id="workshops">
+<h2>Workshop pages: the hands-on work</h2>
+<p>Each workshop page covers what you built, the code with the important lines highlighted, how to recognise that kind of code on the exam, and practice. Concepts are linked, not repeated.</p>
+<div class="scroll"><table>
+<tr><th>Page</th><th>Date</th><th>What you did</th></tr>
+<tr><td><a href="02-workshop-1-docker-cli.html">Workshop 1</a><br><span style="font-weight:400">Docker and the CLI</span></td><td style="font-weight:400;white-space:nowrap">Aug 19</td><td style="font-weight:400">Built and ran an Alpine container; lost a file; kept one with the <code>-v</code> bind mount; installed <code>cloc</code>; edited the Dockerfile</td></tr>
+<tr><td><a href="04-workshop-2-secrets-github-api.html">Workshop 2</a><br><span style="font-weight:400">Secrets and the GitHub API</span></td><td style="font-weight:400;white-space:nowrap">Aug 26</td><td style="font-weight:400">Passed a token in as an environment variable; created dev and release branches through the REST API</td></tr>
+<tr><td><a href="06-workshop-3-github-actions.html">Workshop 3</a><br><span style="font-weight:400">GitHub Actions</span></td><td style="font-weight:400;white-space:nowrap">Sep 2</td><td style="font-weight:400">Self-hosted runner on your VM; a workflow triggered by a pull request, using contexts and a repository secret</td></tr>
+<tr><td><a href="08-workshop-4-ansible-intro.html">Workshop 4</a><br><span style="font-weight:400">Ansible 1</span></td><td style="font-weight:400;white-space:nowrap">Sep 9</td><td style="font-weight:400">Password-less SSH; inventory; a playbook for nginx; a playbook that deploys a Node.js app with a database</td></tr>
+<tr><td><a href="10-workshop-5-ansible-deployment.html">Workshop 5</a><br><span style="font-weight:400">Ansible 2</span></td><td style="font-weight:400;white-space:nowrap">Sep 16</td><td style="font-weight:400">Security-update playbook; single-host Node.js + MySQL deployment with handlers and idempotent tasks</td></tr>
+<tr><td><a href="13-workshop-6-multi-host-ansible.html">Workshop 6</a><br><span style="font-weight:400">Ansible 3</span></td><td style="font-weight:400;white-space:nowrap">Sep 23</td><td style="font-weight:400">Two hosts with a multi-play playbook; 30-request benchmark of each configuration; box plot of your results</td></tr>
+<tr><td><a href="14-workshop-7-retrospectives.html">Workshop 7</a><br><span style="font-weight:400">Retrospectives</span></td><td style="font-weight:400;white-space:nowrap">Sep 28</td><td style="font-weight:400">A short video retrospective of Workshop 5 with your top two takeaways</td></tr>
+</table></div>
+</section>
+
+<section id="practice">
+<h2>Practice and reference</h2>
+<div class="scroll"><table>
+<tr><th>Page</th><th>Use it for</th></tr>
+<tr><td><a href="16-exam-drill.html">Exam drill</a></td><td style="font-weight:400">The three confirmed question types: name the tool from a code snippet (24 snippets), true / false with corrections (58 statements), matching concepts (7 sets). Also the review deck's rules, slide by slide.</td></tr>
+<tr><td><a href="17-glossary.html">Glossary</a></td><td style="font-weight:400">About 200 short definitions with a filter box, the pairs that get swapped in true / false questions, and names and quotes to recognise.</td></tr>
+</table></div>
+<p><strong>A sensible order if you have one evening:</strong> read the eight lecture pages in order, skim the workshop pages for what each kind of code looks like, then spend the rest of the time on the exam drill.</p>
+</section>
+
+<section id="guide">
+<h2>Study-guide map</h2>
+<p>Every bullet on the one-page study guide, the page it lives on, and a one-line answer.</p>
+<div class="scroll"><table>
+<tr><th>Study-guide bullet</th><th>Page</th><th>One-line answer</th></tr>
+<tr><td>Git Flow / branch-based development / PRs / Modern Code Review</td><td><a href="01-lecture-1-devops-git-flow.html">Lecture 1</a>, <a href="03-lecture-2-pipelines-roles.html">Lecture 2</a></td><td style="font-weight:400">Features branch from and merge to develop; only release and hotfix reach main; review happens on the PR</td></tr>
+<tr><td>Workshop 1 concepts: containers, the bind mount (-v)</td><td><a href="02-workshop-1-docker-cli.html">Workshop 1</a></td><td style="font-weight:400">Image is the template, container the instance; <code>-v host:container</code> shares a host folder</td></tr>
+<tr><td>DevOps lifecycle / pipelines / events / roles</td><td><a href="01-lecture-1-devops-git-flow.html">Lecture 1</a>, <a href="03-lecture-2-pipelines-roles.html">Lecture 2</a>, <a href="15-lecture-8-pipelines.html">Lecture 8</a></td><td style="font-weight:400">Event-driven stages carry a unit of change from code to production; five named roles</td></tr>
+<tr><td>Ansible: idempotent, declarative | imperative, agents, controllers, role of SSH, hosts</td><td><a href="07-lecture-4-configuration-management.html">Lecture 4</a>, <a href="08-workshop-4-ansible-intro.html">Workshop 4</a></td><td style="font-weight:400">Agentless, declarative, idempotent; control node pushes over SSH to inventory hosts</td></tr>
+<tr><td>Configuration management</td><td><a href="07-lecture-4-configuration-management.html">Lecture 4</a></td><td style="font-weight:400">Inventory of assets provisioned and controlled through tools such as Ansible</td></tr>
+<tr><td>Diff time</td><td><a href="03-lecture-2-pipelines-roles.html">Lecture 2</a></td><td style="font-weight:400">The discrete moment a change is proposed; when review and static analysis run</td></tr>
+<tr><td>Bit rot</td><td><a href="05-lecture-3-computing-environments.html">Lecture 3</a></td><td style="font-weight:400">Unchanged code stops working as its environment and dependencies change</td></tr>
+<tr><td>Environment variables</td><td><a href="04-workshop-2-secrets-github-api.html">Workshop 2</a></td><td style="font-weight:400">Name=value configuration injected at run time; keeps config and secrets out of code</td></tr>
+<tr><td>Feature flags / dark launching</td><td><a href="09-lecture-5-feature-flags.html">Lecture 5</a></td><td style="font-weight:400">Run-time switches; deployed but not released</td></tr>
+<tr><td>Change management</td><td><a href="11-lecture-6-ownership-retrospectives.html">Lecture 6</a></td><td style="font-weight:400">Small, reviewed, verified, gradual, owned, reversible changes</td></tr>
+<tr><td>DevOps silos / wall of confusion</td><td><a href="11-lecture-6-ownership-retrospectives.html">Lecture 6</a></td><td style="font-weight:400">Dev and Ops separated by a ticket hand-off; delays and blame</td></tr>
+<tr><td>Continuous Deployment</td><td><a href="09-lecture-5-feature-flags.html">Lecture 5</a>, <a href="15-lecture-8-pipelines.html">Lecture 8</a></td><td style="font-weight:400">Changes automatically tested, vetted and deployed to production</td></tr>
+<tr><td>GitHub Actions</td><td><a href="06-workshop-3-github-actions.html">Workshop 3</a></td><td style="font-weight:400">YAML workflows: <code>on</code> event → jobs → steps on a runner</td></tr>
+<tr><td>Releases: canary / deflighting / rollback / A-B testing / load balancing</td><td><a href="09-lecture-5-feature-flags.html">Lecture 5</a>, <a href="12-lecture-7-rings-blast-radius.html">Lecture 7</a></td><td style="font-weight:400">Small share first; shift traffic or flip the flag to undo; compare variants by metric</td></tr>
+<tr><td>Two large pizzas rule</td><td><a href="03-lecture-2-pipelines-roles.html">Lecture 2</a></td><td style="font-weight:400">Team size: no bigger than two pizzas can feed</td></tr>
+<tr><td>Retrospectives / hotwashes</td><td><a href="11-lecture-6-ownership-retrospectives.html">Lecture 6</a>, <a href="14-workshop-7-retrospectives.html">Workshop 7</a></td><td style="font-weight:400">What worked, what didn't, what can we do better</td></tr>
+<tr><td>Computing environments: shells / VMs / containers / virtualization</td><td><a href="05-lecture-3-computing-environments.html">Lecture 3</a>, <a href="02-workshop-1-docker-cli.html">Workshop 1</a></td><td style="font-weight:400">VMs virtualize hardware with a guest OS; containers share the host kernel</td></tr>
+<tr><td>All the adages</td><td><a href="11-lecture-6-ownership-retrospectives.html">Lecture 6</a></td><td style="font-weight:400">Table of all ten with what each connects to</td></tr>
+<tr><td>Continuous Deployment Glossaries 1 &amp; 2</td><td><a href="09-lecture-5-feature-flags.html">Lecture 5</a>, <a href="11-lecture-6-ownership-retrospectives.html">Lecture 6</a></td><td style="font-weight:400">Ten definitions; know them well enough to spot a swapped word</td></tr>
+<tr><td>Deployment rings / blast radius</td><td><a href="12-lecture-7-rings-blast-radius.html">Lecture 7</a></td><td style="font-weight:400">Canaries → early adopters → users; impact grows with each ring</td></tr>
+<tr><td>Shift left / shift right</td><td><a href="12-lecture-7-rings-blast-radius.html">Lecture 7</a></td><td style="font-weight:400">Test earlier to prevent; test in production to detect</td></tr>
+</table></div>
 </section>
 
 <section id="format">
@@ -189,20 +251,21 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <li>Paper, in class, pen preferred, no notes, assigned seats, no devices or smart watches. Cover your answers with the paper provided.</li>
 <li>Excluded even though on slides: DevOps job postings, semantically rich identifiers, unikernels, reverse proxy, docker command syntax.</li>
 </ul>
-<p>Practise all three on the <a href="exam.html">exam drill page</a>. On the workshop pages, items labelled "Self-check" and "Read the code" are there to build understanding; they are not exam formats.</p>
+<p>On the lecture and workshop pages, practice items labelled "Self-check" and "Read the code" build understanding; they are not exam formats. The <a href="16-exam-drill.html">exam drill</a> is the closest thing to the real paper.</p>
 </section>
 
 <section id="caveats">
 <h2>What to double-check against your notes</h2>
 <ul>
-<li>Many slides are images only. The key ones were read (Git Flow, Ansible, feature flags, rings, shift-left, silos, pipelines), but not every slide.</li>
 <li>Adages 4 ("Invest for survival") and 9 ("Invite privacy and security in") are only listed on the slides, so their explanations come from the source paper.</li>
 <li>Definitions of blast radius, shift left / right, load balancer, change management and continuous delivery are written from general knowledge, because the slides give only a diagram or a bare term.</li>
+<li>The model answers to the in-class activity prompts, and all practice questions beyond the samples shown in class, are mine.</li>
+<li>The slides for Workshop 2 (<code>1_5_Workshop_2.pdf</code> on the calendar) were not in the slides folder, so that page is built from the README and your repo only.</li>
 </ul>
 </section>
 
-<nav class="pager" aria-label="Previous and next page"><a class="next" href="ws1.html" rel="next"><small>Next →</small>DevOps WS1 Containers &amp; CLI</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+<nav class="pager" aria-label="Previous and next page"><a class="next" href="01-lecture-1-devops-git-flow.html" rel="next"><small>Next →</small>Lecture 1: What is DevOps, and Git Flow</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){

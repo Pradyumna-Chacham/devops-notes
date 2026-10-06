@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Lecture 1 DevOps and Git Flow</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section#slides table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><span class="cur" aria-current="page">L1<small>DevOps, Git Flow</small></span><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
+<header class="top">
+<div class="eyebrow"><span class="kind l">Lecture 1 · concept</span> Monday Aug 17</div>
+<h1>What is DevOps, and Git Flow</h1>
+<p class="lede">The opening lecture introduced two ideas the rest of the course hangs on: the Git Flow branching model, and DevOps as an event-driven loop that joins development and operations.</p>
+<p class="pair">Workshop that followed: <a href="02-workshop-1-docker-cli.html">Workshop 1</a> (Wed Aug 19), which is about containers. Git Flow itself is practised in <a href="04-workshop-2-secrets-github-api.html">Workshop 2</a> (creating the dev and release branches) and <a href="06-workshop-3-github-actions.html">Workshop 3</a> (automation on Git events).</p>
+<p class="deckmeta">Source: 0_Intro_and_what_is_DevOps.pdf</p>
+<ul class="tags"><li>Git Flow</li><li>branch-based development</li><li>DevOps lifecycle</li><li>events</li></ul>
+<ul class="toc"><li><a href="#gitflow">Git Flow and branch-based development</a></li><li><a href="#lifecycle">The DevOps lifecycle</a></li><li><a href="#slides">The slides, in order</a></li><li><a href="#quiz">Practice</a></li></ul>
+</header>
+<section id="gitflow">
+<h2>Git Flow and branch-based development</h2>
+<p>The <code>dev</code> and <code>release</code> branches you created are two of the Git Flow lanes. The slide was marked "important".</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 310" role="img" aria-label="Git Flow lanes: main, hotfix, release, develop and feature, with the merges between them" style="max-width:760px;min-width:600px"><text x="20" y="54" class="b">main</text>
+<text x="20" y="109" class="b">hotfix</text>
+<text x="20" y="164" class="b">release</text>
+<text x="20" y="219" class="b">develop</text>
+<text x="20" y="274" class="b">feature</text>
+<line class="d-ln grid" x1="90" y1="50" x2="740" y2="50"/>
+<line class="d-ln grid" x1="90" y1="105" x2="740" y2="105"/>
+<line class="d-ln grid" x1="90" y1="160" x2="740" y2="160"/>
+<line class="d-ln grid" x1="90" y1="215" x2="740" y2="215"/>
+<line class="d-ln grid" x1="90" y1="270" x2="740" y2="270"/>
+<line class="d-ln" x1="151" y1="50" x2="239" y2="50" marker-end="url(#ah)"/>
+<line class="d-ln" x1="261" y1="50" x2="689" y2="50" marker-end="url(#ah)"/>
+<line class="d-ln" x1="147.8" y1="57.8" x2="187.2" y2="97.2" marker-end="url(#ah)"/>
+<line class="d-ln a" x1="202.8" y1="97.2" x2="242.2" y2="57.8" marker-end="url(#aha)"/>
+<line class="d-ln" x1="204.7" y1="110.2" x2="390.3" y2="209.8" marker-end="url(#ah)"/>
+<line class="d-ln" x1="143.8" y1="60.3" x2="196.2" y2="204.7" marker-end="url(#ah)"/>
+<line class="d-ln" x1="211" y1="215" x2="289" y2="215" marker-end="url(#ah)"/>
+<line class="d-ln" x1="311" y1="215" x2="389" y2="215" marker-end="url(#ah)"/>
+<line class="d-ln" x1="411" y1="215" x2="489" y2="215" marker-end="url(#ah)"/>
+<line class="d-ln" x1="511" y1="215" x2="689" y2="215" marker-end="url(#ah)"/>
+<line class="d-ln" x1="306.5" y1="223.9" x2="333.5" y2="261.1" marker-end="url(#ah)"/>
+<line class="d-ln" x1="351" y1="270" x2="429" y2="270" marker-end="url(#ah)"/>
+<line class="d-ln" x1="448.1" y1="262.6" x2="491.9" y2="222.4" marker-end="url(#ah)"/>
+<line class="d-ln" x1="508.1" y1="207.6" x2="551.9" y2="167.4" marker-end="url(#ah)"/>
+<line class="d-ln" x1="571" y1="160" x2="629" y2="160" marker-end="url(#ah)"/>
+<line class="d-ln a" x1="645.3" y1="150.3" x2="694.7" y2="59.7" marker-end="url(#aha)"/>
+<line class="d-ln" x1="648.1" y1="167.4" x2="691.9" y2="207.6" marker-end="url(#ah)"/>
+<circle class="d-box ok" cx="140" cy="50" r="10"/>
+<circle class="d-box ok" cx="250" cy="50" r="10"/>
+<circle class="d-box ok" cx="700" cy="50" r="10"/>
+<circle class="d-box bad" cx="195" cy="105" r="10"/>
+<circle class="d-box warn" cx="560" cy="160" r="10"/>
+<circle class="d-box warn" cx="640" cy="160" r="10"/>
+<circle class="d-box" cx="200" cy="215" r="10"/>
+<circle class="d-box" cx="300" cy="215" r="10"/>
+<circle class="d-box" cx="400" cy="215" r="10"/>
+<circle class="d-box" cx="500" cy="215" r="10"/>
+<circle class="d-box" cx="700" cy="215" r="10"/>
+<circle class="d-box acc" cx="340" cy="270" r="10"/>
+<circle class="d-box acc" cx="440" cy="270" r="10"/>
+<text x="140" y="30" text-anchor="middle" class="mono">v0.1</text>
+<text x="250" y="30" text-anchor="middle" class="mono">v0.2</text>
+<text x="700" y="30" text-anchor="middle" class="mono">v1.0</text>
+<text x="232" y="86" class="m">urgent fix merges to main…</text>
+<text x="300" y="150" class="m">…and back into develop</text>
+<text x="470" y="296" text-anchor="middle" class="m">PR: feature merges into develop</text>
+<text x="648" y="106" text-anchor="end" class="m">release merges to main, gets a tag</text></svg></div><figcaption>Only two kinds of edge ever arrive at <strong>main</strong> (the teal arrows): from a release branch and from a hotfix. Everything else integrates on develop first.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th>Branch</th><th>Branched from</th><th>Merges into</th><th>Rules from the slides</th></tr>
+<tr><td>main</td><td></td><td></td><td>Stays clean. Don't break the build. Build from main. Use release tags. Quality gates protect main</td></tr>
+<tr><td>develop</td><td>main</td><td>release</td><td>Integration branch. "Dev might at times be broken"</td></tr>
+<tr><td>feature</td><td><strong>develop</strong></td><td><strong>develop</strong> (via PR)</td><td>Name it <code>unity_id__description</code>. Don't squash commits (at first)</td></tr>
+<tr><td>release</td><td>develop</td><td>main (tagged) and develop</td><td>Stabilize a version before it ships</td></tr>
+<tr><td>hotfix</td><td>main</td><td>main and develop</td><td>Urgent production fix that skips the normal path</td></tr>
+</table></div>
+<aside class="exam"><b>Exam angle</b>This exact question was shown in class as a sample: "In a git flow paradigm, a feature branch is branched from <u class="fix">main</u>." False: change <u class="fix">main</u> to <strong>develop</strong>. Also know the "special moments": main has two inbound edges (release, hotfix); develop receives features plus the merge-backs from hotfix and release.</aside>
+<p><strong>Branch-based development</strong> in general: nobody commits straight to the shared branch. Work happens on a short-lived branch, and the only way in is a reviewed merge. GitHub Actions (WS3) attaches automation to these same edges.</p>
+</section>
+
+<section id="lifecycle">
+<h2>The DevOps lifecycle</h2>
+<p>Working definition from lecture: "DevOps is a set of practices designed to help teams build, test, and release software faster and more reliably." It joins <strong>Dev</strong>elopment and <strong>Op</strong>erations, usually drawn as an infinity loop because it never ends.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 158" role="img" aria-label="The DevOps loop as eight phases, four on the Dev side and four on the Ops side, feeding back into planning" style="max-width:740px;min-width:600px"><rect class="d-box acc" x="20" y="40" width="80" height="44" rx="5"/><text x="60" y="66" text-anchor="middle" class="b">Plan</text>
+<rect class="d-box acc" x="108" y="40" width="80" height="44" rx="5"/><text x="148" y="66" text-anchor="middle" class="b">Code</text>
+<rect class="d-box acc" x="196" y="40" width="80" height="44" rx="5"/><text x="236" y="66" text-anchor="middle" class="b">Build</text>
+<rect class="d-box acc" x="284" y="40" width="80" height="44" rx="5"/><text x="324" y="66" text-anchor="middle" class="b">Test</text>
+<rect class="d-box warn" x="380" y="40" width="80" height="44" rx="5"/><text x="420" y="66" text-anchor="middle" class="b">Release</text>
+<rect class="d-box warn" x="468" y="40" width="80" height="44" rx="5"/><text x="508" y="66" text-anchor="middle" class="b">Deploy</text>
+<rect class="d-box warn" x="556" y="40" width="80" height="44" rx="5"/><text x="596" y="66" text-anchor="middle" class="b">Operate</text>
+<rect class="d-box warn" x="644" y="40" width="80" height="44" rx="5"/><text x="684" y="66" text-anchor="middle" class="b">Monitor</text>
+<text x="192" y="28" text-anchor="middle" class="b">Dev</text>
+<text x="552" y="28" text-anchor="middle" class="b">Ops</text>
+<line class="d-ln" x1="364" y1="62" x2="380" y2="62" marker-end="url(#ah)"/>
+<path class="d-ln" d="M684 84 C684 132 60 132 60 86" marker-end="url(#ah)"/>
+<text x="372" y="146" text-anchor="middle" class="m">feedback from production drives the next plan</text></svg></div><figcaption>The linear view from the slides. CI covers roughly build and test; continuous delivery and deployment carry the change through release and deploy; monitoring feeds planning.</figcaption></figure>
+<h3>DevOps is event-driven</h3>
+<ol><li>Code commit</li><li>Pull request to a special branch</li><li>Automated testing</li><li>Passing tests (a <strong>quality gate</strong>) can automatically trigger promotion to the next phase, for example staging</li></ol>
+</section>
+
+<section id="slides">
+<h2>The slides, in order</h2>
+<p class="deckmeta">0_Intro_and_what_is_DevOps.pdf · 29 slides</p>
+<p>The first lecture has two real topics after the course logistics: the <strong>Git Flow</strong> development process, and a first answer to "what is DevOps?". The Git Flow diagram carries a yellow "important slide" star.</p>
+<div class="scroll"><table>
+<tr><th>Slides</th><th>What they say and what to know</th></tr>
+<tr><td>2–12 · Admin</td><td style="font-weight:400">Course structure. Worth knowing only: exams are on paper, in class, with pen or pencil; the project is a DevOps pipeline built in the second half of the semester.</td></tr>
+<tr><td>14 · Software development as a "lifecycle"</td><td style="font-weight:400">The classic cycle: planning → analysis → design → implementation → testing and integration → maintenance, and round again. DevOps speeds up and automates the trip around this loop.</td></tr>
+<tr><td>15 · Git Flow (important slide)</td><td style="font-weight:400">Five lanes: main, hotfix, release, develop, feature. Main carries version tags (v0.1, v0.2, v1.0). Know which lane branches from which and where each merges.</td></tr>
+<tr><td>16 · A main branch… with tags</td><td style="font-weight:400">Main alone is a short line of tagged, released versions.</td></tr>
+<tr><td>17 · Hotfix</td><td style="font-weight:400">A hotfix leaves main at v0.1 and returns to main as v0.2: the short path for an urgent production fix.</td></tr>
+<tr><td>18 · Main and dev</td><td style="font-weight:400">"main stays clean. Don't break the build. Build from main. Use release tags." And: "Quality gates protect main. Dev might at times be broken."</td></tr>
+<tr><td>19 · Feature branches</td><td style="font-weight:400">Branch off develop, merge back to develop. Name them <code>unity_id__description</code>. "Don't squash commits (at first)."</td></tr>
+<tr><td>20–21 · What is DevOps? It's about perspective</td><td style="font-weight:400">"'DevOps' is a set of practices designed to help teams build, test, and release software faster and more reliably." Development on one side, Operations on the other.</td></tr>
+<tr><td>22–26 · The infinity loop and tool landscape</td><td style="font-weight:400">Several drawings of the same Dev/Ops loop (create, plan, verify, package | release, configure, monitor; or code, build, test | release, deploy, operate, monitor) surrounded by tools: git, Docker, Ansible, Jenkins, Kubernetes, Grafana. Point: DevOps is a crowded set of tools hung on one loop. Slide 26 shows feature branches merging to master and flowing through staging → UAT/QA → prod.</td></tr>
+<tr><td>27 · A linear perspective</td><td style="font-weight:400">Dev: plan, develop, build, test. Ops: release, deploy, operate, monitor. Underneath: continuous integration → continuous delivery → continuous deployment → continuous testing → continuous operations.</td></tr>
+<tr><td>28 · DevOps is "event-driven"</td><td style="font-weight:400">Code commit · pull request to a special branch · automated testing · passing tests might automatically trigger the CI/CD pipeline.</td></tr>
+</table></div>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>DevOps<span class="src">slide wording</span></dt><dd>"A set of practices designed to help teams build, test, and release software faster and more reliably."</dd></div>
+<div class="term"><dt>Git Flow<span class="src">slide wording</span></dt><dd>A Git-based development workflow with main, develop, feature, release and hotfix branches.</dd></div>
+<div class="term"><dt>main<span class="src">slide wording</span></dt><dd>Stays clean; don't break the build; build from main; use release tags; protected by quality gates.</dd></div>
+<div class="term"><dt>develop<span class="src">slide wording</span></dt><dd>The integration branch. "Dev might at times be broken."</dd></div>
+<div class="term"><dt>Feature branch<span class="src">slide wording</span></dt><dd>Branched from develop, named <code>unity_id__description</code>, commits not squashed at first.</dd></div>
+<div class="term"><dt>Hotfix</dt><dd>Urgent fix branched from main and merged straight back to main (and into develop).</dd></div>
+<div class="term"><dt>Release tag</dt><dd>A version label on a main commit, e.g. <code>v1.0</code>.</dd></div>
+<div class="term"><dt>Quality gate</dt><dd>A check that must pass before a change may enter a protected branch or the next stage.</dd></div>
+<div class="term"><dt>Event-driven<span class="src">slide wording</span></dt><dd>Automation runs in response to events: commit, pull request to a special branch, automated tests, tests passing.</dd></div>
+<div class="term"><dt>Software development lifecycle</dt><dd>The repeating cycle of planning, analysis, design, implementation, testing and integration, and maintenance.</dd></div>
+</dl>
+<h3>Check yourself</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>Which branches may merge into main in Git Flow, and why not feature branches?</summary><div class="ans">Release and hotfix only. Main must stay clean and buildable because releases are built and tagged from it; features are integrated on develop first.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>List the four event-driven steps from slide 28.</summary><div class="ans">Code commit; pull request to a special branch; automated testing; passing tests automatically triggering the CI/CD pipeline.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which phases sit on the Dev side and which on the Ops side of the loop?</summary><div class="ans">Dev: plan, code (develop), build, test. Ops: release, deploy, operate, monitor.</div></details>
+</div>
+</section>
+
+<section id="quiz">
+<h2>Practice</h2>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>In a git flow paradigm, a feature branch is branched from main.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">main</u> to <strong>develop</strong>. (Sample question from the lecture slides.)</div></details>
+<details class="q"><summary><span class="chip">True / False</span>In Git Flow, a hotfix branch is merged only into main.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">only into main</u> to <strong>into main and develop</strong>, so the fix is not lost in the next release.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name the two branches whose commits can merge into main in Git Flow, and say why direct feature merges to main are avoided.</summary><div class="ans">Release and hotfix. Main must stay clean and buildable because releases are built from it; features integrate and get tested on develop first, behind quality gates.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why is DevOps described as "event-driven"? Give the chain of events from the slides.</summary><div class="ans">Automation runs in response to events instead of on someone's manual schedule: a code commit, a pull request to a special branch, automated testing, and passing tests (a quality gate) automatically triggering the next CI/CD phase such as staging.</div></details>
+</div>
+</section>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="index.html" rel="prev"><small>← Previous</small>Start here: Start here</a><a class="next" href="02-workshop-1-docker-cli.html" rel="next"><small>Next →</small>Workshop 1: Command line tools and Docker</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>

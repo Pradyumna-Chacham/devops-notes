@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Lecture 8 Pipelines</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section#slides table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><span class="cur" aria-current="page">L8<small>Pipelines, CI</small></span></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
+<header class="top">
+<div class="eyebrow"><span class="kind l">Lecture 8 · concept</span> Wednesday Sep 30</div>
+<h1>Pipelines in depth</h1>
+<p class="lede">What a pipeline is in general (pipes and filters), the goal of a DevOps pipeline, the unit of change, the eight common stages, hooks, and continuous integration with its principles, benefits and pain points.</p>
+<p class="pair">Nearest hands-on: <a href="06-workshop-3-github-actions.html">Workshop 3</a> (GitHub Actions is a pipeline tool). Extends <a href="03-lecture-2-pipelines-roles.html">Lecture 2</a>. No workshop followed before the midterm.</p>
+<p class="deckmeta">Source: 8_Pipelines_2.pdf</p>
+<ul class="tags"><li>pipelines</li><li>unit of change</li><li>stages</li><li>hooks</li><li>Continuous Integration</li></ul>
+<ul class="toc"><li><a href="#pipeline">Pipelines, stages and hooks</a></li><li><a href="#ci">Continuous integration, delivery and deployment</a></li><li><a href="#slides">The slides, in order</a></li><li><a href="#quiz">Practice</a></li></ul>
+</header>
+<section id="pipeline">
+<h2>Pipelines, stages and hooks</h2>
+<dl>
+<dt><strong>Pipeline</strong> (general)</dt><dd>An architectural style for incrementally processing data with independent components or stages. A <em>pipe</em> is a message queue; a <em>filter</em> reads a message from an input pipe, processes it, and writes the result to an output pipe.</dd>
+<dt><strong>DevOps pipeline</strong></dt><dd>Its goal: "apply a series of checks, tests, and transformations onto a <strong>unit of change</strong>, such that a production environment is safely and reliably changed in a timely manner."</dd>
+<dt><strong>Unit of change</strong></dt><dd>The thing travelling down the pipeline: a commit, a pull request, a build.</dd>
+<dt><strong>Hook</strong></dt><dd>A mechanism for specifying an action that occurs in response to an event. Examples: a git <code>pre-commit</code> hook that runs <code>npm test</code> and cancels the commit on failure; a webhook that notifies another system; <code>on:</code> in a workflow.</dd>
+</dl>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 780 150" role="img" aria-label="Eight common pipeline stages from pre-build to post-deploy, with continuous integration covering build, test and analysis" style="max-width:780px;min-width:600px"><circle class="d-box" cx="26" cy="86" r="14"/><text x="26" y="90" text-anchor="middle" class="b">C</text>
+<circle class="d-box acc" cx="756" cy="86" r="14"/><text x="756" y="90" text-anchor="middle" class="b">P</text>
+<rect class="d-box" x="52" y="66" width="80" height="40" rx="5"/><text x="92" y="90" text-anchor="middle" class="b">Pre-Build</text>
+<text x="92" y="124" text-anchor="middle" class="m s">quick checks</text>
+<rect class="d-box acc" x="138" y="66" width="80" height="40" rx="5"/><text x="178" y="90" text-anchor="middle" class="b">Build</text>
+<text x="178" y="124" text-anchor="middle" class="m s">build manager</text>
+<rect class="d-box acc" x="224" y="66" width="80" height="40" rx="5"/><text x="264" y="90" text-anchor="middle" class="b">Test</text>
+<text x="264" y="124" text-anchor="middle" class="m s">unit tests</text>
+<rect class="d-box acc" x="310" y="66" width="80" height="40" rx="5"/><text x="350" y="90" text-anchor="middle" class="b">Analysis</text>
+<text x="350" y="124" text-anchor="middle" class="m s">static analysis</text>
+<rect class="d-box" x="396" y="66" width="80" height="40" rx="5"/><text x="436" y="90" text-anchor="middle" class="b">Package</text>
+<text x="436" y="124" text-anchor="middle" class="m s">image / bundle</text>
+<rect class="d-box" x="482" y="66" width="80" height="40" rx="5"/><text x="522" y="90" text-anchor="middle" class="b">Staging</text>
+<text x="522" y="124" text-anchor="middle" class="m s">system tests</text>
+<rect class="d-box" x="568" y="66" width="80" height="40" rx="5"/><text x="608" y="90" text-anchor="middle" class="b">Deploy</text>
+<text x="608" y="124" text-anchor="middle" class="m s">into production</text>
+<rect class="d-box" x="654" y="66" width="80" height="40" rx="5"/><text x="694" y="90" text-anchor="middle" class="b">Post-Deploy</text>
+<text x="694" y="124" text-anchor="middle" class="m s">test in prod</text>
+<line class="d-ln" x1="138" y1="50" x2="390" y2="50"/>
+<line class="d-ln" x1="138" y1="50" x2="138" y2="58"/>
+<line class="d-ln" x1="390" y1="50" x2="390" y2="58"/>
+<text x="264" y="40" text-anchor="middle" class="a">Continuous Integration</text></svg></div><figcaption>A unit of change enters at C (code) and, if every stage passes, reaches P (production). Each stage has one goal and can stop the change.</figcaption></figure>
+<p>Real pipelines are "more complicated": not all changes are correct or safe, and product and infrastructure needs vary. Companies run a <em>federation</em> of hundreds to thousands of loosely aligned pipelines, not one global one. Netflix Spinnaker is the slides' example of a fully automated pipeline: bake immutable VM images, built-in deployment strategies (highlander, red/black), restrict stages to time windows, Chaos Monkey integration, with canary and hotfix stages.</p>
+<h3>Pipelines outsource the heavy lifting</h3>
+<p>A pipeline is integrative technology. The real work is done by build and task managers it calls:</p>
+<div class="scroll"><table>
+<tr><th>Tool</th><th>Concept to know</th><th>Example</th></tr>
+<tr><td>make</td><td>A <em>target</em> is a group of commands; a <em>source</em> is a dependency of a target, used to infer what must run first</td><td><code>make publish-latest</code></td></tr>
+<tr><td>Maven (Java, XML)</td><td>A <em>phase</em> is a stage in the build lifecycle (compile, test, package, verify, deploy); phases contain <em>goals</em> executed by <em>plugins</em></td><td><code>mvn verify</code></td></tr>
+<tr><td>grunt / npm</td><td>A <em>task</em> runs a registered plugin or arbitrary JavaScript</td><td><code>npm run deploy:stage</code></td></tr>
+</table></div>
+</section>
+
+<section id="ci">
+<h2>Continuous integration, delivery and deployment</h2>
+<div class="scroll"><table>
+<tr><th>Term</th><th>Definition</th></tr>
+<tr><td>Continuous Integration</td><td>Developers automatically build, test and analyze a software change in response to every change committed to the source repository</td></tr>
+<tr><td>Continuous Delivery</td><td>Every change is carried through testing and staging so it is always ready to release; the final push to production may still be a human decision</td></tr>
+<tr><td>Continuous Deployment</td><td>"A process in which incremental software changes are automatically tested, vetted, and deployed to production environments" (Glossary 1)</td></tr>
+</table></div>
+<p>Lecture's caveat: "continuous" is imprecise. Code changes arrive at discrete moments (diff time), and production updates happen at intervals.</p>
+<div class="two"><div>
+<h3>CI principles</h3>
+<ul><li>Commit code frequently</li><li>Don't commit broken code</li><li>Fix broken builds immediately</li><li>Write automated developer tests</li><li>All tests and inspections must pass</li><li>Run private builds</li><li>Avoid getting broken code</li></ul>
+</div><div>
+<h3>Claimed benefits</h3>
+<ul><li>Detect and fix defects faster</li><li>Health of the software is measurable</li><li>Fewer assumptions about the environment</li><li>Less repetitive manual process</li><li>Deployable software at any point in time</li><li>Global feedback about failure gives developers confidence</li></ul>
+</div></div>
+<p>The problem CI solves: code "that worked individually were put together and the whole usually failed in ways that were infuriatingly difficult to find". Pain points from the studies: "why did the build fail?" and builds that take too long. Some companies use <strong>build teams</strong> to maintain CI scripts and infrastructure; they can act as gatekeepers on integration. CD pipeline configs have their own "smells", which linters such as CD-Linter detect.</p>
+<aside class="note">History that could appear as a matching item: XP "integrate often" and the 10-minute build (1999), Fowler's CI post (2000), Jenkins (2005), Travis CI (2011), Spinnaker (2015), Jenkins 2 "pipeline-as-code" (2016), GitOps (2017).</aside>
+</section>
+
+<section id="slides">
+<h2>The slides, in order</h2>
+<p class="deckmeta">8_Pipelines_2.pdf · 32 slides, from Dr. Chris Parnin</p>
+<p>Learning goals: what is a pipeline? The definition of a DevOps pipeline. The meaning of "a unit of change". Pipeline hooks. The deck ends with the midterm rules and sample questions.</p>
+<div class="scroll"><table>
+<tr><th>Slides (in order)</th><th>What they say and what to know</th></tr>
+<tr><td>What are pipelines?</td><td style="font-weight:400">Definition, plus a Unix example: <code>ls -R | grep … | sed …</code>. Diagram: data source → pipe → filter → pipe → filter → pipe → data sink.</td></tr>
+<tr><td>Example pipelines in computer science</td><td style="font-weight:400">A compiler's phases, Hadoop MapReduce (split → map → shuffle → reduce), a graphics pipeline. Same shape everywhere.</td></tr>
+<tr><td>A DevOps pipeline?</td><td style="font-weight:400">The goal sentence, with "unit of change" underlined. Picture: commit to a repo → "1 second of magic" → changes deployed to production.</td></tr>
+<tr><td>More complicated</td><td style="font-weight:400">"Not all changes are correct or safe… and the needs of product and infrastructure are great and varied." Real reference architectures are large.</td></tr>
+<tr><td>Example pipeline and common stages</td><td style="font-weight:400">Pre-Build, Build, Test, Analysis, Package, Staging, Deploy, Post-Deploy, each with its one-line job. "Easier to understand pipelines by their various stages."</td></tr>
+<tr><td>A simple pipeline with hooks</td><td style="font-weight:400">Hook definition. Example: <code>git commit</code> fires <code>.git/hooks/pre-commit</code>, which runs <code>npm test</code>; failing tests cancel the commit. Also shown: GitHub's "add webhook" page.</td></tr>
+<tr><td>Netflix Spinnaker</td><td style="font-weight:400">Code check-in → CI → bake → deployment → post-deploy test → hotfix → canary → live. Features: bake immutable VM images via Packer; built-in strategies such as highlander and red/black; restrict stages to time windows; Chaos Monkey integration.</td></tr>
+<tr><td>Narrowing down: continuous integration</td><td style="font-weight:400">Build, Test and Analysis are bracketed as CI, with its definition.</td></tr>
+<tr><td>CI timeline</td><td style="font-weight:400">1999 XP "integrate often", "10-minute build" · 2000 Fowler's post · 2001 CruiseControl · 2003 22–35% of companies run daily builds · 2005 Hudson/Jenkins · 2011 Travis CI · 2013 57% use CI tools · 2015 Spinnaker · 2016 Jenkins 2 "pipeline-as-code" · 2017 GitOps.</td></tr>
+<tr><td>CI: problem, principles, benefits</td><td style="font-weight:400">The integration problem quote; seven principles; six claimed benefits.</td></tr>
+<tr><td>Empirical evidence / pain points</td><td style="font-weight:400">Top motivation in a survey: "CI helps us catch errors earlier" (75%). Top pain points: troubleshooting a CI build failure (50%) and overly long build times (38%). "I'm Leaving You, Travis": projects with more commits, and C# projects, were more likely to abandon Travis.</td></tr>
+<tr><td>Implementing build, test, analysis</td><td style="font-weight:400">"Pipelines are just integrative technology… heavy-lifting outsourced to other tools." Build and task managers: make, maven, grunt, npm, msbuild. Examples: <code>npm run deploy:stage</code>; grunt tasks; <code>make publish-latest</code> with targets and sources; <code>mvn verify</code> with phases, goals and plugins (FindBugs can fail the build).</td></tr>
+<tr><td>CI in practice</td><td style="font-weight:400">Build teams maintain CI scripts and infrastructure, act as gatekeepers, and help with failures. There isn't a single global pipeline but a federation; companies have 100s to 1000s.</td></tr>
+<tr><td>Other stages? Desirable properties</td><td style="font-weight:400">A table of properties per stage: scalability, repeatability, simplicity, trustworthiness, security, robustness, availability, velocity/speed, cost, coverage, incrementality, correctness, regularity, traceability, independence. For Build: correctness (dependencies fully expressed), velocity, incrementality, repeatability, independence. Cautionary note: "326 Jenkins nightmare. Build server didn't drop database after build."</td></tr>
+<tr><td>Configuration smells in CD pipelines</td><td style="font-weight:400">CD-Linter, a semantic linter that detects four "CD smells" in pipeline configuration; 31% of projects with long configurations had at least one.</td></tr>
+<tr><td>About the midterm</td><td style="font-weight:400">Arrive on time; assigned seats; devices in a bag; no smart watches; no calculator; pen preferred. True / false with corrections, no simple negation. Samples: the two-pizzas trap and "Ansible is mostly an imperative language". Matching concepts: left items may connect to zero, one or multiple right items.</td></tr>
+</table></div>
+<h3>Definitions from this deck</h3>
+<dl class="terms">
+<div class="term"><dt>Pipeline<span class="src">slide wording</span></dt><dd>An architectural style for incrementally processing data with independent components or stages.</dd></div>
+<div class="term"><dt>Pipe<span class="src">slide wording</span></dt><dd>A message queue.</dd></div>
+<div class="term"><dt>Filter<span class="src">slide wording</span></dt><dd>A process, thread, or component that perpetually reads messages from an input pipe, one at a time, processes each message, then writes the result to an output pipe.</dd></div>
+<div class="term"><dt>DevOps pipeline (goal)<span class="src">slide wording</span></dt><dd>To apply a series of checks, tests, and transformations onto a unit of change, such that a production environment is safely and reliably changed in a timely manner.</dd></div>
+<div class="term"><dt>Unit of change</dt><dd>What flows through the pipeline: a commit, a pull request, a build.</dd></div>
+<div class="term"><dt>Stage<span class="src">slide wording</span></dt><dd>One step of the pipeline with a particular goal and function.</dd></div>
+<div class="term"><dt>Hook<span class="src">slide wording</span></dt><dd>A mechanism for specifying an action that occurs in response to an event.</dd></div>
+<div class="term"><dt>Webhook</dt><dd>An HTTP callback: one system POSTs to a URL when an event happens.</dd></div>
+<div class="term"><dt>Continuous integration<span class="src">slide wording</span></dt><dd>A practice where developers automatically build, test, and analyze a software change in response to every software change committed to the source repository.</dd></div>
+<div class="term"><dt>Private build</dt><dd>Building and testing locally before committing, so you do not break the shared build.</dd></div>
+<div class="term"><dt>Build / task manager<span class="src">slide wording</span></dt><dd>make, maven, grunt, npm, msbuild: the tools that do a pipeline's heavy lifting.</dd></div>
+<div class="term"><dt>Target and source (make)<span class="src">slide wording</span></dt><dd>A target is a group of commands; a source is a dependency for a target.</dd></div>
+<div class="term"><dt>Phase, goal, plugin (Maven)<span class="src">slide wording</span></dt><dd>A phase is a stage in the build lifecycle; each phase contains goals, which are executed by plugins.</dd></div>
+<div class="term"><dt>Task (grunt)<span class="src">slide wording</span></dt><dd>Executes a registered plugin or arbitrary JavaScript.</dd></div>
+<div class="term"><dt>Build team<span class="src">slide wording</span></dt><dd>Maintains CI scripts and infrastructure; can serve as gatekeepers on code integration.</dd></div>
+<div class="term"><dt>Immutable image / bake</dt><dd>Build a complete VM image once and deploy it unchanged, instead of modifying running servers.</dd></div>
+<div class="term"><dt>Pipeline-as-code</dt><dd>Defining the pipeline in a versioned file in the repository (Jenkins 2, 2016).</dd></div>
+<div class="term"><dt>CD smell</dt><dd>A common pipeline misconfiguration that violates CD principles.</dd></div>
+</dl>
+<h3>Check yourself</h3>
+<div class="quiz">
+<details class="q"><summary><span class="chip">Self-check</span>Explain "pipe" and "filter" using a DevOps pipeline.</summary><div class="ans">Each stage (build, test, analysis…) is a filter: it takes the unit of change in, does one job, and passes the result on. The hand-off between stages is the pipe.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What does it mean that "pipelines are just integrative technology"?</summary><div class="ans">The pipeline does not compile, test or analyze anything itself. It connects and sequences other tools (make, maven, npm, linters, test runners) and decides whether the change moves on.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Name the two biggest CI pain points and one benefit.</summary><div class="ans">Pain: troubleshooting why a build failed, and long build times. Benefit: catching errors earlier (detecting and fixing defects faster).</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Which three stages make up continuous integration on the stages slide?</summary><div class="ans">Build, Test and Analysis.</div></details>
+</div>
+</section>
+
+<section id="quiz">
+<h2>Practice</h2>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>Continuous Integration is a practice where developers automatically build, test and analyze a change in response to every change committed to the repository.</summary><div class="ans"><span class="T">True.</span> That is the slide definition.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A hook is a mechanism for specifying an action that occurs in response to an event.</summary><div class="ans"><span class="T">True.</span> Git pre-commit hooks and webhooks are examples.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Staging is the pipeline stage in which unit tests are run against the developer's laptop.</summary><div class="ans"><span class="F">False.</span> Staging (baking) runs <strong>system tests in a production-like environment</strong>. Unit tests belong to the Test stage.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>State the goal of a DevOps pipeline.</summary><div class="ans">To apply a series of checks, tests and transformations to a unit of change so that the production environment is changed safely, reliably and in a timely manner.</div></details>
+<details class="q"><summary><span class="chip">Matching</span>Match each to its closest tool: Continuous Integration, Infrastructure as Code, Containerization, Version Control. (Tools: Ansible, Git, GitHub Actions, Docker / Podman.)</summary><div class="ans">Continuous Integration ↔ GitHub Actions. Infrastructure as Code ↔ Ansible. Containerization ↔ Docker / Podman. Version Control ↔ Git. On the slide, Microservices was also in the left column; items "might connect to zero, one, or multiple" on the right, so the closest link for Microservices is Docker / Podman (services packaged as containers), and it is fine to argue for none.</div></details>
+<details class="q"><summary><span class="chip">Matching</span>Connect each term to its tool. Terms: version control · continuous integration · infrastructure as code · containerization · secrets manager · package manager. Tools: Git · GitHub Actions · Ansible · Docker / Podman · GitHub repository secrets · apk / apt.</summary><div class="ans">In the same order: Git, GitHub Actions, Ansible, Docker / Podman, GitHub repository secrets, apk / apt.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Trace one code change from a developer's laptop to all users, naming a concept from each workshop.</summary><div class="ans">The developer works in a container (WS1) on a feature branch and opens a pull request, the diff-time review point (WS2). The PR event triggers a GitHub Actions workflow that tests it (WS3). After merge, an idempotent Ansible playbook configures the servers (WS4) and deploys the app with the new feature behind a flag, dark (WS5). It is enabled ring by ring, canaries first, while telemetry is watched and the blast radius stays small (WS6). If anything goes wrong it is rolled back and the team holds a retrospective (WS7).</div></details>
+</div>
+</section>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="14-workshop-7-retrospectives.html" rel="prev"><small>← Previous</small>Workshop 7: A video retrospective of Workshop 5</a><a class="next" href="16-exam-drill.html" rel="next"><small>Next →</small>Exam drill: Exam drill</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>

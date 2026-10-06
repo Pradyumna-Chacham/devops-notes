@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DevOps WS6 Multi-Host Orchestration</title>
+<title>DevOps Workshop 6 Multi-Host Ansible</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
 /* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
@@ -36,12 +36,23 @@ body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-in
 .wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
 a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-nav.set{display:flex;flex-wrap:wrap;gap:6px}
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
 nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
 nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
 
 header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
 .eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
 .lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
@@ -97,7 +108,7 @@ details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transfor
 details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
 .F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
 u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
-section[id^="d"] table td:first-child{min-width:10.5rem}
+section#slides table td:first-child{min-width:10.5rem}
 .snip{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
 .cols ul{margin:0}
@@ -115,7 +126,7 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 @media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 </style>
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}nav.pager a:hover{border-color:var(--accent)}nav.pager a.next{text-align:right}nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -125,15 +136,16 @@ footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padd
 <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <div class="wrap">
-<nav class="set" aria-label="Study pages"><a href="index.html">Home</a><a href="ws1.html">WS1<small>Containers &amp; CLI</small></a><a href="ws2.html">WS2<small>Secrets &amp; Git Flow</small></a><a href="ws3.html">WS3<small>Actions &amp; pipelines</small></a><a href="ws4.html">WS4<small>Ansible basics</small></a><a href="ws5.html">WS5<small>Deploy &amp; feature flags</small></a><span class="cur" aria-current="page">WS6<small>Multi-host &amp; rings</small></span><a href="ws7.html">WS7<small>Retros &amp; adages</small></a><a href="exam.html">Exam<small>3 question types</small></a><a href="notes.html">Notes<small>By slide deck</small></a><a href="glossary.html">Glossary<small>Definitions</small></a></nav>
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="16-exam-drill.html">Exam drill</a><a href="17-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><span class="cur" aria-current="page">W6<small>Ansible 3</small></span><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
 <header class="top">
-<div class="eyebrow">CSC 519 · Midterm prep · Workshop 6</div>
-<h1>Multi-host orchestration and performance profiling</h1>
-<p class="lede">Workshop 6 split the Workshop 5 system across two machines, an app server and a database server, and then measured what the split did to response time. The lecture that day introduced deployment rings, blast radius, and shift-left / shift-right testing, all of which are about controlling risk as a change spreads.</p>
-<ul class="tags"><li>hosts / inventory groups</li><li>orchestration</li><li>environment variables</li><li>telemetry</li><li>deployment rings</li><li>blast radius</li><li>shift left / shift right</li><li>load balancing</li></ul>
-<ul class="toc"><li><a href="#arch">One host vs two</a></li><li><a href="#playbook">Multi-play playbook</a></li><li><a href="#net">Opening the database</a></li><li><a href="#bench">Benchmarking</a></li><li><a href="#results">Your results</a></li><li><a href="#rings">Deployment rings</a></li><li><a href="#blast">Blast radius</a></li><li><a href="#shift">Shift left / right</a></li><li><a href="#lb">Load balancing</a></li><li><a href="#quiz">Practice</a></li></ul>
+<div class="eyebrow"><span class="kind w">Workshop 6 · hands-on</span> Wednesday Sep 23</div>
+<h1>Ansible 3: two hosts and a performance comparison</h1>
+<p class="lede">You moved the database to a second VM with one multi-play playbook, then measured 30 requests against each configuration and plotted the difference.</p>
+<p class="pair">Concepts behind it: <a href="07-lecture-4-configuration-management.html">Lecture 4</a> (inventory groups, idempotence) and <a href="12-lecture-7-rings-blast-radius.html">Lecture 7</a> (measuring in production, blast radius).</p>
+<p class="deckmeta">Source: README</p>
+<ul class="tags"><li>hosts / inventory groups</li><li>orchestration</li><li>environment variables</li><li>telemetry</li></ul>
+<ul class="toc"><li><a href="#arch">One host vs two</a></li><li><a href="#playbook">One playbook, two plays, two host groups</a></li><li><a href="#net">Opening the database to exactly one client</a></li><li><a href="#bench">Benchmarking</a></li><li><a href="#results">Your results</a></li><li><a href="#quiz">Practice</a></li></ul>
 </header>
-
 <section id="arch">
 <h2>One host vs two</h2>
 <figure class="fig"><div class="scroll"><svg viewBox="0 0 760 230" role="img" aria-label="Configuration 1 keeps the app and database on one VM; configuration 2 puts the database on a second VM, adding a network hop" style="max-width:760px;min-width:600px"><text x="185" y="22" text-anchor="middle" class="l">Config 1: single host (WS5)</text>
@@ -359,133 +371,21 @@ write CSV: config, request number, duration_ms, status</pre>
 <p><strong>The trade:</strong> you pay about 10 ms per request and extra configuration to get tiers that scale and fail independently. Whether that is worth it is a judgment about the system, and the measurement is what lets you make it.</p>
 </section>
 
-<section id="rings">
-<h2>Deployment rings</h2>
-<p>Deployment rings (a.k.a. rollout rings) release a change to progressively larger groups of users. Each ring must look healthy before the change is promoted to the next.</p>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 270" role="img" aria-label="Three concentric rings, canaries inside early adopters inside all users, and the blast radius growing as a change is promoted outward" style="max-width:740px;min-width:600px"><circle class="d-box soft" cx="130" cy="138" r="108"/>
-<circle class="d-box" cx="130" cy="138" r="78"/>
-<circle class="d-box acc" cx="130" cy="138" r="34"/>
-<text x="130" y="142" text-anchor="middle" class="b">Canaries</text>
-<text x="130" y="94" text-anchor="middle" class="b">Early adopters</text>
-<text x="130" y="50" text-anchor="middle" class="b">Users</text>
-<polygon points="290,222 722,222 722,64" style="fill:var(--bad-soft);stroke:var(--bad);stroke-width:1"/>
-<rect class="d-box acc" x="290" y="168" width="110" height="48" rx="5"/><text x="345" y="188.5" text-anchor="middle" class="b">Ring 0</text><text x="345" y="203.5" text-anchor="middle" class="m">canaries</text>
-<line class="d-ln" x1="400" y1="192" x2="450" y2="192" marker-end="url(#ah)"/>
-<text x="425" y="184" text-anchor="middle" class="m s">gate</text>
-<rect class="d-box" x="450" y="138" width="110" height="78" rx="5"/><text x="505" y="173.5" text-anchor="middle" class="b">Ring 1</text><text x="505" y="188.5" text-anchor="middle" class="m">early adopters</text>
-<line class="d-ln" x1="560" y1="177" x2="610" y2="177" marker-end="url(#ah)"/>
-<text x="585" y="169" text-anchor="middle" class="m s">gate</text>
-<rect class="d-box" x="610" y="94" width="110" height="122" rx="5"/><text x="665" y="151.5" text-anchor="middle" class="b">Ring 2</text><text x="665" y="166.5" text-anchor="middle" class="m">all users</text>
-<text x="500" y="244" text-anchor="middle" class="bad b">Blast radius grows with every ring</text>
-<text x="500" y="40" text-anchor="middle" class="m">CI → CD pipeline deploys to ring 0 automatically;</text>
-<text x="500" y="55" text-anchor="middle" class="m">promotion outward needs an approval (a quality gate)</text></svg></div><figcaption>A defect caught in ring 0 hurts a handful of volunteers. The same defect found in ring 2 hurts everyone. Rings exist to keep the first discovery small.</figcaption></figure>
-<div class="scroll"><table>
-<tr><th>Ring</th><th>Who</th><th>Purpose</th><th>Character</th></tr>
-<tr><td>0: Canaries</td><td>Internal users, volunteers, a small slice of traffic</td><td>Catch defects first, at minimum impact</td><td>Most volatile; sees the largest set of new features</td></tr>
-<tr><td>1: Early adopters</td><td>Users who opted in to previews</td><td>Validate with real usage at moderate scale</td><td>In between</td></tr>
-<tr><td>2: Users</td><td>Everyone in production</td><td>General availability</td><td>Most stable; the exposed feature set is smaller</td></tr>
-</table></div>
-<p>The third slide ("exposed feature set + rings") makes one more point: from early adopters to production users, volatility falls and stability rises, and <strong>the set of features switched on shrinks</strong>. Feature flags are the mechanism: inner rings have more flags on, and some users get custom exposure.</p>
-<p>"Canary" comes from the canary in a coal mine: a small early warning before the danger reaches everyone.</p>
-</section>
-
-<section id="blast">
-<h2>Blast radius</h2>
-<p><strong>Blast radius</strong> is the extent of the damage if a change goes wrong: how many users, services or machines are affected. Much of DevOps practice is a way of shrinking it.</p>
-<div class="scroll"><table>
-<tr><th>Practice</th><th>How it limits blast radius</th></tr>
-<tr><td>Deployment rings / canary release</td><td>Only a small group sees the change first</td></tr>
-<tr><td>Feature flags</td><td>One feature can be turned off without touching the rest</td></tr>
-<tr><td>Small, frequent changes (CI)</td><td>Less can break per change, and the cause is easy to find</td></tr>
-<tr><td>Microservices / separate hosts</td><td>A failure is contained in one service (though dependencies can spread it, as Lamport's quote warns)</td></tr>
-<tr><td>Least privilege</td><td>A leaked token or compromised host can reach less. WS6: port 3306 open to VM1 only, <code>GRANT SELECT</code> only</td></tr>
-<tr><td>Staging / baking</td><td>The first place a bad build explodes is not production</td></tr>
-</table></div>
-</section>
-
-<section id="shift">
-<h2>Shift left and shift right</h2>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 280" role="img" aria-label="Testing can shift left toward planning and design or shift right into operation; the cost of fixing a defect rises the later it is found" style="max-width:740px;min-width:600px"><line class="d-ln a" x1="350" y1="30" x2="60" y2="30" marker-end="url(#aha)"/>
-<text x="205" y="20" text-anchor="middle" class="a">Shift-left: test earlier</text>
-<line class="d-ln" x1="390" y1="30" x2="690" y2="30" marker-end="url(#ah)"/>
-<text x="540" y="20" text-anchor="middle" class="b">Shift-right: test in production</text>
-<rect class="d-box" x="40" y="50" width="96" height="36" rx="5"/><text x="88" y="72" text-anchor="middle" class="b">Plan</text>
-<rect class="d-box" x="148" y="50" width="96" height="36" rx="5"/><text x="196" y="72" text-anchor="middle" class="b">Design</text>
-<rect class="d-box" x="256" y="50" width="96" height="36" rx="5"/><text x="304" y="72" text-anchor="middle" class="b">Dev</text>
-<rect class="d-box" x="364" y="50" width="96" height="36" rx="5"/><text x="412" y="72" text-anchor="middle" class="b">Deploy</text>
-<rect class="d-box" x="472" y="50" width="96" height="36" rx="5"/><text x="520" y="72" text-anchor="middle" class="b">Operate</text>
-<rect class="d-box" x="580" y="50" width="96" height="36" rx="5"/><text x="628" y="72" text-anchor="middle" class="b">Measure</text>
-<line class="d-ln" x1="40" y1="250" x2="690" y2="250"/>
-<rect class="d-box s1" x="58" y="232" width="60" height="18" rx="3"><title>Plan: cheapest to fix</title></rect>
-<rect class="d-box s1" x="166" y="220" width="60" height="30" rx="3"><title>Design</title></rect>
-<rect class="d-box s1" x="274" y="204" width="60" height="46" rx="3"><title>Dev</title></rect>
-<rect class="d-box s1" x="382" y="184" width="60" height="66" rx="3"><title>Deploy</title></rect>
-<rect class="d-box s1" x="490" y="156" width="60" height="94" rx="3"><title>Operate</title></rect>
-<rect class="d-box s1" x="598" y="126" width="60" height="124" rx="3"><title>Measure: most expensive to fix</title></rect>
-<text x="40" y="114" class="b">Cost of fixing a defect</text>
-<text x="40" y="130" class="m">rises with time and lifecycle progress</text>
-<text x="40" y="146" class="m">(shape only; the slide gives no numbers)</text>
-<text x="365" y="270" text-anchor="middle" class="m">time and lifecycle progress →</text></svg></div><figcaption>The slide's title was "Shift-left reduces cost of defects". The bars are the same idea as Boehm's curve on the Workshop 5 page.</figcaption></figure>
-<div class="two"><div>
-<h3>Shift left</h3>
-<p>Move testing and quality checks <strong>earlier</strong>, toward plan, design and dev, where defects are cheap to fix.</p>
-<ul><li>Static analysis and linting at diff time</li><li>Unit tests on every commit (CI)</li><li>Pre-commit hooks, pre-build checks</li><li>Code review before merge</li><li>Security review early ("Invite Privacy and Security In")</li></ul>
-</div><div>
-<h3>Shift right</h3>
-<p>Extend testing <strong>later</strong>, into deploy, operate and measure, because some problems only show with real users, real data and real load.</p>
-<ul><li>Canary releases and deployment rings</li><li>A/B tests and feature-flag experiments</li><li>Monitoring, telemetry, alerting</li><li>Post-deploy testing in production</li><li>Chaos engineering (Chaos Monkey)</li></ul>
-</div></div>
-<aside class="exam"><b>Exam angle</b>The two are complements, not rivals. Shift left <em>prevents</em> defects cheaply; shift right <em>detects</em> what could not be predicted and limits its blast radius. Your WS6 benchmark was a shift-right style activity: measuring the deployed system.</aside>
-</section>
-
-<section id="lb">
-<h2>Load balancing</h2>
-<figure class="fig"><div class="scroll"><svg viewBox="0 0 740 220" role="img" aria-label="A load balancer in front of several instances sends most traffic to version 1 and a small share to the canary, and can cut the canary to zero" style="max-width:740px;min-width:600px"><rect class="d-box" x="20" y="86" width="110" height="48" rx="5"/><text x="75" y="106.5" text-anchor="middle" class="b">Users</text><text x="75" y="121.5" text-anchor="middle" class="m">all requests</text>
-<line class="d-ln" x1="130" y1="110" x2="200" y2="110" marker-end="url(#ah)"/>
-<rect class="d-box acc" x="200" y="80" width="140" height="60" rx="5"/><text x="270" y="106.5" text-anchor="middle" class="b">Load balancer</text><text x="270" y="121.5" text-anchor="middle" class="m">chooses an instance</text>
-<line class="d-ln" x1="340" y1="98" x2="450" y2="38" marker-end="url(#ah)"/>
-<line class="d-ln" x1="340" y1="106" x2="450" y2="84" marker-end="url(#ah)"/><text x="388" y="62" text-anchor="middle" class="m">90%</text>
-<line class="d-ln" x1="340" y1="114" x2="450" y2="130" marker-end="url(#ah)"/>
-<line class="d-ln a" x1="340" y1="124" x2="450" y2="184" marker-end="url(#aha)"/><text x="388" y="172" text-anchor="middle" class="m a">10%</text>
-<rect class="d-box" x="450" y="20" width="130" height="36" rx="5"/><text x="515" y="42" text-anchor="middle" class="b">v1 instance</text>
-<rect class="d-box" x="450" y="66" width="130" height="36" rx="5"/><text x="515" y="88" text-anchor="middle" class="b">v1 instance</text>
-<rect class="d-box" x="450" y="112" width="130" height="36" rx="5"/><text x="515" y="134" text-anchor="middle" class="b">v1 instance</text>
-<rect class="d-box warn" x="450" y="166" width="130" height="36" rx="5"/><text x="515" y="188" text-anchor="middle" class="b">v2 canary</text>
-<text x="600" y="180" class="m">rollback: set this</text>
-<text x="600" y="195" class="m">share to 0%</text>
-<text x="600" y="80" class="m">stable pool</text></svg></div><figcaption>The same component gives you scaling (add instances), resilience (skip a dead one), canary releases (weighted routing), blue-green switches and rollback.</figcaption></figure>
-<ul>
-<li>A load balancer distributes incoming requests across multiple instances of a service.</li>
-<li>It is the "networking layer" that the Workshop 5 page says canary and blue-green releases are implemented in.</li>
-<li>Rollback option 1 from lecture is a load-balancer action: shift traffic away from the canary.</li>
-<li>WS4 mentioned that nginx in front of Node.js is useful for static caching and load balancing. (The term "reverse proxy" is excluded from the midterm.)</li>
-</ul>
-</section>
-
 <section id="quiz">
 <h2>Practice</h2>
 <div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">The exam has three question types: true / false with corrections, matching concepts, and naming the tool from a code snippet. "Self-check" and "Read the code" items are for understanding only. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
 <div class="quiz">
-<details class="q"><summary><span class="chip">True / False</span>In a ring-based rollout, a change is deployed to all users first and then to canaries.</summary><div class="ans"><span class="F">False.</span> Reverse the order: <strong>canaries</strong> first, then early adopters, then <strong>all users</strong>.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>The blast radius of a change shrinks as it is promoted to outer deployment rings.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">shrinks</u> to <strong>grows</strong>. More users are exposed with each ring.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>Shift-left testing means moving testing later in the lifecycle, into production.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">Shift-left</u> to <strong>Shift-right</strong> (or: shift-left moves testing <strong>earlier</strong>, toward design and development).</div></details>
-<details class="q"><summary><span class="chip">True / False</span>Canary releases and monitoring in production are examples of shift-right testing.</summary><div class="ans"><span class="T">True.</span> They test with real users and real traffic after deployment.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>In an Ansible playbook, each play targets a group of hosts, and one playbook may contain several plays.</summary><div class="ans"><span class="T">True.</span> WS6 used one play for the database host and one for the app host.</div></details>
 <details class="q"><summary><span class="chip">True / False</span>Moving the database to a second VM reduced the median response time in the workshop.</summary><div class="ans"><span class="F">False.</span> It <strong>increased</strong> it (about 77.6 → 88.2 ms in your data) because each query now crosses the network.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>Telemetry is a practice in which team members discuss the causes of an outage.</summary><div class="ans"><span class="F">False.</span> That is a <strong>retrospective</strong>. Telemetry is instrumenting code to compute metrics about feature use, performance and stability.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>A load balancer can be used to roll back a canary release by shifting traffic away from it.</summary><div class="ans"><span class="T">True.</span> Rollback option 1 from the lecture.</div></details>
-<details class="q"><summary><span class="chip">True / False</span>Production users see a larger exposed feature set than canary users.</summary><div class="ans"><span class="F">False.</span> Change <u class="fix">larger</u> to <strong>smaller</strong>. Inner rings have more new features switched on; production is the most stable.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span><code>db_host: &quot;{{ hostvars[groups[&#x27;myserver1&#x27;][0]].inventory_hostname }}&quot;</code> What does this expression evaluate to, and why write it this way?</summary><div class="ans">The address of the first host in the inventory group <code>myserver1</code> (the database VM). The value comes from the inventory, so if the VMs are re-provisioned with new IPs you edit only the hosts file, not the playbook or the app.</div></details>
 <details class="q"><summary><span class="chip">Read the code</span>A benchmark script measures <code>total_elapsed</code> around the whole loop and also sums the 30 durations. Which is larger and why?</summary><div class="ans"><code>total_elapsed</code>, slightly, because it also includes the script's own overhead between requests (loop bookkeeping, recording the sample). In your run: 2,415 ms total vs 2,411 ms summed for Config 1.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>Why does the database play come before the app play in the playbook?</summary><div class="ans">The app depends on the database. Running the DB play first means the database, user, firewall rule and data exist before the app service starts, so the playbook's final check that the app responds can succeed in a single run.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>Give two reasons to separate an app server and a database server despite the added latency.</summary><div class="ans">Independent scaling and sizing of each tier (several app servers can share one database); fault and resource isolation, so a busy or crashed app does not starve or take down the database; tighter security boundaries per machine.</div></details>
-<details class="q"><summary><span class="chip">Self-check</span>Explain blast radius and name two practices that reduce it.</summary><div class="ans">Blast radius is how much is affected when a change fails: users, services, machines. Deployment rings / canary releases expose few users first; feature flags let one feature be switched off; small frequent changes, least privilege and staging also limit it.</div></details>
 <details class="q"><summary><span class="chip">Self-check</span>Why report a box plot or histogram instead of just the average response time?</summary><div class="ans">An average hides spread and outliers. Two systems with the same mean can have very different worst cases. The median, quartiles and tail show what a typical request and a bad request look like.</div></details>
 </div>
 </section>
-
-<nav class="pager" aria-label="Previous and next page"><a class="prev" href="ws5.html" rel="prev"><small>← Previous</small>DevOps WS5 Ansible Deployment</a><a class="next" href="ws7.html" rel="next"><small>Next →</small>DevOps WS7 Retrospectives</a></nav>
-<footer>Built from the CSC 519 slides, the workshop READMEs, the midterm study guide and your own workshop repos. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="12-lecture-7-rings-blast-radius.html" rel="prev"><small>← Previous</small>Lecture 7: Deployment rings, blast radius, shift left and shift right</a><a class="next" href="14-workshop-7-retrospectives.html" rel="next"><small>Next →</small>Workshop 7: A video retrospective of Workshop 5</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
 </div>
 <script>
 document.querySelectorAll('button.reveal').forEach(function(b){
