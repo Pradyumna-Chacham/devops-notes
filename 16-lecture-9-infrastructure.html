@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Lecture 9 Infrastructure Concepts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (max 56rem). Tables, code and diagrams scroll inside their own box. */
+:root{
+  --bg:#f1f4f7; --surface:#ffffff; --surface-2:#e6ebf1; --ink:#16202b; --ink-2:#4a5767; --line:#cfd7e0;
+  --accent:#0b6a72; --accent-soft:#dcefee;
+  --exam-bg:#fff2d2; --exam-ink:#5e3c00; --exam-line:#d99a1c;
+  --ok:#17733a; --ok-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe3e0;
+  --code-bg:#0f1823; --code-ink:#dce5ef; --code-com:#8ea0b5; --code-hl:#f4c66b; --code-line:#0f1823;
+  --s1:#2a78d6; --s2:#eb6834;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#18212b; --surface-2:#222e3a; --ink:#e5ebf1; --ink-2:#a2afbe; --line:#30404f;
+  --accent:#62c9cf; --accent-soft:#16363b;
+  --exam-bg:#33270c; --exam-ink:#f5d893; --exam-line:#b0811c;
+  --ok:#72d391; --ok-soft:#153422; --bad:#ff9087; --bad-soft:#40201d;
+  --code-bg:#0a1018; --code-line:#30404f; --s1:#3987e5; --s2:#d95926; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);padding-inline:16px;padding-block:20px 72px}
+.wrap{max-width:56rem;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--accent)} a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+nav.set{display:flex;flex-direction:column;gap:6px}
+.navrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:6px;align-items:start}
+.navchips{display:flex;flex-wrap:wrap;gap:6px}
+nav.set span.navlab{border:0;background:none;padding:8px 0 0;font:600 .68rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:640px){ .navrow{grid-template-columns:1fr;gap:3px} nav.set span.navlab{padding-top:4px} }
+nav.set a,nav.set span{font:600 .8rem/1 var(--cond);letter-spacing:.03em;text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--surface)}
+nav.set .cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav.set small{font-weight:500;font-family:var(--sans);opacity:.85;margin-left:4px}
+
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.kind{display:inline-block;padding:4px 8px;border-radius:3px;margin-right:8px;letter-spacing:.06em}
+.kind.l{background:var(--accent);color:var(--bg)} .kind.w{background:var(--ink);color:var(--bg)}
+.pair{font-size:.95rem;border-left:3px solid var(--accent);padding-left:12px}
+nav.pager{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px}
+nav.pager a{flex:1 1 14rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);color:var(--ink)}
+nav.pager a:hover{border-color:var(--accent)} nav.pager a.next{text-align:right}
+nav.pager small{display:block;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(1.9rem,5vw,2.75rem)/1.08 var(--cond);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{font-size:1.06rem;color:var(--ink-2);margin:0;max-width:44rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font:500 .76rem/1 var(--mono);padding:5px 8px;border-radius:3px;background:var(--surface-2);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin:0;padding:0;list-style:none}
+
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:700 1.55rem/1.15 var(--cond);margin:14px 0 0;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance}
+h3{font:600 1.04rem/1.3 var(--sans);margin:6px 0 0}
+p,ul,ol,dl{margin:0;max-width:46rem} ul,ol{padding-left:1.25rem} li+li{margin-top:4px}
+code{font:500 .86em var(--mono);background:var(--surface-2);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+strong{font-weight:600}
+
+pre.code{margin:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:6px;padding:14px 16px;font:400 .82rem/1.6 var(--mono);overflow-x:auto;tab-size:2}
+pre.code .c{color:var(--code-com)} pre.code mark{background:none;color:var(--code-hl);font-weight:600}
+.cap{font:500 .74rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);margin-bottom:-8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:14px} .two>*{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 .74rem/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+td:first-child{font-weight:600} table.anno td:first-child{font-weight:400;white-space:nowrap} table.anno code{background:none;padding:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+aside.exam{background:var(--exam-bg);color:var(--exam-ink);border:1px solid var(--exam-line);border-radius:6px;padding:12px 14px;max-width:46rem}
+aside.exam>b:first-child{display:block;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+aside.exam code{background:transparent;border:1px solid var(--exam-line)}
+aside.note{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink-2);max-width:46rem}
+
+figure.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+figure.fig svg{display:block;width:100%;height:auto;margin-inline:auto}
+figure.fig figcaption{font-size:.86rem;color:var(--ink-2);margin-top:8px;max-width:46rem}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg text.b{font-weight:600} svg text.m{fill:var(--ink-2);font-size:11px} svg text.s{font-size:10.5px} svg text.l{font-size:14px;font-weight:600}
+svg text.a{fill:var(--accent);font-weight:600} svg text.mono{font-family:var(--mono);font-size:11px} svg text.bad{fill:var(--bad)} svg text.ok{fill:var(--ok)}
+.d-box{fill:var(--bg);stroke:var(--ink-2);stroke-width:1.2}
+.d-box.soft{fill:none;stroke:var(--line);stroke-width:1.5} .d-box.acc{fill:var(--accent-soft);stroke:var(--accent)}
+.d-box.warn{fill:var(--exam-bg);stroke:var(--exam-line)} .d-box.ok{fill:var(--ok-soft);stroke:var(--ok)} .d-box.bad{fill:var(--bad-soft);stroke:var(--bad)}
+.d-box.ghost{fill:none;stroke-dasharray:5 4} .d-box.s1{fill:var(--s1);stroke:none} .d-box.s2{fill:var(--s2);stroke:none} .d-box.s1l{fill:var(--s1);stroke:none;opacity:.35}
+.d-ln{stroke:var(--ink-2);stroke-width:1.3;fill:none} .d-ln.a{stroke:var(--accent);stroke-width:1.8} .d-ln.dash{stroke-dasharray:5 4} .d-ln.grid{stroke:var(--line);stroke-width:1} .d-ln.bad{stroke:var(--bad)}
+.d-ah{fill:var(--ink-2)} .d-aha{fill:var(--accent)} .d-ahb{fill:var(--bad)}
+.d-dot1{fill:var(--s1);stroke:var(--surface);stroke-width:1.5} .d-dot2{fill:var(--s2);stroke:var(--surface);stroke-width:1.5}
+
+.quizbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button.reveal{font:600 .8rem/1 var(--mono);padding:8px 12px;border-radius:4px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.reveal:hover{background:var(--ink);color:var(--bg)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.q summary{cursor:pointer;padding:10px 12px;list-style-position:outside;margin-left:1.2rem;padding-left:4px}
+details.q .chip{font:600 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);margin-right:6px;white-space:nowrap}
+details.q .ans{padding:10px 12px 12px;border-top:1px dashed var(--line);font-size:.94rem}
+.F{color:var(--bad);font-weight:700} .T{color:var(--ok);font-weight:700}
+u.fix{text-decoration-color:var(--bad);text-decoration-thickness:2px;text-underline-offset:3px}
+section#slides table td:first-child{min-width:10.5rem}
+.snip{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:6px 28px;max-width:none}
+.cols ul{margin:0}
+.deckmeta{font:500 .76rem/1.5 var(--mono);color:var(--ink-2);letter-spacing:.02em}
+dl.terms{max-width:none;margin:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.term{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2px 22px;padding:10px 0;border-bottom:1px solid var(--line)}
+.term dt{font-weight:600;min-width:0} .term dt small{display:block;font-weight:400;color:var(--ink-2);font-size:.84rem}
+.term dd{margin:0;min-width:0} .term .tn{display:block;color:var(--ink-2);font-size:.9rem;margin-top:3px}
+.src{font:600 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:2px 4px;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.filter{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filter input{flex:1 1 14rem;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--ink-2);border-radius:5px;background:var(--surface);color:var(--ink)}
+.filter output{font:500 .8rem/1 var(--mono);color:var(--ink-2)}
+@media (max-width:640px){ .term{grid-template-columns:1fr} }
+footer{font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){ body{font-size:15px} table{font-size:.84rem} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-aha" d="M0 0L10 5L0 10z"/></marker>
+<marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-ahb" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="wrap">
+<nav class="set" aria-label="All pages"><div class="navrow"><span class="navlab">Start</span><div class="navchips"><a href="index.html">Start here</a><a href="17-exam-drill.html">Exam drill</a><a href="18-glossary.html">Glossary</a></div></div><div class="navrow"><span class="navlab">Lectures · concepts</span><div class="navchips"><a href="01-lecture-1-devops-git-flow.html">L1<small>DevOps, Git Flow</small></a><a href="03-lecture-2-pipelines-roles.html">L2<small>Pipelines, roles</small></a><a href="05-lecture-3-computing-environments.html">L3<small>Environments, VMs</small></a><a href="07-lecture-4-configuration-management.html">L4<small>Config mgmt, Ansible</small></a><a href="09-lecture-5-feature-flags.html">L5<small>Feature flags, releases</small></a><a href="11-lecture-6-ownership-retrospectives.html">L6<small>Ownership, retros</small></a><a href="12-lecture-7-rings-blast-radius.html">L7<small>Rings, shift left</small></a><a href="15-lecture-8-pipelines.html">L8<small>Pipelines, CI</small></a><span class="cur" aria-current="page">L9<small>Infrastructure</small></span></div></div><div class="navrow"><span class="navlab">Workshops · hands-on</span><div class="navchips"><a href="02-workshop-1-docker-cli.html">W1<small>Docker, CLI</small></a><a href="04-workshop-2-secrets-github-api.html">W2<small>Secrets, API</small></a><a href="06-workshop-3-github-actions.html">W3<small>GitHub Actions</small></a><a href="08-workshop-4-ansible-intro.html">W4<small>Ansible 1</small></a><a href="10-workshop-5-ansible-deployment.html">W5<small>Ansible 2</small></a><a href="13-workshop-6-multi-host-ansible.html">W6<small>Ansible 3</small></a><a href="14-workshop-7-retrospectives.html">W7<small>Retrospective</small></a></div></div></nav>
+<header class="top">
+<div class="eyebrow"><span class="kind l">Lecture 9 · concept</span> Monday Oct 12 (after the midterm)</div>
+<h1>Infrastructure concepts: beyond the 3-tier architecture</h1>
+<p class="lede">The first lecture after the midterm. It starts from the 3-tier architecture, shows where it fails, and adds load balancers, CDNs, caches, zones, regions, replication and microservices to get eight desirable properties.</p>
+<p class="pair">Not on the midterm (it came after Oct 7), so this is for the final and the project. Builds on <a href="09-lecture-5-feature-flags.html">Lecture 5</a> (load balancer, canary), <a href="12-lecture-7-rings-blast-radius.html">Lecture 7</a> (blast radius) and <a href="03-lecture-2-pipelines-roles.html">Lecture 2</a> (services). The course calendar lists "Infrastructure Concepts" for Nov 11; the deck's own housekeeping slide places it the week of Oct 12.</p>
+<p class="deckmeta">Source: 11_Infrastructure_Concepts.pdf</p>
+<ul class="tags"><li>availability</li><li>scalability</li><li>load balancer</li><li>CDN / cache</li><li>zones / regions</li><li>mirroring / sharding</li><li>microservices</li></ul>
+<ul class="toc"><li><a href="#why">From the 3-tier architecture to modern infrastructure</a></li><li><a href="#props">Desirable properties of modern infrastructure</a></li><li><a href="#parts">Common infrastructure components</a></li><li><a href="#avail">Making it available and scalable</a></li><li><a href="#eff">Ensuring efficiency and regulation</a></li><li><a href="#iso">Ensuring isolation</a></li><li><a href="#dur">Durability (mirroring) and scalability and isolation (sharding)</a></li><li><a href="#micro">Microservices</a></li><li><a href="#risk">Platform and vendor risks (slide 34)</a></li><li><a href="#devops">Connections to DevOps</a></li><li><a href="#project">Project introduction (slide 35)</a></li><li><a href="#defs">Definitions from this deck</a></li><li><a href="#slides">The slides, in order</a></li><li><a href="#quiz">Practice</a></li></ul>
+</header>
+<section id="why">
+<h2>From the 3-tier architecture to modern infrastructure</h2>
+<p>The lecture reviews the <strong>3-tier (layered) architecture</strong>, shows where it breaks, and then adds one infrastructure component per desirable property until the system survives load, failures and outages.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 190" role="img" aria-label="The basic 3-tier architecture: a user&#x27;s request goes through a web or presentation layer, an application layer and a database layer" style="max-width:760px;min-width:600px"><rect class="d-box" x="20" y="70" width="110" height="50" rx="5"/><text x="75" y="91.5" text-anchor="middle" class="b">User</text><text x="75" y="106.5" text-anchor="middle" class="m">opens login page</text>
+<line class="d-ln" x1="130" y1="95" x2="190" y2="95" marker-end="url(#ah)"/><text x="160" y="85" text-anchor="middle" class="m">HTTP</text>
+<rect class="d-box acc" x="190" y="40" width="150" height="110" rx="5"/><text x="200" y="57" class="b">Web / presentation</text><text x="200" y="73" class="m">page makes a REST</text><text x="200" y="87" class="m">request to the app</text><text x="200" y="101" class="m">server, renders result</text>
+<line class="d-ln" x1="340" y1="95" x2="400" y2="95" marker-end="url(#ah)"/><text x="370" y="85" text-anchor="middle" class="m">REST</text>
+<rect class="d-box" x="400" y="40" width="150" height="110" rx="5"/><text x="410" y="57" class="b">Application layer</text><text x="410" y="73" class="m">authentication, gets</text><text x="410" y="87" class="m">account data,</text><text x="410" y="101" class="m">coordinates the</text><text x="410" y="115" class="m">transaction</text>
+<line class="d-ln" x1="550" y1="95" x2="610" y2="95" marker-end="url(#ah)"/><text x="580" y="85" text-anchor="middle" class="m">SQL</text>
+<rect class="d-box" x="610" y="40" width="140" height="110" rx="5"/><text x="620" y="57" class="b">Database layer</text><text x="620" y="73" class="m">retrieves data,</text><text x="620" y="87" class="m">processes the money</text><text x="620" y="101" class="m">transaction</text>
+<text x="380" y="178" text-anchor="middle" class="m">Often sufficient for many applications.</text></svg></div><figcaption>The example from the slide: a user logs in to withdraw money. Each tier has one job and talks only to the next.</figcaption></figure>
+<h3>When it is not enough</h3>
+<p>The slide gives three failure pictures. Each one is a single point of failure or a capacity limit:</p>
+<div class="scroll"><table>
+<tr><th>Slide picture</th><th>What goes wrong</th><th>Property that is missing</th></tr>
+<tr><td>A huge crowd opening the login page</td><td style="font-weight:400">All users arrive at once and one app server cannot serve them</td><td style="font-weight:400">Scalable, available</td></tr>
+<tr><td>An unplugged power cord</td><td style="font-weight:400">The app server is unplugged or its VM is deleted, so the service is gone</td><td style="font-weight:400">Available, robust</td></tr>
+<tr><td>A bucket full to the brim</td><td style="font-weight:400">Disks are full and incoming data requests exceed capacity</td><td style="font-weight:400">Scalable, durable, regulation</td></tr>
+</table></div>
+<p>Slide 7, <strong>"Towards Architecture 2.0"</strong>: traditional architectural styles are insufficient for modern web-scale workloads. Moving forward there are two options: <strong>patch architectures</strong> (keep the 3 tiers and add components around them) or <strong>novel architectures</strong> (the microservices style at the end of the lecture). The slide's pictures are a patched road and the Amazon.com site.</p>
+<p>Slides 4 and 8 are reference diagrams: the Microsoft <em>Cloud Design Patterns</em> poster, and a set of real cloud architectures (a mobile game backend, Drupal hosting). Their message is that real systems are made of many of these patterns.</p>
+</section>
+
+<section id="props">
+<h2>Desirable properties of modern infrastructure</h2>
+<p>Eight properties, in the slide's order and wording. This list is the spine of the lecture, and each component later in the deck is introduced by the properties it ensures.</p>
+<dl class="terms">
+<div class="term"><dt>1. Available<span class="src">slide wording</span></dt><dd>No or limited interruption to provided services.</dd></div>
+<div class="term"><dt>2. Scalable<span class="src">slide wording</span></dt><dd>Can increase specific units in response to demand.</dd></div>
+<div class="term"><dt>3. Efficient<span class="src">slide wording</span></dt><dd>Avoid redundant work, shift responsibility to low-cost components.</dd></div>
+<div class="term"><dt>4. Robust<span class="src">slide wording</span></dt><dd>Graceful response to failure of infrastructure or services.</dd></div>
+<div class="term"><dt>5. Durable<span class="src">slide wording</span></dt><dd>Operations and data persistent across partitions.</dd></div>
+<div class="term"><dt>6. Regulation<span class="src">slide wording</span></dt><dd>Can throttle incoming work into a component.</dd></div>
+<div class="term"><dt>7. Isolation<span class="src">slide wording</span></dt><dd>Can reduce the impact of one component's behaviour on others.</dd></div>
+<div class="term"><dt>8. Resilient<span class="src">slide wording</span></dt><dd>Can adapt to unknown and unexpected situations (what happens if a region goes down, or if Google kills GCP?).</dd></div>
+</dl>
+<aside class="exam"><b>Do not confuse</b><strong>Robust</strong> is a graceful response to <em>known kinds</em> of failure (a server dies). <strong>Resilient</strong> is adapting to the <em>unknown and unexpected</em> (a whole region, or a vendor, disappears). <strong>Available</strong> is about uninterrupted service; <strong>durable</strong> is about data and operations surviving.</aside>
+</section>
+
+<section id="parts">
+<h2>Common infrastructure components</h2>
+<p>Slide 10 introduces the toolbox, and slides 11 to 13 give three of its parts one-line summaries:</p>
+<div class="scroll"><table>
+<tr><th>Component</th><th>What it does (slide wording)</th><th>Ensures</th></tr>
+<tr><td>Load balancer</td><td style="font-weight:400">Send traffic to healthy instances. Request new instances as needed.</td><td style="font-weight:400">Availability and scalability</td></tr>
+<tr><td>Content Delivery Network (CDN) and caches</td><td style="font-weight:400">Shift delivery of static content from infrastructure to a third-party provider.</td><td style="font-weight:400">Availability and efficiency</td></tr>
+<tr><td>Zones</td><td style="font-weight:400">Supports isolation and spreads risk by operating instances in independent pools. Useful for supporting certain deployment strategies.</td><td style="font-weight:400">Availability and robustness</td></tr>
+</table></div>
+<p>The rest of the lecture grows one example site, <code>www.devops.com</code> on AWS, one step at a time. The AWS product names are examples; the concepts are what matter.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 780 400" role="img" aria-label="The patched architecture: DNS routes users to a load balancer in front of auto-scaling web and app tiers, with a CDN and S3 for static content, a cache tier, and a database, spread across two availability zones in one region" style="max-width:780px;min-width:600px"><rect class="d-box soft" x="20" y="10" width="740" height="380" rx="5"/><text x="30" y="27" class="b">Region</text>
+<rect class="d-box acc" x="300" y="36" width="160" height="40" rx="5"/><text x="380" y="52.5" text-anchor="middle" class="b">DNS (Route 53)</text><text x="380" y="67.5" text-anchor="middle" class="m">www.devops.com → IP</text>
+<line class="d-ln" x1="380" y1="76" x2="380" y2="100" marker-end="url(#ah)"/><text x="388" y="94" class="m">routes</text>
+<rect class="d-box acc" x="300" y="100" width="160" height="40" rx="5"/><text x="380" y="116.5" text-anchor="middle" class="b">Load balancer</text><text x="380" y="131.5" text-anchor="middle" class="m">health checks, scaling</text>
+<line class="d-ln" x1="300" y1="120" x2="160" y2="120" marker-end="url(#ah)"/><text x="230" y="112" text-anchor="middle" class="m">static requests</text>
+<rect class="d-box" x="40" y="100" width="120" height="40" rx="5"/><text x="100" y="116.5" text-anchor="middle" class="b">CDN (CloudFront)</text><text x="100" y="131.5" text-anchor="middle" class="m">media.devops.com</text>
+<line class="d-ln" x1="100" y1="140" x2="100" y2="168" marker-end="url(#ah)"/>
+<rect class="d-box" x="40" y="168" width="120" height="40" rx="5"/><text x="100" y="184.5" text-anchor="middle" class="b">S3 bucket</text><text x="100" y="199.5" text-anchor="middle" class="m">static files</text>
+<line class="d-ln" x1="380" y1="140" x2="380" y2="176" marker-end="url(#ah)"/>
+<rect class="d-box soft" x="180" y="176" width="400" height="60" rx="5"/><text x="190" y="193" class="b">Availability zone 1</text>
+<rect class="d-box" x="195" y="200" width="110" height="28" rx="5"/><text x="250" y="218" text-anchor="middle" class="b">Web server</text>
+<rect class="d-box" x="315" y="200" width="110" height="28" rx="5"/><text x="370" y="218" text-anchor="middle" class="b">Web server</text>
+<rect class="d-box" x="435" y="200" width="130" height="28" rx="5"/><text x="500" y="218" text-anchor="middle" class="b">Auto-scaling group</text>
+<line class="d-ln" x1="380" y1="236" x2="380" y2="252" marker-end="url(#ah)"/>
+<rect class="d-box soft" x="180" y="252" width="400" height="56" rx="5"/><text x="190" y="269" class="b">App tier (auto-scaling)</text>
+<rect class="d-box" x="195" y="274" width="100" height="26" rx="5"/><text x="245" y="291" text-anchor="middle" class="b">App server</text>
+<rect class="d-box" x="305" y="274" width="100" height="26" rx="5"/><text x="355" y="291" text-anchor="middle" class="b">App server</text>
+<line class="d-ln" x1="380" y1="308" x2="380" y2="320" marker-end="url(#ah)"/>
+<rect class="d-box acc" x="180" y="320" width="190" height="52" rx="5"/><text x="275" y="342.5" text-anchor="middle" class="b">Cache tier</text><text x="275" y="357.5" text-anchor="middle" class="m">Memcached / Redis, in memory</text>
+<line class="d-ln" x1="370" y1="346" x2="400" y2="346" marker-end="url(#ah)"/>
+<rect class="d-box" x="400" y="320" width="180" height="52" rx="5"/><text x="490" y="342.5" text-anchor="middle" class="b">Database</text><text x="490" y="357.5" text-anchor="middle" class="m">Amazon RDS</text>
+<rect class="d-box warn" x="600" y="176" width="140" height="196" rx="5"/><text x="610" y="193" class="b">Availability zone 2</text><text x="610" y="209" class="m">same stack in an</text><text x="610" y="223" class="m">independent pool</text><text x="610" y="237" class="m">(isolation)</text><text x="610" y="251" class="m">takes over if zone 1</text><text x="610" y="265" class="m">fails</text>
+<line class="d-ln dash" x1="580" y1="270" x2="600" y2="270" marker-end="url(#ah)"/></svg></div><figcaption>The finished picture the lecture builds slide by slide. Each box is there for one or two of the eight properties; the next sections add them in the slides' order.</figcaption></figure>
+</section>
+
+<section id="avail">
+<h2>Making it available and scalable</h2>
+<h3>DNS services (slide 16)</h3>
+<ul>
+<li>A simple routing service. It turns a request to <code>www.devops.com</code> into an IP address, projected into the AWS infrastructure (Amazon Route 53, with a "hosted zone").</li>
+<li><strong>Routing options:</strong> latency-based routing, geo DNS, weighted round robin.</li>
+<li><strong>Simple round robin:</strong> several names such as <code>www0.devops.com</code>, <code>www1.devops.com</code>, and so on, taken in turn.</li>
+</ul>
+<h3>Load balancing (slide 17)</h3>
+<ul>
+<li>Dynamic balancing and scaling.</li>
+<li>Ensure <strong>only healthy instances</strong> receive requests.</li>
+<li>Not only can it route a request, it can <strong>request a new auto-scaling instance</strong> if needed.</li>
+<li><strong>Conditions</strong> that trigger scaling, as listed: latency greater than 4 seconds; CPU utilization greater than 70%; request count; count of 5xx responses.</li>
+</ul>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 210" role="img" aria-label="A load balancer sends requests only to healthy web servers and asks the auto-scaling group for a new instance when a threshold is crossed" style="max-width:760px;min-width:600px"><rect class="d-box" x="20" y="80" width="110" height="50" rx="5"/><text x="75" y="109" text-anchor="middle" class="b">Users</text>
+<line class="d-ln" x1="130" y1="105" x2="210" y2="105" marker-end="url(#ah)"/>
+<rect class="d-box acc" x="210" y="70" width="140" height="70" rx="5"/><text x="280" y="94" text-anchor="middle" class="b">Load balancer</text><text x="280" y="109" text-anchor="middle" class="m">health checks</text><text x="280" y="124" text-anchor="middle" class="m">metrics</text>
+<line class="d-ln" x1="350" y1="85" x2="450" y2="45" marker-end="url(#ah)"/><text x="402" y="58" text-anchor="middle" class="m">healthy</text>
+<line class="d-ln" x1="350" y1="105" x2="450" y2="105" marker-end="url(#ah)"/><text x="402" y="97" text-anchor="middle" class="m">healthy</text>
+<line class="d-ln bad dash" x1="350" y1="125" x2="450" y2="165" marker-end="url(#ahb)"/><text x="345" y="156" text-anchor="end" class="m">unhealthy: skipped</text>
+<rect class="d-box" x="450" y="25" width="130" height="40" rx="5"/><text x="515" y="49" text-anchor="middle" class="b">Web server 1</text>
+<rect class="d-box" x="450" y="85" width="130" height="40" rx="5"/><text x="515" y="109" text-anchor="middle" class="b">Web server 2</text>
+<rect class="d-box bad" x="450" y="145" width="130" height="40" rx="5"/><text x="515" y="169" text-anchor="middle" class="b">Web server 3 (down)</text>
+<line class="d-ln dash" x1="250" y1="140" x2="250" y2="188" marker-end="url(#ah)"/><text x="244" y="181" text-anchor="end" class="m">latency &gt; 4 s, CPU &gt; 70%</text>
+<rect class="d-box warn" x="200" y="188" width="380" height="20" rx="5"/>
+<text x="390" y="202" text-anchor="middle" class="m s">request a new instance from the auto-scaling group</text>
+<text x="605" y="105" class="m">Scale out on a</text>
+<text x="605" y="120" class="m">threshold; stop</text>
+<text x="605" y="135" class="m">sending traffic to</text>
+<text x="605" y="150" class="m">bad nodes.</text></svg></div><figcaption>The same component gives availability (skip the dead instance) and scalability (add instances under load).</figcaption></figure>
+<h3>What happens when the load balancer goes down? (slide 18)</h3>
+<p>The load balancer is itself a single point of failure. The answer is <strong>leader election</strong>: stand-by servers can take over in the event the leader goes down. The slide's meme is two identical Spider-Men; the diagram shows clients and servers with one active and the others on stand-by.</p>
+</section>
+
+<section id="eff">
+<h2>Ensuring efficiency and regulation</h2>
+<h3>Content delivery network (slide 21)</h3>
+<ul>
+<li>Deliver frequently accessed content from the edge (Amazon CloudFront in front of an S3 bucket, on its own name <code>media.devops.com</code>).</li>
+<li>Don't waste <strong>CPU, sockets and worker threads</strong> on static requests.</li>
+<li>"The most common <strong>DDoS</strong> attack is to request a large static file, e.g. a 100 MB PDF file." Serving it from a CDN protects the servers.</li>
+<li>Example content: JavaScript libraries and CSS; images and videos; popular objects.</li>
+</ul>
+<h3>Caches and queues (slide 22)</h3>
+<ul>
+<li><strong>Cache popular dynamic requests.</strong> Data is <strong>in memory, not on disk</strong>. Providers: Memcached, Redis (an "ElastiCache" tier).</li>
+<li>Example content: the front page of Reddit; computationally intensive requests such as driving directions from Raleigh to Florida during Spring Break.</li>
+<li><strong>Queues:</strong> data waiting to be processed and stored by the back end. A queue absorbs bursts so the back end is not overrun (this is regulation).</li>
+</ul>
+<h3>Circuit breakers and bulkheads (slide 23)</h3>
+<div class="two"><div>
+<p><strong>Circuit breaker.</strong> "Eliminate connections to faulty services." (Martin Fowler's pattern.) Stop calling a service that keeps failing so callers do not pile up waiting on it.</p>
+</div><div>
+<p><strong>Bulkheads.</strong> "Effectively isolate components and protect from cascading failures through the enforcement of limits (<strong>load shedding</strong>)." Named after the watertight compartments in a ship's hull. Example on the slide: no matter how many requests are applied, <strong>NGINX has a hard limit on the number of processes it will create</strong>.</p>
+</div></div>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 190" role="img" aria-label="A circuit breaker stops calls to a failing service, while bulkheads give each caller its own limited pool so one failure cannot use up everything" style="max-width:760px;min-width:600px"><text x="190" y="20" text-anchor="middle" class="l">Circuit breaker</text>
+<rect class="d-box" x="20" y="60" width="100" height="44" rx="5"/><text x="70" y="86" text-anchor="middle" class="b">Caller</text>
+<line class="d-ln" x1="120" y1="82" x2="200" y2="82" marker-end="url(#ah)"/><text x="160" y="72" text-anchor="middle" class="m">calls</text>
+<rect class="d-box warn" x="200" y="56" width="70" height="52" rx="5"/><text x="235" y="86" text-anchor="middle" class="b">Breaker</text>
+<line class="d-ln bad dash" x1="270" y1="82" x2="330" y2="82" marker-end="url(#ahb)"/><text x="300" y="72" text-anchor="middle" class="m">cut</text>
+<rect class="d-box bad" x="330" y="60" width="90" height="44" rx="5"/><text x="375" y="86" text-anchor="middle" class="b">Failing service</text>
+<text x="220" y="135" text-anchor="middle" class="m">After repeated failures the breaker</text>
+<text x="220" y="150" text-anchor="middle" class="m">opens: calls fail fast instead of waiting.</text>
+<line class="d-ln grid" x1="450" y1="30" x2="450" y2="175"/>
+<text x="600" y="20" text-anchor="middle" class="l">Bulkheads</text>
+<rect class="d-box" x="480" y="50" width="80" height="36" rx="5"/><text x="520" y="72" text-anchor="middle" class="b">Pool A: 10</text>
+<rect class="d-box bad" x="570" y="50" width="80" height="36" rx="5"/><text x="610" y="72" text-anchor="middle" class="b">Pool B: full</text>
+<rect class="d-box" x="660" y="50" width="80" height="36" rx="5"/><text x="700" y="72" text-anchor="middle" class="b">Pool C: 10</text>
+<line class="d-ln" x1="520" y1="118" x2="520" y2="90" marker-end="url(#ah)"/>
+<line class="d-ln" x1="700" y1="118" x2="700" y2="90" marker-end="url(#ah)"/>
+<text x="520" y="134" text-anchor="middle" class="m s">still served</text>
+<text x="700" y="134" text-anchor="middle" class="m s">still served</text>
+<text x="610" y="160" text-anchor="middle" class="m">A limit per pool sheds extra load; B&#x27;s failure stays in B.</text></svg></div><figcaption>Both patterns stop one failing part from taking down the rest, which the slides call a cascading failure.</figcaption></figure>
+<p>The slide's source text names only the idea. The "open after repeated failures, fail fast" behaviour is the standard description of the pattern, so treat that detail as general knowledge rather than slide wording.</p>
+</section>
+
+<section id="iso">
+<h2>Ensuring isolation</h2>
+<h3>Availability zones (slide 25)</h3>
+<ul>
+<li>Isolated production environment. Create <strong>pools or zones</strong> of your production environment that are isolated from other instances.</li>
+<li><strong>Use cases:</strong> switch requests when deploying a new version; have environments resilient to pollution (a corrupted cache); avoid slow spin-up by anticipating a large traffic boost (lunch or prime-time hours).</li>
+<li>The sidebar picture is "cascading failures: the pyramid check", a stack of glasses where one falling glass brings down the rest.</li>
+</ul>
+<h3>Regions (slide 26)</h3>
+<ul>
+<li><strong>Geographically placed</strong> production environments, also isolated from each other.</li>
+<li><strong>Use cases:</strong> serve traffic closest to where it occurs (Asia, Europe, South America); handle different laws and content-distribution rules.</li>
+</ul>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 210" role="img" aria-label="A region contains independent availability zones; several regions are placed near users and under different laws" style="max-width:760px;min-width:600px"><rect class="d-box soft" x="20" y="20" width="500" height="170" rx="5"/><text x="30" y="37" class="b">Region A (for example us-east-1)</text>
+<rect class="d-box acc" x="40" y="54" width="220" height="120" rx="5"/><text x="50" y="71" class="b">Availability zone 1</text><text x="50" y="87" class="m">web + app + cache + DB</text>
+<rect class="d-box acc" x="280" y="54" width="220" height="120" rx="5"/><text x="290" y="71" class="b">Availability zone 2</text><text x="290" y="87" class="m">independent copy of the stack</text>
+<line class="d-ln" x1="260" y1="114" x2="280" y2="114" marker-end="url(#ah)" marker-start="url(#ah)"/>
+<rect class="d-box" x="560" y="20" width="180" height="80" rx="5"/><text x="570" y="37" class="b">Region B (eu-west-1)</text><text x="570" y="53" class="m">closer to European users,</text><text x="570" y="67" class="m">follows local law</text>
+<rect class="d-box" x="560" y="110" width="180" height="80" rx="5"/><text x="570" y="127" class="b">Region C (Asia)</text><text x="570" y="143" class="m">closer to Asian users</text>
+<text x="650" y="206" text-anchor="middle" class="m s">DNS geo routing picks the region</text></svg></div><figcaption>Zones isolate failures inside a region (cheap, fast). Regions isolate geography, law and large outages (broader, more expensive).</figcaption></figure>
+<div class="scroll"><table>
+<tr><th></th><th>Availability zone</th><th>Region</th></tr>
+<tr><td>What it is</td><td style="font-weight:400">An isolated pool inside one region</td><td style="font-weight:400">A geographic placement of a whole production environment</td></tr>
+<tr><td>Main use cases</td><td style="font-weight:400">Switch traffic when deploying; survive a corrupted cache; pre-warm for a traffic peak</td><td style="font-weight:400">Serve users nearest to them; meet different laws and content rules</td></tr>
+<tr><td>Ensures</td><td style="font-weight:400">Isolation, availability, robustness</td><td style="font-weight:400">Isolation, resilience to a region going down</td></tr>
+</table></div>
+</section>
+
+<section id="dur">
+<h2>Durability (mirroring) and scalability and isolation (sharding)</h2>
+<p>Slide 27 is a diagram of one database design with two techniques named in its title.</p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 250" role="img" aria-label="Mirroring copies a master database to a standby replica; sharding splits one table into shards held on different database servers" style="max-width:760px;min-width:600px"><text x="190" y="20" text-anchor="middle" class="l">Mirroring / replication</text>
+<rect class="d-box acc" x="20" y="50" width="150" height="70" rx="5"/><text x="30" y="67" class="b">Master database</text><text x="30" y="83" class="m">takes writes</text>
+<line class="d-ln" x1="170" y1="85" x2="270" y2="85" marker-end="url(#ah)"/><text x="220" y="75" text-anchor="middle" class="m">replicate</text>
+<rect class="d-box" x="270" y="50" width="150" height="70" rx="5"/><text x="280" y="67" class="b">Slave / standby</text><text x="280" y="83" class="m">scaled-down copy</text>
+<text x="190" y="150" text-anchor="middle" class="m">If the master is lost, cut over to the standby.</text>
+<text x="190" y="166" text-anchor="middle" class="m">The standby is not active for production traffic.</text>
+<text x="190" y="190" text-anchor="middle" class="b">Ensures durability</text>
+<line class="d-ln grid" x1="450" y1="30" x2="450" y2="235"/>
+<text x="600" y="20" text-anchor="middle" class="l">Sharding</text>
+<rect class="d-box" x="490" y="50" width="130" height="60" rx="5"/><text x="555" y="76.5" text-anchor="middle" class="b">Tracking table</text><text x="555" y="91.5" text-anchor="middle" class="m">key → shard</text>
+<line class="d-ln" x1="620" y1="70" x2="660" y2="60" marker-end="url(#ah)"/>
+<line class="d-ln" x1="620" y1="90" x2="660" y2="120" marker-end="url(#ah)"/>
+<rect class="d-box" x="660" y="40" width="90" height="40" rx="5"/><text x="705" y="64" text-anchor="middle" class="b">Shard 1</text>
+<rect class="d-box" x="660" y="100" width="90" height="40" rx="5"/><text x="705" y="124" text-anchor="middle" class="b">Shard 2</text>
+<text x="600" y="170" text-anchor="middle" class="m">Each shard holds part of the data,</text>
+<text x="600" y="186" text-anchor="middle" class="m">so no one server holds everything.</text>
+<text x="600" y="210" text-anchor="middle" class="b">Ensures scalability and isolation</text></svg></div><figcaption>The slide pairs them: mirroring gives a second copy (durability); sharding divides the data (scalability and isolation). The slide also shows a corporate data centre cutting over to an AWS region with a scaled-down standby.</figcaption></figure>
+<div class="scroll"><table>
+<tr><th></th><th>Mirroring (replication)</th><th>Sharding</th></tr>
+<tr><td>Idea</td><td style="font-weight:400">Keep a second copy of the same data on another server</td><td style="font-weight:400">Split the data so different servers hold different parts</td></tr>
+<tr><td>Slide wording</td><td style="font-weight:400">Master / slave, "Mirroring / Replication", "Cut Over", "Scaled down Standby"</td><td style="font-weight:400">A tracking table that maps data to shards</td></tr>
+<tr><td>Ensures</td><td style="font-weight:400">Durability</td><td style="font-weight:400">Scalability and isolation</td></tr>
+</table></div>
+<p>Slide 28 is an <strong>activity</strong>: <em>How are availability, isolation, regulation and scalability related to DevOps?</em> A model answer is in the practice section below.</p>
+</section>
+
+<section id="micro">
+<h2>Microservices</h2>
+<p>The "novel architecture" option. <strong>Split services into single deployable units.</strong></p>
+<figure class="fig"><div class="scroll"><svg viewBox="0 0 760 230" role="img" aria-label="In a monolith one executable runs all services and scales as a whole; with microservices each service runs in its own executable and scales independently" style="max-width:760px;min-width:600px"><text x="190" y="20" text-anchor="middle" class="l">Monolith</text>
+<rect class="d-box soft" x="40" y="50" width="300" height="130" rx="5"/><text x="50" y="67" class="b">One application, one executable</text><text x="50" y="83" class="m">hello/  users/  appointments/  ...</text>
+<text x="190" y="205" text-anchor="middle" class="m">&quot;Run single application with all services.&quot;</text>
+<line class="d-ln grid" x1="380" y1="30" x2="380" y2="215"/>
+<text x="570" y="20" text-anchor="middle" class="l">Microservices</text>
+<rect class="d-box" x="410" y="50" width="100" height="40" rx="5"/><text x="460" y="66.5" text-anchor="middle" class="b">hello/</text><text x="460" y="81.5" text-anchor="middle" class="m">1x</text>
+<rect class="d-box" x="410" y="100" width="100" height="40" rx="5"/><text x="460" y="116.5" text-anchor="middle" class="b">users/</text><text x="460" y="131.5" text-anchor="middle" class="m">30x</text>
+<rect class="d-box" x="410" y="150" width="100" height="40" rx="5"/><text x="460" y="166.5" text-anchor="middle" class="b">appointments/</text><text x="460" y="181.5" text-anchor="middle" class="m">10x</text>
+<text x="640" y="80" class="m">Scale each service by</text>
+<text x="640" y="96" class="m">the instances it needs.</text>
+<text x="640" y="130" class="m">If one fails, the others</text>
+<text x="640" y="146" class="m">keep running.</text>
+<text x="570" y="215" text-anchor="middle" class="m">&quot;Run each service in its own executable.&quot;</text></svg></div><figcaption>The slide's counts (1x, 30x, 10x) show how many instances of each service might run. The code on the slide is a tiny Spring Boot REST controller that returns "Hello World!" at <code>/api/hello</code>: one small service.</figcaption></figure>
+<ul>
+<li><strong>Scalability:</strong> can run as many instances of particular services as needed across multiple servers.</li>
+<li><strong>Robustness and isolation:</strong> can still run other services if one fails.</li>
+</ul>
+<p>This is the same idea as the lecture-2 and Glossary 2 definition of microservices: small, often stateless instances connected through a central discovery service and property store.</p>
+<h3>Case study: Netflix (slides 32 and 33)</h3>
+<div class="scroll"><table>
+<tr><th>Piece</th><th>What the slides say</th></tr>
+<tr><td>Video delivery</td><td style="font-weight:400">AWS does not handle <em>any</em> video data. A CDN, <strong>Open Connect</strong>, serves video; the boxes are co-located with ISPs ("all Netflix content in one box")</td></tr>
+<tr><td>What AWS does</td><td style="font-weight:400">Discovery, load balancing, recommendations, profiles, and 1 billion metrics streaming to Atlas</td></tr>
+<tr><td>Regions</td><td style="font-weight:400">us-east-1, us-west-2, eu-west-1</td></tr>
+<tr><td>Routing</td><td style="font-weight:400">DNS / IP geo routing</td></tr>
+<tr><td>Services</td><td style="font-weight:400">Hundreds of <strong>stateless</strong> services: login, playback, list movies, bookmarks, ratings, recommendations</td></tr>
+<tr><td>Discovery and configuration</td><td style="font-weight:400">A discovery service holds the service end-points (IP addresses); configurable "fast properties"</td></tr>
+<tr><td>Load balancing and failover</td><td style="font-weight:400"><strong>Zuul</strong> does load balancing and failover</td></tr>
+<tr><td>Robustness</td><td style="font-weight:400"><strong>Hystrix</strong> handles a failing service (the circuit-breaker idea) and fails over</td></tr>
+<tr><td>Durability</td><td style="font-weight:400"><strong>Cassandra</strong> holds the state, replicated across regions</td></tr>
+</table></div>
+<p>The lesson: services are stateless so any instance can answer; the state lives in a replicated data store. That is what lets each part be scaled, replaced or lost independently.</p>
+</section>
+
+<section id="risk">
+<h2>Platform and vendor risks (slide 34)</h2>
+<p>Depending on a platform is itself a risk. Two examples from the slide:</p>
+<ul>
+<li><strong>Heroku</strong> "kills free hosting tier, replacing it with a new service that can only run 18 hours per day" (2015).</li>
+<li><strong>Linode</strong> assigned maintenance windows in which a reboot will occur; the assigned windows are not changeable.</li>
+</ul>
+<p>This is the <strong>resilient</strong> property again: what do you do if a provider changes terms or disappears? Answers the deck points to are regions, multiple zones, and avoiding lock-in.</p>
+</section>
+
+<section id="devops">
+<h2>Connections to DevOps</h2>
+<p>One of the lecture's objectives was to "look for connections to DevOps". The ones that follow from the deck and earlier lectures:</p>
+<div class="scroll"><table>
+<tr><th>Infrastructure idea</th><th>DevOps connection</th></tr>
+<tr><td>Load balancer shifts traffic</td><td style="font-weight:400">Canary release and rollback (Lecture 5): send a small share, or zero, to the new version</td></tr>
+<tr><td>Availability zones as isolated pools</td><td style="font-weight:400">Deployment strategies: the slide says to "switch requests when deploying a new version" (blue-green, rings)</td></tr>
+<tr><td>Regions, zones, bulkheads</td><td style="font-weight:400">Smaller blast radius (Lecture 7)</td></tr>
+<tr><td>Auto-scaling and thresholds</td><td style="font-weight:400">Telemetry: the metrics (latency, CPU, request count, 5xx count) are the same ones DevOps monitors</td></tr>
+<tr><td>Infrastructure described in files</td><td style="font-weight:400">Configuration is code (Lecture 4): playbooks create and configure the servers, load balancers and databases</td></tr>
+<tr><td>Microservices</td><td style="font-weight:400">One team per service, the two-large-pizzas rule (Lecture 2), change ownership (Lecture 6)</td></tr>
+<tr><td>Stateless services, replicated data</td><td style="font-weight:400">Safe to deploy, restart and roll back any instance</td></tr>
+</table></div>
+</section>
+
+<section id="project">
+<h2>Project introduction (slide 35)</h2>
+<ul>
+<li>Teams of <strong>1 to 3 people</strong>. Everyone must contribute substantially, as shown in the GitHub commit log.</li>
+<li>Teams must be finalized by the time the Project Proposal is submitted.</li>
+</ul>
+</section>
+
+<section id="defs">
+<h2>Definitions from this deck</h2>
+<dl class="terms">
+<div class="term"><dt>3-tier architecture</dt><dd>Web / presentation layer, application layer, database layer. Often sufficient for many applications.</dd></div>
+<div class="term"><dt>Patch architecture<span class="src">slide wording</span></dt><dd>Keep the traditional layered style and add infrastructure components around it.</dd></div>
+<div class="term"><dt>Novel architecture<span class="src">slide wording</span></dt><dd>A different style built for web scale, such as microservices.</dd></div>
+<div class="term"><dt>Single point of failure</dt><dd>One component whose loss stops the whole system (one app server, one load balancer, one database).</dd></div>
+<div class="term"><dt>Load balancer</dt><dd>Sends traffic to healthy instances and can request new ones. Ensures availability and scalability.</dd></div>
+<div class="term"><dt>Auto-scaling group</dt><dd>A set of instances that grows or shrinks on a trigger such as CPU above 70% or latency above 4 seconds.</dd></div>
+<div class="term"><dt>Leader election</dt><dd>A stand-by server takes over when the active (leader) one goes down.</dd></div>
+<div class="term"><dt>DNS</dt><dd>Turns a name such as <code>www.devops.com</code> into an IP address. Routing options: latency-based, geo, weighted round robin, simple round robin.</dd></div>
+<div class="term"><dt>CDN<small>content delivery network</small></dt><dd>Delivers static content from a third-party provider's edge servers. Ensures availability and efficiency.</dd></div>
+<div class="term"><dt>Cache</dt><dd>Fast in-memory storage (Memcached, Redis) for popular dynamic results.</dd></div>
+<div class="term"><dt>Queue</dt><dd>Data waiting to be processed and stored by the back end.</dd></div>
+<div class="term"><dt>Circuit breaker</dt><dd>Eliminate connections to faulty services.</dd></div>
+<div class="term"><dt>Bulkhead</dt><dd>Isolates components and protects from cascading failures through enforced limits (load shedding).</dd></div>
+<div class="term"><dt>Load shedding</dt><dd>Refusing excess work once a limit is reached so the rest keeps working.</dd></div>
+<div class="term"><dt>Cascading failure</dt><dd>One failing component causing the components that depend on it to fail in turn.</dd></div>
+<div class="term"><dt>Availability zone</dt><dd>An isolated pool of production instances inside a region. Spreads risk.</dd></div>
+<div class="term"><dt>Region</dt><dd>A geographically placed production environment, for latency and to meet local laws.</dd></div>
+<div class="term"><dt>Mirroring<small>replication</small></dt><dd>Keeping a copy of the data on a standby server. Ensures durability.</dd></div>
+<div class="term"><dt>Sharding</dt><dd>Splitting data across servers by a key. Ensures scalability and isolation.</dd></div>
+<div class="term"><dt>Monolith</dt><dd>One application, one executable, all services together.</dd></div>
+<div class="term"><dt>Microservices<span class="src">slide wording</span></dt><dd>Split services into single deployable units, each run in its own executable.</dd></div>
+<div class="term"><dt>Stateless service</dt><dd>Keeps no client state in the instance, so any instance can answer. State lives in a replicated store.</dd></div>
+<div class="term"><dt>Open Connect</dt><dd>Netflix's own CDN: boxes co-located with ISPs that serve all video data.</dd></div>
+<div class="term"><dt>Vendor risk</dt><dd>The risk that a provider changes or removes its service (Heroku free tier, Linode forced reboots).</dd></div>
+</dl>
+</section>
+
+<section id="slides">
+<h2>The slides, in order</h2>
+<p class="deckmeta">11_Infrastructure_Concepts.pdf · 32 slides, from Dr. Christopher Parnin, modified by JPO</p>
+<div class="scroll"><table>
+<tr><th>Slides</th><th>What they say and what to know</th></tr>
+<tr><td>2 · Housekeeping</td><td style="font-weight:400">Midterm grades expected by the end of the week. Workshop 8 (the final workshop) that Wednesday. No class the following Monday (Fall Break, Oct 19).</td></tr>
+<tr><td>3 · Learning objectives</td><td style="font-weight:400">Review the 3-layered architecture. Why it is not enough. Desirable properties of modern web architecture. Look for connections to DevOps. Time to work on the project.</td></tr>
+<tr><td>4 · Cloud Design Patterns</td><td style="font-weight:400">Microsoft's pattern poster. Real systems combine many patterns.</td></tr>
+<tr><td>5–6 · 3-tier, and when it is not enough</td><td style="font-weight:400">Web/presentation, application, database. Not enough when everyone arrives at once, when the app server is unplugged or its VM is deleted, or when disks are full and data requests exceed capacity.</td></tr>
+<tr><td>7–8 · Towards Architecture 2.0</td><td style="font-weight:400">Patch architectures or novel architectures. Example cloud architectures.</td></tr>
+<tr><td>9 · Desirable properties</td><td style="font-weight:400">The eight properties.</td></tr>
+<tr><td>10–13 · Components</td><td style="font-weight:400">Load balancers, CDN and caches, zones, each with the properties it ensures.</td></tr>
+<tr><td>14–15 · Patching our 3-tier architecture</td><td style="font-weight:400">The AWS version: EC2 instances in an auto-scaling group for the web tier, another for the app tier, RDS database, in one availability zone (AZ-1).</td></tr>
+<tr><td>16–18 · Available and scalable</td><td style="font-weight:400">DNS (routing options), load balancing (healthy instances, auto-scaling, thresholds), leader election for the load balancer.</td></tr>
+<tr><td>20–23 · Efficiency and regulation</td><td style="font-weight:400">CDN and S3, caches and queues, circuit breakers and bulkheads.</td></tr>
+<tr><td>24–26 · Isolation</td><td style="font-weight:400">Availability zones (AZ-2 added), regions.</td></tr>
+<tr><td>27 · Durability and sharding</td><td style="font-weight:400">Mirroring / replication to a standby with cut-over; a tracking table and shards.</td></tr>
+<tr><td>28 · Activity</td><td style="font-weight:400">How are availability, isolation, regulation and scalability related to DevOps?</td></tr>
+<tr><td>30–33 · Microservices and Netflix</td><td style="font-weight:400">Monolith vs microservices with per-service scaling; Netflix with Open Connect, Zuul, Hystrix, Cassandra.</td></tr>
+<tr><td>34 · Platform and vendor risks</td><td style="font-weight:400">Heroku free tier; Linode forced reboots.</td></tr>
+<tr><td>35 · Project introduction</td><td style="font-weight:400">Teams of 1 to 3; everyone contributes, as the commit log shows.</td></tr>
+</table></div>
+</section>
+
+<section id="quiz">
+<h2>Practice</h2>
+<p><strong>Not on the midterm.</strong> This lecture came after the exam (Oct 7), so it is for the final and the project. The questions use the same formats.</p>
+<div class="quizbar"><button class="reveal" type="button">Reveal all answers</button><span style="color:var(--ink-2);font-size:.88rem">Answer in your head first, then open each one. On true / false, underline the wrong word and write the fix; a plain "not" earns nothing.</span></div>
+<div class="quiz">
+<details class="q"><summary><span class="chip">True / False</span>A load balancer sends requests to all instances, including ones that have failed.</summary><div class="ans"><span class="F">False.</span> Underline <u class="fix">all instances, including ones that have failed</u> → <strong>only healthy instances</strong>.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Mirroring splits data across servers so each holds a part of it.</summary><div class="ans"><span class="F">False.</span> <u class="fix">Mirroring</u> → <strong>Sharding</strong>. Mirroring keeps a copy (durability).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A cache stores popular dynamic requests on disk.</summary><div class="ans"><span class="F">False.</span> <u class="fix">on disk</u> → <strong>in memory</strong> (Memcached, Redis).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>A CDN is used to deliver static content such as images and JavaScript libraries.</summary><div class="ans"><span class="T">True.</span> It shifts delivery from your infrastructure to a third-party provider.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Availability zones are geographically placed environments that serve users closest to where they are.</summary><div class="ans"><span class="F">False.</span> <u class="fix">Availability zones</u> → <strong>Regions</strong>. Zones are isolated pools inside a region.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Bulkheads protect against cascading failures by enforcing limits.</summary><div class="ans"><span class="T">True.</span> Load shedding.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Microservices run all services in a single executable.</summary><div class="ans"><span class="F">False.</span> <u class="fix">a single executable</u> → <strong>their own executable each</strong> (that describes a monolith).</div></details>
+<details class="q"><summary><span class="chip">True / False</span>The ability to adapt to unknown and unexpected situations, such as a region going down, is called robustness.</summary><div class="ans"><span class="F">False.</span> <u class="fix">robustness</u> → <strong>resilience</strong>. Robust is graceful response to failure.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>At Netflix, AWS serves the video data.</summary><div class="ans"><span class="F">False.</span> AWS handles <strong>no</strong> video data; the Open Connect CDN serves it.</div></details>
+<details class="q"><summary><span class="chip">True / False</span>Leader election lets a stand-by server take over if the load balancer goes down.</summary><div class="ans"><span class="T">True.</span> Slide 18.</div></details>
+<details class="q"><summary><span class="chip">Matching</span>Match each component to the property it mainly ensures. Components: load balancer · CDN · availability zone · mirroring · sharding · bulkhead · cache. Properties: availability and scalability · efficiency · isolation · durability · scalability and isolation · protection from cascading failure.</summary><div class="ans">Load balancer ↔ availability and scalability. CDN ↔ efficiency (and availability). Availability zone ↔ isolation. Mirroring ↔ durability. Sharding ↔ scalability and isolation. Bulkhead ↔ protection from cascading failure. Cache ↔ efficiency.</div></details>
+<details class="q"><summary><span class="chip">Matching</span>Name the infrastructure piece: (a) turns a name into an IP address (b) skip unhealthy servers (c) serve a 100 MB PDF without using your CPU (d) stand-by takes over (e) stop calling a failing service.</summary><div class="ans">(a) DNS. (b) Load balancer. (c) CDN. (d) Leader election. (e) Circuit breaker.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>How are availability, isolation, regulation and scalability related to DevOps? (slide 28)</summary><div class="ans">Availability and scalability are what DevOps pipelines deliver safely: a change must not interrupt service, and the system must grow with load. Isolation (zones, regions, bulkheads) keeps a bad change or failure small, which is the blast-radius idea behind rings and canaries, and gives you a place to switch traffic for a deployment or rollback. Regulation (throttling, queues, limits) protects services from overload while changes roll out. DevOps adds the automation, monitoring and fast recovery that keep these properties true as the code keeps changing.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>Why is the 3-tier architecture sometimes not enough?</summary><div class="ans">It has single points of failure and fixed capacity: an unplugged app server or deleted VM takes the service down, a crowd of users overwhelms one server, and full disks or too many data requests overload one database.</div></details>
+<details class="q"><summary><span class="chip">Self-check</span>What does a stateless service buy you?</summary><div class="ans">Any instance can answer any request, so instances can be added, removed, restarted or rolled back without losing user state. The state is kept in a replicated store instead.</div></details>
+</div>
+</section>
+<nav class="pager" aria-label="Previous and next page"><a class="prev" href="15-lecture-8-pipelines.html" rel="prev"><small>← Previous</small>Lecture 8: Pipelines in depth</a><a class="next" href="17-exam-drill.html" rel="next"><small>Next →</small>Exam drill: Exam drill</a></nav>
+<footer>Built from the CSC 519 slides, the course calendar, the workshop READMEs, the midterm study guide and your own workshop repos. Lecture pages hold the concepts; workshop pages hold the hands-on work. Per the midterm review deck, the exam has three question types: true / false with corrections, matching concepts, and naming the tool behind a code snippet (GitHub Actions, Dockerfile, Ansible, Bash). No coding, no open-ended definitions, no fill-in-the-blank, no notes.</footer>
+</div>
+<script>
+document.querySelectorAll('button.reveal').forEach(function(b){
+  b.addEventListener('click',function(){
+    var qs=b.closest('section').querySelectorAll('details.q');
+    var open=b.getAttribute('data-open')!=='1';
+    qs.forEach(function(d){d.open=open});
+    b.setAttribute('data-open',open?'1':'0');
+    b.textContent=open?'Hide all answers':'Reveal all answers';
+  });
+});
+var tf=document.getElementById('term-filter');
+if(tf){
+  var terms=[].slice.call(document.querySelectorAll('.term')),secs=[].slice.call(document.querySelectorAll('section[data-terms]')),out=document.getElementById('term-count');
+  var run=function(){
+    var q=tf.value.trim().toLowerCase(),n=0;
+    terms.forEach(function(t){var hit=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!hit;if(hit)n++;});
+    secs.forEach(function(s){s.hidden=!s.querySelector('.term:not([hidden])');});
+    out.textContent=q?(n+' of '+terms.length+' terms match'):(terms.length+' terms');
+  };
+  tf.addEventListener('input',run);run();
+}
+</script>
+
+</body>
+</html>
